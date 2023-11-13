@@ -72,7 +72,7 @@ class FormController extends Controller
             if (UtilityFacades::getsettings('mercadosetting') == 'on') {
                 $payment_type['mercado'] = 'Mercado';
             }
-            return view('form.create', compact('roles', 'payment_type', 'users'));
+            return view('admin.form.create', compact('roles', 'payment_type', 'users'));
         } else {
             return response()->json(['failed' => __('Permission denied.')], 401);
         }
@@ -361,7 +361,6 @@ class FormController extends Controller
     {
         if (\Auth::user()->can('design-form')) {
             $form = Form::find($id);
-            // dd($form);
             if ($form) {
                 return view('admin.form.design', compact('form'));
             } else {
