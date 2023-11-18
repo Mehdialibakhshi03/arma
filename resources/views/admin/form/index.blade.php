@@ -19,7 +19,9 @@
                     <div class="table-responsive py-5 pb-4">
 
                         <div class="container-fluid">
-                            <a class="btn btn-sm btn-primary" href="/forms/create">+ Create</a>
+                            @can('form-create')
+                            <a class="btn btn-sm btn-primary" href="{{ route('admin.forms.create') }}">+ Create</a>
+                            @endcan
                             {{ $dataTable->table(['width' => '100%']) }}
                         </div>
                     </div>

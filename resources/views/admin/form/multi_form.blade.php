@@ -38,7 +38,7 @@
                         @endif
                     </div>
                     <div class="card-body form-card-body">
-                        <form action="{{ route('forms.fill.store', $form->id) }}" method="POST"
+                        <form action="{{ route('admin.forms.fill.store', $form->id) }}" method="POST"
                               enctype="multipart/form-data" id="fill-form">
                             @method('PUT')
                             @if (isset($array))
@@ -682,7 +682,7 @@
                     <div class="form-group col-6 m-auto">
                         <p>{{ __('Use this link to share the poll with your participants.') }}</p>
                         <div class="input-group">
-                            <input type="text" value="{{ route('forms.survey', $id) }}"
+                            <input type="text" value="{{ route('admin.forms.survey', $id) }}"
                                    class="form-control js-content" id="pc-clipboard-1"
                                    placeholder="Type some value to copy">
                             <a href="#" class="btn btn-primary js-copy" data-clipboard="true"
@@ -690,30 +690,30 @@
                             </a>
                         </div>
                         <div class="mt-3 social-links-share">
-                            <a href="https://api.whatsapp.com/send?text={{ route('forms.survey', $id) }}"
+                            <a href="https://api.whatsapp.com/send?text={{ route('admin.forms.survey', $id) }}"
                                title="Whatsapp" class="social-links-share-main">
                                 <i class="ti ti-brand-whatsapp"></i>
                             </a>
-                            <a href="https://twitter.com/intent/tweet?text={{ route('forms.survey', $id) }}"
+                            <a href="https://twitter.com/intent/tweet?text={{ route('admin.forms.survey', $id) }}"
                                title="Twitter" class="social-links-share-main">
                                 <i class="ti ti-brand-twitter"></i>
                             </a>
-                            <a href="https://www.facebook.com/share.php?u={{ route('forms.survey', $id) }}"
+                            <a href="https://www.facebook.com/share.php?u={{ route('admin.forms.survey', $id) }}"
                                title="Facebook" class="social-links-share-main">
                                 <i class="ti ti-brand-facebook"></i>
                             </a>
-                            <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ route('forms.survey', $id) }}"
+                            <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ route('admin.forms.survey', $id) }}"
                                title="Linkedin" class="social-links-share-main">
                                 <i class="ti ti-brand-linkedin"></i>
                             </a>
                             <a href="javascript:void(1);" class="social-links-share-main" title="Show QR Code"
-                               data-action="{{ route('forms.survey.qr', $id) }}" id="share-qr-image">
+                               data-action="{{ route('admin.forms.survey.qr', $id) }}" id="share-qr-image">
                                 <i class="ti ti-qrcode"></i>
                             </a>
                             <a href="javascript:void(0)" title="Embed" class="social-links-share-main"
                                onclick="copyToClipboard('#embed-form-{{ $form->id }}')"
                                id="embed-form-{{ $form->id }}"
-                               data-url='<iframe src="{{ route('forms.survey', $id) }}" scrolling="auto" align="bottom" style="height:100vh;" width="100%"></iframe>'>
+                               data-url='<iframe src="{{ route('admin.forms.survey', $id) }}" scrolling="auto" align="bottom" style="height:100vh;" width="100%"></iframe>'>
                                 <i class="ti ti-code"></i>
                             </a>
                         </div>
@@ -879,7 +879,7 @@
             var totaldropzone = $('.dropzone').map((_, el) => el.id).get();
             totaldropzone.forEach(function (val) {
                 var myDropzone = new Dropzone("#" + val, {
-                    url: "{{ route('dropzone.upload', $form->id) }}",
+                    url: "{{ route('admin.dropzone.upload', $form->id) }}",
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },

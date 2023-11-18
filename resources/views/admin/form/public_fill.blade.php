@@ -180,7 +180,7 @@
             formData.append('ajax', true);
             $.ajax({
                 type: "POST",
-                url: '{{ route('forms.fill.store', $form->id) }}',
+                url: '{{ route('admin.forms.fill.store', $form->id) }}',
                 data: formData,
                 processData: false,
                 contentType: false,
@@ -641,7 +641,7 @@
         }
         if ($(".ck_editor").length) {
             CKEDITOR.replace($('.ck_editor').attr('name'), {
-                filebrowserUploadUrl: "{{ route('ckeditor.upload', ['_token' => csrf_token()]) }}",
+                filebrowserUploadUrl: "{{ route('admin.ckeditor.upload', ['_token' => csrf_token()]) }}",
                 filebrowserUploadMethod: 'form'
             });
         }

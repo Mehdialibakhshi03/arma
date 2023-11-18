@@ -739,25 +739,25 @@
     <script src="{{ asset('vendor/ckeditor/ckeditor.js') }}"></script>
     <script>
         CKEDITOR.replace('privacy', {
-            filebrowserUploadUrl: "{{ route('ckeditor.upload', ['_token' => csrf_token()]) }}",
+            filebrowserUploadUrl: "{{ route('admin.ckeditor.upload', ['_token' => csrf_token()]) }}",
             filebrowserUploadMethod: 'form'
         });
     </script>
     <script>
         CKEDITOR.replace('contact_us', {
-            filebrowserUploadUrl: "{{ route('ckeditor.upload', ['_token' => csrf_token()]) }}",
+            filebrowserUploadUrl: "{{ route('admin.ckeditor.upload', ['_token' => csrf_token()]) }}",
             filebrowserUploadMethod: 'form'
         });
     </script>
     <script>
         CKEDITOR.replace('term_condition', {
-            filebrowserUploadUrl: "{{ route('ckeditor.upload', ['_token' => csrf_token()]) }}",
+            filebrowserUploadUrl: "{{ route('admin.ckeditor.upload', ['_token' => csrf_token()]) }}",
             filebrowserUploadMethod: 'form'
         });
     </script>
     <script>
         CKEDITOR.replace('faq_page_content', {
-            filebrowserUploadUrl: "{{ route('ckeditor.upload', ['_token' => csrf_token()]) }}",
+            filebrowserUploadUrl: "{{ route('admin.ckeditor.upload', ['_token' => csrf_token()]) }}",
             filebrowserUploadMethod: 'form'
         });
     </script>

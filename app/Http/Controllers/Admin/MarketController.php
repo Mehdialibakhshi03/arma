@@ -19,7 +19,7 @@ class MarketController extends Controller
 
     public function create($status)
     {
-        $form_values = FormValue::where('status',1)->where('show_in_market', 1)->get();
+        $form_values = FormValue::where('status', 1)->where('show_in_market', 1)->get();
         return view('admin.markets.create', compact('status', 'form_values'));
     }
 
@@ -47,8 +47,14 @@ class MarketController extends Controller
             if (!empty($FormValues)) {
                 foreach ($FormValues as $FormValue) {
                     $market->FormValues()->attach($FormValue);
+                    //change_status_form_value
+                    $form_val = FormValue::where('id', $FormValue)->first();
+                    $form_val->update([
+                        'show_in_market'=>0
+                    ]);
                 }
             }
+
             DB::commit();
             session()->flash('success', 'The Item Has Been Created Successfully');
             return redirect()->route('admin.markets.index', ['status' => $status]);
@@ -60,13 +66,13 @@ class MarketController extends Controller
 
     }
 
-    public function edit($status,Market $market)
+    public function edit($status, Market $market)
     {
-        $form_values = FormValue::where('status',1)->where('show_in_market', 1)->get();
-        return view('admin.markets.edit', compact('status', 'form_values','status','market'));
+        $form_values = FormValue::where('status', 1)->get();
+        return view('admin.markets.edit', compact('status', 'form_values', 'status', 'market'));
     }
 
-    public function update($status,Market $market,Request $request)
+    public function update($status, Market $market, Request $request)
     {
         $stts = $status == 'open' ? 1 : 0;
         $request->validate([
@@ -86,7 +92,7 @@ class MarketController extends Controller
             ]);
             //category_product
             $market->FormValues()->detach();
-            if ($request->has('form_id')){
+            if ($request->has('form_id')) {
                 $FormValues = $request->form_id;
                 if (!empty($FormValues)) {
                     foreach ($FormValues as $FormValue) {

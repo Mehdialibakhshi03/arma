@@ -63,7 +63,7 @@
 @push('script')
     <script>
         CKEDITOR.replace('html_template', {
-            filebrowserUploadUrl: "{{ route('ckeditor.upload', ['_token' => csrf_token()]) }}",
+            filebrowserUploadUrl: "{{ route('admin.ckeditor.upload', ['_token' => csrf_token()]) }}",
             filebrowserUploadMethod: 'form'
         });
     </script>

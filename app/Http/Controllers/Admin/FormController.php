@@ -11,7 +11,6 @@ use App\Models\AssignFormRole;
 use App\Models\AssignFormsRoles;
 use App\Models\AssignFormsUsers;
 use App\Models\AssignFormUser;
-use App\Models\DashboardWidget;
 use App\Models\Form;
 use App\Models\FormComments;
 use App\Models\FormCommentsReply;
@@ -33,141 +32,29 @@ class FormController extends Controller
 {
     public function index(FormsDataTable $dataTable)
     {
-        if (\Auth::user()->can('manage-form')) {
-
-            return $dataTable->render('admin.form.index');
-        } else {
-            return redirect()->back()->with('failed', __('Permission denied.'));
-        }
+        return $dataTable->render('admin.form.index');
     }
 
     public function create()
     {
-        if (\Auth::user()->can('create-form')) {
-            $users = User::where('id', '!=', 1)->pluck('name', 'id');
-            $roles = Role::where('name', '!=', 'Super Admin')->orwhere('name', Auth::user()->type)->pluck('name', 'id');
-            $payment_type = [];
-            $payment_type[''] = 'Select payment';
-            if (UtilityFacades::getsettings('stripesetting') == 'on') {
-                $payment_type['stripe'] = 'Stripe';
-            }
-            if (UtilityFacades::getsettings('paypalsetting') == 'on') {
-                $payment_type['paypal'] = 'Paypal';
-            }
-            if (UtilityFacades::getsettings('razorpaysetting') == 'on') {
-                $payment_type['razorpay'] = 'Razorpay';
-            }
-            if (UtilityFacades::getsettings('paytmsetting') == 'on') {
-                $payment_type['paytm'] = 'Paytm';
-            }
-            if (UtilityFacades::getsettings('flutterwavesetting') == 'on') {
-                $payment_type['flutterwave'] = 'Flutterwave';
-            }
-            if (UtilityFacades::getsettings('paystacksetting') == 'on') {
-                $payment_type['paystack'] = 'Paystack';
-            }
-            if (UtilityFacades::getsettings('coingatesetting') == 'on') {
-                $payment_type['coingate'] = 'Coingate';
-            }
-            if (UtilityFacades::getsettings('mercadosetting') == 'on') {
-                $payment_type['mercado'] = 'Mercado';
-            }
-            return view('admin.form.create', compact('roles', 'payment_type', 'users'));
-        } else {
-            return response()->json(['failed' => __('Permission denied.')], 401);
+        if (\auth()->user()->can('form-create')) {
+            return view('admin.form.create');
         }
     }
 
     public function store(Request $request)
     {
-        if (\Auth::user()->can('create-form')) {
-            $rules = [
-                'title' => 'required',
-            ];
-            $ccemails = implode(',', $request->ccemail);
-            $bccemails = implode(',', $request->bccemail);
-            if ($ccemails) {
-                $request->validate([
-                    'ccemail' => ['nullable', new CommaSeparatedEmails],
-                ]);
-            }
-            if ($bccemails) {
-                $request->validate([
-                    'bccemail' => ['nullable', new CommaSeparatedEmails],
-                ]);
-            }
-            $request->validate([
-                'email' => ['nullable', new CommaSeparatedEmails],
-            ]);
-            $validator = Validator::make($request->all(), $rules);
-            if ($request->payment_type == "paystack") {
-                if ($request->currency_symbol != '₦' || $request->currency_name != 'NGN') {
-                    return redirect()->back()->with('failed', __('Currency not suppoted this payment getway. please enter NGN currency and ₦ symbol.'));
-                }
-            }
-            if ($request->payment_type == "paytm") {
-                if ($request->currency_symbol != '₹' || $request->currency_name != 'INR') {
-                    return redirect()->back()->with('failed', __('Currency not suppoted this payment getway. please enter INR currency and ₹ symbol.'));
-                }
-            }
-            if ($validator->fails()) {
-                $messages = $validator->getMessageBag();
-                return redirect()->back()->with('failed', $messages->first());
-            }
-            $filename = '';
-            if (request()->file('form_logo')) {
-                $allowedfileExtension = ['jpeg', 'jpg', 'png'];
-                $file = $request->file('form_logo');
-                $extension = $file->getClientOriginalExtension();
-                $check = in_array($extension, $allowedfileExtension);
-                if ($check) {
-                    $filename = $file->store('form_logo');
-                } else {
-                    return redirect()->route('forms.index')->with('failed', __('File type not valid.'));
-                }
-            }
-            if (isset($request->email) and !empty($request->email)) {
-                $emails = implode(',', $request->email);
-            }
-            if (isset($request->ccemail) and !empty($request->ccemail)) {
-                $ccemails = implode(',', $request->ccemail);
-            }
-            if (isset($request->bccemail) and !empty($request->bccemail)) {
-                $bccemails = implode(',', $request->bccemail);
-            }
-            $form = new Form();
-            $form->title  = $request->title;
-            $form->logo  = $filename;
-            $form->email  = $emails;
-            $form->bccemail  = $bccemails;
-            $form->ccemail  = $bccemails;
-            $form->allow_comments  = ($request->allow_comments == 'on') ? '1' : '0';
-            $form->allow_share_section  = ($request->allow_share_section == 'on') ? '1' : '0';
-            $form->json  = '';
-            $form->html  = '';
-            $form->success_msg  = $request->success_msg;
-            $form->thanks_msg  = $request->thanks_msg;
-            $form->payment_status  = ($request->payment == 'on') ? '1' : '0';
-            $form->amount  = ($request->amount) ? $request->amount : 0;
-            $form->currency_symbol  = $request->currency_symbol;
-            $form->currency_name  = $request->currency_name;
-            $form->payment_type  = $request->payment_type;
-            $form->created_by  = Auth::user()->id;
-            $form->assign_type  = $request->assign_type;
-            $form->save();
-            if ($request->assign_type == 'role') {
-                $form->assignRole($request->roles);
-            }
-            if ($request->assign_type == 'user') {
-                $form->assignUser($request->users);
-            }
-            $form->assignFormRoles($request->roles);
-            return redirect()->route('forms.index')->with('success', __('Form created successfully.'));
-        } else {
-            return redirect()->back()->with('failed', __('Permission denied.'));
-        }
+        $request->validate([
+            'title' => 'required|unique:forms,title'
+        ]);
+        $form = new Form();
+        $form->title = $request->title;
+        $form->json = '';
+        $form->html = '';
+        $form->created_by = Auth::user()->id;
+        $form->save();
+        return redirect()->route('admin.forms.index')->with('success', __('Form created successfully.'));
     }
-
 
 
     public function edit($id)
@@ -175,7 +62,7 @@ class FormController extends Controller
         $usr = \Auth::user();
         $user_role = $usr->roles->first()->id;
         $formallowededit = UserForm::where('role_id', $user_role)->where('form_id', $id)->count();
-        if (\Auth::user()->can('edit-form') && $usr->type == 'Admin') {
+//        if (\Auth::user()->can('edit-form') && $usr->type == 'Admin') {
             $form = Form::find($id);
             $next = Form::where('id', '>', $form->id)->first();
             $previous = Form::where('id', '<', $form->id)->orderBy('id', 'desc')->first();
@@ -183,7 +70,7 @@ class FormController extends Controller
             $roles = Role::where('name', '!=', 'Super Admin')->pluck('name', 'id');
             $formRole = $form->assignedroles->pluck('id')->toArray();
             $form_role = Role::pluck('name', 'id');
-            $formUser =  $form->assignedusers->pluck('id')->toArray();
+            $formUser = $form->assignedusers->pluck('id')->toArray();
             $form_user = User::where('id', '!=', 1)->pluck('name', 'id');
             $payment_type = [];
             if (UtilityFacades::getsettings('stripesetting') == 'on') {
@@ -211,22 +98,22 @@ class FormController extends Controller
                 $payment_type['mercado'] = 'Mercado';
             }
             return view('admin.form.edit', compact('form', 'form_roles', 'roles', 'payment_type', 'form_user', 'formUser', 'formRole', 'form_role', 'next', 'previous'));
-        } else {
-            if (\Auth::user()->can('edit-form') && $formallowededit > 0) {
-                $form = Form::find($id);
-                $next = Form::where('id', '>', $form->id)->first();
-                $previous = Form::where('id', '<', $form->id)->orderBy('id', 'desc')->first();
-                $form_roles = $form->Roles->pluck('id')->toArray();
-                $roles = Role::pluck('name', 'id');
-                $formRole = $form->assignedroles->pluck('id')->toArray();
-                $form_role = Role::pluck('name', 'id');
-                $formUser =  $form->assignedusers->pluck('id')->toArray();
-                $form_user = User::where('id', '!=', 1)->pluck('name', 'id');
-                return view('admin.form.edit', compact('form', 'form_roles', 'form_role', 'form_user', 'formUser', 'formRole', 'next', 'previous'));
-            } else {
-                return redirect()->back()->with('failed', __('Permission denied.'));
-            }
-        }
+//        } else {
+//            if (\Auth::user()->can('edit-form') && $formallowededit > 0) {
+//                $form = Form::find($id);
+//                $next = Form::where('id', '>', $form->id)->first();
+//                $previous = Form::where('id', '<', $form->id)->orderBy('id', 'desc')->first();
+//                $form_roles = $form->Roles->pluck('id')->toArray();
+//                $roles = Role::pluck('name', 'id');
+//                $formRole = $form->assignedroles->pluck('id')->toArray();
+//                $form_role = Role::pluck('name', 'id');
+//                $formUser = $form->assignedusers->pluck('id')->toArray();
+//                $form_user = User::where('id', '!=', 1)->pluck('name', 'id');
+//                return view('admin.form.edit', compact('form', 'form_roles', 'form_role', 'form_user', 'formUser', 'formRole', 'next', 'previous'));
+//            } else {
+//                return redirect()->back()->with('failed', __('Permission denied.'));
+//            }
+//        }
     }
 
     public function update(Request $request, Form $form)
@@ -275,7 +162,7 @@ class FormController extends Controller
                 if ($check) {
                     $filename = $file->store('form_logo');
                 } else {
-                    return redirect()->route('forms.index')->with('failed', __('File type not valid.'));
+                    return redirect()->route('admin.forms.index')->with('failed', __('File type not valid.'));
                 }
             }
             if (isset($request->email) and !empty($request->email)) {
@@ -301,8 +188,8 @@ class FormController extends Controller
             $form->currency_symbol = $request->currency_symbol;
             $form->currency_name = $request->currency_name;
             $form->payment_type = $request->payment_type;
-            $form->created_by  = Auth::user()->id;
-            $form->assign_type  = $request->assign_type;
+            $form->created_by = Auth::user()->id;
+            $form->assign_type = $request->assign_type;
             // $form->assign_form = ($request->assignform == 'on') ? '0' : '1';
             $form->save();
             if ($request->assign_type == 'role') {
@@ -321,7 +208,7 @@ class FormController extends Controller
                 AssignFormsUsers::where('form_id', $id)->delete();
             }
             $form->assignFormRoles($request->roles);
-            return redirect()->route('forms.index')->with('success', __('Form updated successfully.'));
+            return redirect()->route('admin.forms.index')->with('success', __('Form updated successfully.'));
         } else {
             return redirect()->back()->with('failed', __('Permission denied.'));
         }
@@ -329,84 +216,71 @@ class FormController extends Controller
 
     public function destroy(Form $form)
     {
-        if (\Auth::user()->can('delete-form')) {
-            $id = $form->id;
-            $comments = FormComments::where('form_id', $id)->get();
-            $comments_reply = FormCommentsReply::where('form_id', $id)->get();
-            DashboardWidget::where('form_id', $id)->delete();
-            AssignFormsRoles::where('form_id', $id)->delete();
-            AssignFormsUsers::where('form_id', $id)->delete();
-            foreach ($comments as $allcomments) {
-                $commentsids = $allcomments->id;
-                $commentsall = FormComments::find($commentsids);
-                if ($commentsall) {
-                    $commentsall->delete();
-                }
+        $id = $form->id;
+        $comments = FormComments::where('form_id', $id)->get();
+        $comments_reply = FormCommentsReply::where('form_id', $id)->get();
+        AssignFormsRoles::where('form_id', $id)->delete();
+        AssignFormsUsers::where('form_id', $id)->delete();
+        foreach ($comments as $allcomments) {
+            $commentsids = $allcomments->id;
+            $commentsall = FormComments::find($commentsids);
+            if ($commentsall) {
+                $commentsall->delete();
             }
-            foreach ($comments_reply as $comments_reply_all) {
-                $comments_reply_ids = $comments_reply_all->id;
-                $reply =  FormCommentsReply::find($comments_reply_ids);
-                if ($reply) {
-                    $reply->delete();
-                }
-            }
-            $form->delete();
-            return redirect()->back()->with('success', __('Form deleted successfully'));
-        } else {
-            return redirect()->back()->with('failed', __('Permission denied.'));
         }
+        foreach ($comments_reply as $comments_reply_all) {
+            $comments_reply_ids = $comments_reply_all->id;
+            $reply = FormCommentsReply::find($comments_reply_ids);
+            if ($reply) {
+                $reply->delete();
+            }
+        }
+        $form->delete();
+        return redirect()->back()->with('success', __('Form deleted successfully'));
     }
 
     public function design($id)
     {
-        if (\Auth::user()->can('design-form')) {
-            $form = Form::find($id);
-            if ($form) {
-                return view('admin.form.design', compact('form'));
-            } else {
-                return redirect()->back()->with('failed', __('Form not found.'));
-            }
+
+        $form = Form::find($id);
+        if ($form) {
+            return view('admin.form.design', compact('form'));
         } else {
-            return redirect()->back()->with('failed', __('Permission denied.'));
+            return redirect()->back()->with('failed', __('Form not found.'));
         }
+
     }
 
     public function designtest($id)
     {
-        if (\Auth::user()->can('design-form')) {
-            $form = Form::find($id);
-            if ($form) {
-                return view('form.test_design', compact('form'));
-            } else {
-                return redirect()->back()->with('failed', __('Form not found.'));
-            }
+
+        $form = Form::find($id);
+        if ($form) {
+            return view('form.test_design', compact('form'));
         } else {
-            return redirect()->back()->with('failed', __('Permission denied.'));
+            return redirect()->back()->with('failed', __('Form not found.'));
         }
+
     }
 
     public function designUpdate(Request $request, $id)
     {
-        if (\Auth::user()->can('design-form')) {
-            $form = Form::find($id);
-            if ($form) {
-                $form->json = $request->json;
-                $field_name = json_decode($request->json);
-                $arr = [];
-                foreach ($field_name[0] as $k => $fields) {
-                    if ($fields->type == "header" || $fields->type == "paragraph") {
-                        $arr[$k] = $fields->type;
-                    } else {
-                        $arr[$k] = $fields->name;
-                    }
+        $form = Form::find($id);
+        if ($form) {
+            $form->json = $request->json;
+            $field_name = json_decode($request->json);
+            $arr = [];
+            foreach ($field_name[0] as $k => $fields) {
+                if ($fields->type == "header" || $fields->type == "paragraph") {
+                    $arr[$k] = $fields->type;
+                } else {
+                    $arr[$k] = $fields->name;
                 }
-                $form->save();
-                return redirect()->route('forms.index')->with('success', __('Form updated successfully.'));
-            } else {
-                return redirect()->back()->with('failed', __('Form not found.'));
             }
+            $form->save();
+            return redirect()->route('admin.forms.index')->with('success', __('Form updated successfully.'));
         } else {
-            return redirect()->back()->with('failed', __('Permission denied.'));
+            return redirect()->back()->with('failed', __('Form not found.'));
         }
     }
 
@@ -441,7 +315,7 @@ class FormController extends Controller
         $hashids = new Hashids('', 20);
         $id = $hashids->decodeHex($id);
         $form = Form::find($id);
-        $view =   view('form.public_fill_qr', compact('form'));
+        $view = view('form.public_fill_qr', compact('form'));
         return ['html' => $view->render()];
     }
 
@@ -666,10 +540,10 @@ class FormController extends Controller
                             if ($request->{$row->name} == '') {
                                 $url = $row->value;
                             } else {
-                                $url          = $request->{$row->name};
+                                $url = $request->{$row->name};
                                 $imageContent = file_get_contents($url);
-                                $filePath     = Storage::path($filepath);
-                                $file         = file_put_contents($filePath, $imageContent);
+                                $filePath = Storage::path($filepath);
+                                $file = file_put_contents($filePath, $imageContent);
                             }
 
                             $row->value = $filepath;
@@ -678,12 +552,12 @@ class FormController extends Controller
                                 mkdir(Storage::path("form_values/$form->id"), 0777, true);
                                 chmod(Storage::path("form_values/$form->id"), 0777);
                             }
-                            $filepath     = "form_values/$form->id/" . rand(1, 1000) . '.png';
-                            $url          = $request->{$row->name};
+                            $filepath = "form_values/$form->id/" . rand(1, 1000) . '.png';
+                            $url = $request->{$row->name};
                             $imageContent = file_get_contents($url);
-                            $filePath     = Storage::path($filepath);
-                            $file         = file_put_contents($filePath, $imageContent);
-                            $row->value   = $filepath;
+                            $filePath = Storage::path($filepath);
+                            $file = file_put_contents($filePath, $imageContent);
+                            $row->value = $filepath;
                         }
                     } elseif ($row->type == 'location') {
                         foreach ($request->{$row->name} as $value) {
@@ -708,8 +582,8 @@ class FormController extends Controller
 
                 $data['form_id'] = $form->id;
                 $data['user_id'] = $user_id;
-                $data['json']    = json_encode($array);
-                $form_value      = FormValue::create($data);
+                $data['json'] = json_encode($array);
+                $form_value = FormValue::create($data);
             }
             $emails = explode(',', $form->email);
             $ccemails = explode(',', $form->ccemail);
@@ -755,11 +629,11 @@ class FormController extends Controller
                 $success_msg = strip_tags($form->success_msg);
             }
             if (isset($request->ajax)) {
-                $user=\auth()->user();
-                if ($user->hasRole('Admin')){
-                    $route=null;
-                }else{
-                    $route=route('view.form.values', ['status' => 3, 'user' => auth()->user()->id]);
+                $user = \auth()->user();
+                if ($user->hasRole('Admin')) {
+                    $route = null;
+                } else {
+                    $route = route('admin.form.values', ['status' => 3, 'user' => auth()->user()->id]);
                 }
                 return response()->json(['is_success' => true, 'message' => __($success_msg), 'redirect' => $route], 200);
             } else {
@@ -789,46 +663,42 @@ class FormController extends Controller
 
     public function duplicate(Request $request)
     {
-        if (\Auth::user()->can('duplicate-form')) {
-            $form = Form::find($request->form_id);
-            if ($form) {
-                $newform = Form::create([
-                    'title'           => $form->title . ' (copy)',
-                    'logo'            => $form->logo,
-                    'email'           => $form->email,
-                    'success_msg'     => $form->success_msg,
-                    'thanks_msg'      => $form->thanks_msg,
-                    'json'            => $form->json,
-                    'html'            => $form->html,
-                    'payment_status'  => $form->payment_status,
-                    'amount'          => $form->amount,
-                    'currency_symbol' => $form->currency_symbol,
-                    'currency_name'   => $form->currency_name,
-                    'payment_type'    => $form->payment_type,
-                    'created_by'      => $form->created_by,
-                    'is_active'       => $form->is_active,
-                ]);
-                return redirect()->back()->with('success', __('Form duplicate successfully.'));
-            } else {
-                return redirect()->back()->with('errors', __('Form not found.'));
-            }
+        $form = Form::find($request->form_id);
+        if ($form) {
+            $newform = Form::create([
+                'title' => $form->title . ' (copy)',
+                'logo' => $form->logo,
+                'email' => $form->email,
+                'success_msg' => $form->success_msg,
+                'thanks_msg' => $form->thanks_msg,
+                'json' => $form->json,
+                'html' => $form->html,
+                'payment_status' => $form->payment_status,
+                'amount' => $form->amount,
+                'currency_symbol' => $form->currency_symbol,
+                'currency_name' => $form->currency_name,
+                'payment_type' => $form->payment_type,
+                'created_by' => $form->created_by,
+                'is_active' => $form->is_active,
+            ]);
+            return redirect()->back()->with('success', __('Form duplicate successfully.'));
         } else {
-            return redirect()->back()->with('errors', __('Permission denied.'));
+            return redirect()->back()->with('errors', __('Form not found.'));
         }
     }
 
     public function ckupload(Request $request)
     {
         if ($request->hasFile('upload')) {
-            $originName         = $request->file('upload')->getClientOriginalName();
-            $fileName           = pathinfo($originName, PATHINFO_FILENAME);
-            $extension          = $request->file('upload')->getClientOriginalExtension();
-            $fileName           = $fileName . '_' . time() . '.' . $extension;
+            $originName = $request->file('upload')->getClientOriginalName();
+            $fileName = pathinfo($originName, PATHINFO_FILENAME);
+            $extension = $request->file('upload')->getClientOriginalExtension();
+            $fileName = $fileName . '_' . time() . '.' . $extension;
             $request->file('upload')->move(public_path('images'), $fileName);
-            $CKEditorFuncNum    = $request->input('CKEditorFuncNum');
-            $url                = asset('images/' . $fileName);
-            $msg                = __('Image uploaded successfully');
-            $response           = "<script>window.parent.CKEDITOR.tools.callFunction($CKEditorFuncNum, '$url', '$msg')</script>";
+            $CKEditorFuncNum = $request->input('CKEditorFuncNum');
+            $url = asset('images/' . $fileName);
+            $msg = __('Image uploaded successfully');
+            $response = "<script>window.parent.CKEDITOR.tools.callFunction($CKEditorFuncNum, '$url', '$msg')</script>";
             @header('Content-type: text/html; charset=utf-8');
             echo $response;
         }

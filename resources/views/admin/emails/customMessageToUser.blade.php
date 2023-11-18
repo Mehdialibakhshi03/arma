@@ -1,4 +1,4 @@
-@extends('emails.baseTemplate')
+@extends('admin.emails.baseTemplate')
 
 @section('content')
     {!! $text !!}

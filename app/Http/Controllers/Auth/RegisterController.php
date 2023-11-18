@@ -51,11 +51,11 @@ class RegisterController extends Controller
         $this->validator($request->all())->validate();
 
         event(new Registered($user = $this->create($request->all())));
+        session()->put('UserRegistered','oooo');
         //send email with job
         $admin = Setting::where('key', 'email')->pluck('value')->first();
         dispatch(new SendNewUserRegisteredForAdminJob($admin));
         dispatch(new SendNewUserRegisteredForUserJob($user->email));
-        session()->flash('UserRegistered');
         if ($response = $this->registered($request, $user)) {
             return $response;
         }
@@ -77,12 +77,6 @@ class RegisterController extends Controller
         $this->middleware('guest');
     }
 
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param array $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
     protected function validator(array $data)
     {
 
@@ -106,12 +100,6 @@ class RegisterController extends Controller
         ]);
     }
 
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param array $data
-     * @return \App\Models\User
-     */
     protected function create(array $data)
     {
         return User::create([

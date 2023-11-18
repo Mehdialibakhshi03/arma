@@ -95,7 +95,7 @@
     @include('admin.sections.remove_modal')
 @endsection
 @push('style')
-    @include('admin.layouts.includes.datatable_css')
+
 @endpush
 @push('script')
     <script>

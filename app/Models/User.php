@@ -45,22 +45,7 @@ class User extends Authenticatable
         return $this->lang;
     }
 
-    public function sendPasswordResetNotification($token)
-    {
-        if (MailTemplate::where('mailable', PasswordReset::class)->first()) {
-            $url = URL::temporarySignedRoute(
-                'password.reset',
-                Carbon::now()->addMinutes(Config::get('auth.verification.expire', 60)),
-                [
-                    'token' => $token,
-                ]
-            );
-            try {
-                Mail::to($this->email)->send(new PasswordReset($this, $url));
-            } catch (\Exception $e) {  //$e->getMessage()
-            }
-        }
-    }
+
 
     public function getAvatarImageAttribute()
     {

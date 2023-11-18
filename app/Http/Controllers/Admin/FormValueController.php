@@ -40,39 +40,47 @@ class FormValueController extends Controller
 
     public function show($id)
     {
-        $form_value = FormValue::find($id);
-        $array = json_decode($form_value->json);
-        return view('admin.form_value.view', compact('form_value', 'array'));
+        if (\Auth::user()->can('commodity-show')) {
+            $form_value = FormValue::find($id);
+            $array = json_decode($form_value->json);
+            return view('admin.form_value.view', compact('form_value', 'array'));
+        } else {
+            return redirect()->back()->with('error', __('Permission denied.'));
+        }
     }
 
     public function changeStatus(Request $request)
     {
-        $form_id=$request->form_id;
-        $status=$request->status;
+        $form_id = $request->form_id;
+        $status = $request->status;
         $form_value = FormValue::where('id', $form_id)->first();
         $form_value->update([
             'status' => $status
         ]);
-        session()->flash('success','Status Change Successfully!');
+        session()->flash('success', 'Status Change Successfully!');
         return response()->json([1]);
     }
 
     public function edit($id)
     {
-        $usr = \Auth::user();
-        $user_role = $usr->roles->first()->id;
-        $form_value = FormValue::find($id);
-        $formallowededit = UserForm::where('role_id', $user_role)->where('form_id', $form_value->form_id)->count();
+        if (\Auth::user()->can('commodity-edit')) {
+            $usr = \Auth::user();
+            $user_role = $usr->roles->first()->id;
+            $form_value = FormValue::find($id);
+            $formallowededit = UserForm::where('role_id', $user_role)->where('form_id', $form_value->form_id)->count();
 
-        $array = json_decode($form_value->json);
-        $form = $form_value->Form;
-        $frm = Form::find($form_value->form_id);
-        return view('admin.form.fill', compact('form', 'form_value', 'array'));
+            $array = json_decode($form_value->json);
+            $form = $form_value->Form;
+            $frm = Form::find($form_value->form_id);
+            return view('admin.form.fill', compact('form', 'form_value', 'array'));
+        } else {
+            return redirect()->back()->with('error', __('Permission denied.'));
+        }
     }
 
     public function destroy($id)
     {
-        if (\Auth::user()->can('delete-submitted-form')) {
+        if (\Auth::user()->can('commodity-delete')) {
             FormValue::find($id)->delete();
             return redirect()->back()->with('success', __('Form successfully deleted.'));
         } else {
@@ -140,7 +148,7 @@ class FormValueController extends Controller
             $form_value = FormValue::where('id', $form_value_id)->first();
             session()->forget('success');
             $form_value->update(['status' => 0]);
-            $rout = route('view.form.values', ['status' => 0, 'user' => auth()->user()->id]);
+            $rout = route('admin.form.values', ['status' => 0, 'user' => auth()->user()->id]);
             return response()->json([1, 'Form Submitted Successfully', $rout]);
         } catch (\Exception $exception) {
             return response()->json([0, $exception->getMessage()]);

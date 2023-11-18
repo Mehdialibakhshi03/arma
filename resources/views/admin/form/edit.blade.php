@@ -9,16 +9,16 @@
                 </div>
                 <ul class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('Dashboard') }}</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('forms.index') }}">{{ __('Forms') }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('admin.forms.index') }}">{{ __('Forms') }}</a></li>
                     <li class="breadcrumb-item"> {{ __('Edit Form') }} </li>
                 </ul>
             </div>
             <div class="float-end">
                 <div class="d-flex align-items-center">
-                    <a href="@if (!empty($previous)) {{ route('forms.edit', [$previous->id]) }}@else javascript:void(0) @endif"
+                    <a href="@if (!empty($previous)) {{ route('admin.forms.edit', [$previous->id]) }}@else javascript:void(0) @endif"
                         type="button" class="btn btn-outline-primary"><i class="me-2"
                             data-feather="chevrons-left"></i>Previous</a>
-                    <a href="@if (!empty($next)) {{ route('forms.edit', [$next->id]) }}@else javascript:void(0) @endif"
+                    <a href="@if (!empty($next)) {{ route('admin.forms.edit', [$next->id]) }}@else javascript:void(0) @endif"
                         class="btn btn-outline-primary ms-1"><i class="me-2" data-feather="chevrons-right"></i>Next</a>
                 </div>
             </div>
@@ -27,7 +27,7 @@
 @endsection
 @section('content')
     <div class="row">
-        {{ Form::model($form, ['route' => ['forms.update', $form->id], 'data-validate', 'method' => 'PUT', 'class' => 'form-horizontal', 'enctype' => 'multipart/form-data']) }}
+        {{ Form::model($form, ['route' => ['admin.forms.update', $form->id], 'data-validate', 'method' => 'PUT', 'class' => 'form-horizontal', 'enctype' => 'multipart/form-data']) }}
         <div class="row">
             <div class="col-sm-6">
                 <div class="card">
@@ -307,7 +307,7 @@
                     </div>
                     <div class="card-footer">
                         <div class="float-end">
-                            {!! Html::link(route('forms.index'), __('Cancel'), ['class' => 'btn btn-secondary']) !!}
+                            {!! Html::link(route('admin.forms.index'), __('Cancel'), ['class' => 'btn btn-secondary']) !!}
                             {!! Form::submit(__('Save'), ['class' => 'form_payment btn btn-primary ']) !!}
                         </div>
                     </div>
@@ -361,11 +361,11 @@
     </script>
     <script>
         CKEDITOR.replace('success_msg', {
-            filebrowserUploadUrl: "{{ route('ckeditor.upload', ['_token' => csrf_token()]) }}",
+            filebrowserUploadUrl: "{{ route('admin.ckeditor.upload', ['_token' => csrf_token()]) }}",
             filebrowserUploadMethod: 'form'
         });
         CKEDITOR.replace('thanks_msg', {
-            filebrowserUploadUrl: "{{ route('ckeditor.upload', ['_token' => csrf_token()]) }}",
+            filebrowserUploadUrl: "{{ route('admin.ckeditor.upload', ['_token' => csrf_token()]) }}",
             filebrowserUploadMethod: 'form'
         });
     </script>

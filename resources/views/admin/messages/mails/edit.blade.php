@@ -30,14 +30,7 @@
                                 <label class="form-label">Title</label>
                                 <input name="title" type="text" value="{{$mail->title}}" class="form-control">
                             </div>
-                        <div class="form-group col-12 col-md-4">
-                                <label class="form-label">Button title</label>
-                                <input name="btn_text" type="text" value="{{$mail->btn_text}}" class="form-control">
-                            </div>
-                        <div class="form-group col-12 col-md-4">
-                                <label class="form-label">Button link</label>
-                                <input name="btn_link" type="text" value="{{$mail->btn_link}}" class="form-control">
-                            </div>
+
                         <div class="form-group col-12">
                                 <label class="form-label">Message</label>
                               <textarea name="text" id="html_template" class="form-control">
@@ -68,7 +61,7 @@
 @push('script')
     <script>
         CKEDITOR.replace('html_template', {
-            filebrowserUploadUrl: "{{ route('ckeditor.upload', ['_token' => csrf_token()]) }}",
+            filebrowserUploadUrl: "{{ route('admin.ckeditor.upload', ['_token' => csrf_token()]) }}",
             filebrowserUploadMethod: 'form'
         });
     </script>

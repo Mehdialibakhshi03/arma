@@ -7,7 +7,7 @@
         </div>
         <ul class="breadcrumb">
             <li class="breadcrumb-item">{!! Html::link(route('home'), __('Dashboard'), []) !!}</li>
-            <li class="breadcrumb-item">{!! Html::link(route('forms.index'), __('Forms'), []) !!}</li>
+            <li class="breadcrumb-item">{!! Html::link(route('admin.forms.index'), __('Forms'), []) !!}</li>
             <li class="breadcrumb-item active"> {{ __('View Form') }} </li>
         </ul>
     </div>
@@ -37,21 +37,23 @@
                     <h2 class="mb-3"> {{ $form_value->Form->title }} {{ $form_value->parent!=0 ? '(copied)' : '' }}</h2>
                     <h5>Status: {{ $form_value->Status->title }}</h5>
                 </div>
+
                 <div class="float-end justify-content-between d-flex">
+                    @can('commodity-change-status')
+                        <button onclick="ChangeFormValueStatus({{ $form_value->id }},1)" type="button"
+                                class="btn btn-success ml5">{{ __('Approve') }}</button>
+                        <button onclick="ChangeFormValueStatus({{ $form_value->id }},2)" type="button"
+                                class="btn btn-danger ml5">{{ __('Deny') }}</button>
+                        <button onclick="ChangeFormValueStatus({{ $form_value->id }},0)" type="button"
+                                class="btn btn-warning ml5">{{ __('Pending') }}</button>
+                    @endcan
 
-                    <button onclick="ChangeFormValueStatus({{ $form_value->id }},1)" type="button"
-                            class="btn btn-success ml5">{{ __('Approve') }}</button>
-                    <button onclick="ChangeFormValueStatus({{ $form_value->id }},2)" type="button"
-                            class="btn btn-danger ml5">{{ __('Deny') }}</button>
-                    <button onclick="ChangeFormValueStatus({{ $form_value->id }},0)" type="button"
-                            class="btn btn-warning ml5">{{ __('Pending') }}</button>
-
-
-                    @if($form_value->status==3)
-                        <button onclick="FormPending({{ $form_value->id }})"
-                                class="btn btn-info mr5">{{ __('Submit') }}</button>
-                    @endif
-                    <a href="javascript:javascript:history.go(-1)" class="btn btn-secondary ml5">{{ __('Back') }}</a>
+                    @can('commodity-submit-preview')
+                        @if($form_value->status==3)
+                            <button onclick="FormPending({{ $form_value->id }})"
+                                    class="btn btn-info mr5">{{ __('Submit') }}</button>
+                        @endif
+                    @endcan
 
                 </div>
 

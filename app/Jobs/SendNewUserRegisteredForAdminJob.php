@@ -28,6 +28,7 @@ class SendNewUserRegisteredForAdminJob implements ShouldQueue
      */
     public function handle(): void
     {
+
         $send_mail=$this->email;
         $email = new NewUserRegisteredAdminMail();
         Mail::to($send_mail)->send($email);

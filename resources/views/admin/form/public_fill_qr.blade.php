@@ -4,6 +4,6 @@
 @endphp
 <div class="row">
     <div class="text-center">
-        {!! QrCode::size(200)->generate(route('forms.survey', $id)) !!}
+        {!! QrCode::size(200)->generate(route('admin.forms.survey', $id)) !!}
     </div>
 </div>

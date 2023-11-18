@@ -40,7 +40,7 @@ class NewUserRegisteredUserMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.NewUserRegisteredUser',
+            markdown: 'admin.emails.NewUserRegisteredUser',
             with: [
                 'message' => $this->message,
             ],

@@ -1,77 +1,61 @@
 @extends('admin.layouts.main')
-@section('title', __('Permissions'))
-@section('breadcrumb')
-    <div class="col-md-12">
-        <div class="page-header-title">
-            <h4 class="m-b-10">{{ __('Permissions') }}</h4>
-        </div>
-        <ul class="breadcrumb">
-            <li class="breadcrumb-item">{!! Html::link(route('home'), __('Dashboard'), []) !!}</li>
-            <li class="breadcrumb-item">{!! Html::link(route('roles.index'), __('Roles'), []) !!}</li>
-            <li class="breadcrumb-item active">@yield('title')</li>
-        </ul>
-    </div>
+
+@section('title')
+    show roles
 @endsection
+
 @section('content')
+
+    <!-- Content Row -->
     <div class="row">
-        <div class="row">
-            <div class="col-md-12 mx-auto">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>{{ __('All Permissions') }}</h5>
+
+        <div class="col-xl-12 col-md-12 mb-4 p-4 bg-white">
+            <div class="mb-4 text-center text-md-right">
+                <h5 class="font-weight-bold"> نمایش نقش {{ $role->display_name }}</h5>
+            </div>
+            <hr>
+
+            @include('admin.sections.errors')
+
+            <form action="{{ route('admin.roles.store') }}" method="POST">
+                @csrf
+
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="name">Name</label>
+                        <input class="form-control" name="name" disabled type="text" value="{{ $role->name }}">
                     </div>
-                    {!! Form::open([
-                        'route' => ['roles_permit', $role->id],
-                        'method' => 'Post',
-                        'class' => 'form-horizontal',
-                        'data-validate',
-                        'enctype' => 'multipart/form-data',
-                    ]) !!}
-                    <div class="card-body">
-                        <table class="table table-flush permission-table">
-                            <thead>
-                                <tr>
-                                    <th>{{ __('Module') }}</th>
-                                    <th>{{ __('Permissions') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody class="mb-2">
-                                @foreach ($allmodules as $row)
-                                    @if ($row != 'module')
-                                        <tr>
-                                            <td> {{ __(ucfirst($row)) }}</td>
-                                            <td>
-                                                <div class="row">
-                                                    <?php
-                                                    $default_permissions = ['manage', 'create', 'edit', 'delete', 'view', 'impersonate', 'fill', 'design', 'show', 'download', 'duplicate', 'result', 'vote'];
-                                                    ?>
-                                                    @foreach ($default_permissions as $permission)
-                                                        @if (in_array($permission . '-' . $row, $allpermissions))
-                                                            @php($key = array_search($permission . '-' . $row, $allpermissions))
-                                                            <div class="col-3 form-check">
-                                                                {{ Form::checkbox('permissions[]', $key, in_array($permission . '-' . $row, $permissions), ['class' => 'form-check-input', 'id' => 'permission_' . $key]) }}
-                                                                {{ Form::label('permission_' . $key, ucfirst($permission), ['class' => 'form-check-label']) }}
-                                                            </div>
-                                                        @endif
-                                                    @endforeach
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endif
-                                @endforeach
-                        </table>
-                    </div>
-                    <div class="card-footer">
-                        <div class="text-end">
-                            {!! Html::link(route('roles.index'), __('Cancel'), [
-                                'class' => 'btn btn-secondary',
-                            ]) !!}
-                            {!! Form::submit(__('Save'), ['class' => 'btn btn-primary']) !!}
+
+                    <div class="accordion col-md-12 mt-3" id="accordionPermission">
+                        <div class="card">
+                            <div class="card-header p-1" id="headingOne">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link btn-block text-right" type="button" data-toggle="collapse"
+                                        data-target="#collapsePermission" aria-expanded="true" aria-controls="collapseOne">
+                                        مجوز های دسترسی
+                                    </button>
+                                </h2>
+                            </div>
+
+                            <div id="collapsePermission" class="collapse show" aria-labelledby="headingOne"
+                                data-parent="#accordionPermission">
+                                <div class="card-body row">
+                                    @foreach ($role->permissions as $permission)
+                                        <div class="col-md-3">
+                                            <span>{{ $permission->display_name }}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    {!! Form::close() !!}
                 </div>
-            </div>
+
+                <button class="btn btn-outline-primary mt-5" type="submit">ثبت</button>
+                <a href="{{ route('admin.roles.index') }}" class="btn btn-dark mt-5 mr-3">بازگشت</a>
+            </form>
         </div>
+
     </div>
+
 @endsection

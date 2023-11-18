@@ -35,13 +35,14 @@ class FormsDataTable extends DataTable
     }
     public function query(Form $model)
     {
+        return $model->newQuery();
         $usr = \Auth::user();
         $role_id = $usr->roles->first()->id;
         $user_id = $usr->id;
+
         if ($usr->type == 'Admin') {
             return $model->newQuery();
         } else {
-
             // dd($model);
             return $model->newQuery()
                 ->where(function ($query) use ($role_id, $user_id) {
@@ -75,7 +76,7 @@ class FormsDataTable extends DataTable
                 'buttons'   => [
                     [
                         'extend' => 'create', 'className' => 'btn btn-primary btn-sm no-corner add_module', 'action' => " function ( e, dt, node, config ) {
-                        window.location = '" . route('forms.create') . "';}"
+                        window.location = '" . route('admin.forms.create') . "';}"
                     ],
                     ['extend' => 'export', 'className' => 'btn btn-primary btn-sm no-corner',],
                     ['extend' => 'print', 'className' => 'btn btn-primary btn-sm no-corner',],

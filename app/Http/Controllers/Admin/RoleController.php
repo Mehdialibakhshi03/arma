@@ -2,96 +2,81 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\DataTables\RolesDataTable;
 use App\Http\Controllers\Controller;
-use App\Models\Module;
-use DB;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\View;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
-    function __construct()
+    public function index()
     {
-        $this->middleware('permission:manage-role|create-role|edit-role|delete-role', ['only' => ['index', 'show']]);
-        $this->middleware('permission:create-role', ['only' => ['create', 'store']]);
-        $this->middleware('permission:edit-role', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:delete-role', ['only' => ['destroy']]);
-    }
-
-    public function index(RolesDataTable $dataTable)
-    {
-        return $dataTable->render('roles.index');
+        $roles = Role::orderBy('name','asc')->paginate(100);
+        return view('admin.roles.index', compact('roles'));
     }
 
     public function create()
     {
-        $permission = Permission::get();
-        $view = view('roles.create', compact('permission'));
-        return ['html' => $view->render()];
+        $permissions = Permission::orderBy('name','asc')->get();
+        return view('admin.roles.create', compact('permissions'));
     }
 
     public function store(Request $request)
     {
-        request()->validate([
+        $request->validate([
             'name' => 'required',
         ]);
-        $role = Role::create(['name' => $request->input('name')]);
-        return redirect()->route('roles.index')
-            ->with('success', __('Role created successfully.'));
+        try {
+            $role = Role::create([
+                'name' => $request->name,
+                'guard_name' => 'web'
+            ]);
+            $permissions = $request->except('_token', 'name');
+            $role->givePermissionTo($permissions);
+            session()->flash('success', 'Role granted');
+            return redirect()->route('admin.roles.index');
+        } catch (\Exception $ex) {
+            session()->flash('error', $ex->getMessage());
+            return redirect()->back();
+        }
     }
 
-    public function show($id)
+    public function edit(Role $role)
     {
-        $role = Role::find($id);
-        $permissions = $role->permissions->pluck('name', 'id')->toArray();
-        $allpermissions = Permission::all()->pluck('name', 'id')->toArray();
-        $allmodules = Module::all()->pluck('name', 'id')->toArray();
-        return view('roles.show')
-            ->with('role', $role)
-            ->with('permissions', $permissions)
-            ->with('allpermissions', $allpermissions)
-            ->with('allmodules', $allmodules);
+        $permissions = Permission::orderBy('name','asc')->get();
+        return view('admin.roles.edit', compact('role', 'permissions'));
     }
 
-    public function edit($id)
+    public function update(Request $request, Role $role)
     {
-        $role = Role::find($id);
-        $permission = Permission::get();
-        $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id", $id)
-            ->pluck('role_has_permissions.permission_id', 'role_has_permissions.permission_id')
-            ->all();
-        $view = View::make('roles.edit', compact('role', 'permission', 'rolePermissions'));
-        return ['html' => $view->render()];
-    }
+        $request->validate([
+            'name' => 'required',
+        ]);
 
-    public function update(Request $request, $id)
-    {
-        $role = Role::find($id);
-        $role->name = $request->input('name');
-        $role->save();
-        $role->syncPermissions($request->input('permission'));
-        return redirect()->route('roles.index')
-            ->with('success', __('Role updated successfully.'));
+        try {
+            $role->update([
+                'name' => $request->name,
+            ]);
+            $permissions = $request->except('_token', 'name','_method');
+            $role->syncPermissions($permissions);
+            session()->flash('success','Role Updated Successfully');
+            return redirect()->route('admin.roles.index');
+        } catch (\Exception $ex) {
+            session()->flash('error', $ex->getMessage());
+            return redirect()->back();
+        }
     }
-
-    public function destroy($id)
+    public function delete(Request $request)
     {
-        $role = Role::find($id);
-        $role->delete();
-        return redirect()->route('roles.index')
-            ->with('success', __('Role deleted successfully.'));
-    }
-
-    public function assignPermission(Request $request, $id)
-    {
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-        $role = Role::find($id);
-        $permissions = $role->permissions()->get();
-        $role->revokePermissionTo($permissions);
-        $role->givePermissionTo($request->permissions);
-        return redirect()->route('roles.index')->with('success',  __('Permissions assigned to role successfully.'));
+        $id = $request->id;
+        try {
+            $role = Role::find($id);
+            $role->delete();
+            session()->flash('success', __('Role deleted successfully.'));
+            return response()->json([1]);
+        } catch (\Exception $exception) {
+            session()->flash('error', $exception->getMessage());
+            return response()->json([0]);
+        }
     }
 }

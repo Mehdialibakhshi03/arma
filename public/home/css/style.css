@@ -573,7 +573,7 @@ header .nav-link.btn {
 .landing-feature {
     text-align: center;
     border-top: 1px solid #e0e3eb;
-    padding: 100px 0;
+    padding: 60px 0;
 }
 
 .landing-feature h2 {
@@ -2727,3 +2727,9 @@ body{
 }
 
 
+@media (min-width: 576px) {
+    .modal-dialog {
+        max-width: 700px !important;
+        margin: 1.75rem auto;
+    }
+}

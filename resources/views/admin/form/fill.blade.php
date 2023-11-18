@@ -10,7 +10,7 @@
         </div>
         <ul class="breadcrumb">
             <li class="breadcrumb-item">{!! Html::link(route('home'), __('Dashboard'), []) !!}</li>
-            <li class="breadcrumb-item">{!! Html::link(route('forms.index'), __('Forms'), []) !!}</li>
+            <li class="breadcrumb-item">{!! Html::link(route('admin.forms.index'), __('Forms'), []) !!}</li>
             <li class="breadcrumb-item active"> {{ __('Form Fill') }} </li>
         </ul>
     </div>
@@ -511,7 +511,7 @@
             formData.append('ajax', true);
             $.ajax({
                 type: "POST",
-                url: '{{ route('forms.fill.store', $form->id) }}',
+                url: '{{ route('admin.forms.fill.store', $form->id) }}',
                 data: formData,
                 processData: false,
                 contentType: false,
@@ -626,7 +626,7 @@
         }
         if ($(".ck_editor").length) {
             CKEDITOR.replace($('.ck_editor').attr('name'), {
-                filebrowserUploadUrl: "{{ route('ckeditor.upload', ['_token' => csrf_token()]) }}",
+                filebrowserUploadUrl: "{{ route('admin.ckeditor.upload', ['_token' => csrf_token()]) }}",
                 filebrowserUploadMethod: 'form'
             });
         }

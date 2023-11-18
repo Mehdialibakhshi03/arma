@@ -2,8 +2,6 @@
 
 namespace App\Mail;
 
-use App\Models\Models\MailMessages;
-use App\Models\Models\UserMail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -47,11 +45,8 @@ class AdminChangeStatusUserMail extends Mailable
      */
     public function content(): Content
     {
-        $user_mail = $this->user_mail;
-        $user_mail = UserMail::where('id', $user_mail)->first();
-        $user_mail->update(['status' => 1]);
         return new Content(
-            markdown: 'emails.adminchangestatususer',
+            markdown: 'admin.emails.adminchangestatususer',
             with: ['text' => $this->text, 'note' => $this->note]
         );
     }

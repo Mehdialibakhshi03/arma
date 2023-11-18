@@ -8,6 +8,7 @@
         "php": "^8.0.2",
         "akaunting/laravel-setting": "^1.2",
         "anhskohbo/no-captcha": "^3.4",
+        "avatar/module-setting": "dev-main",
         "bacon/bacon-qr-code": "^2.0",
         "ckeditor/ckeditor": "^4.16",
         "coingate/coingate-php": "3.0",
@@ -15,6 +16,7 @@
         "fruitcake/laravel-cors": "^3.0",
         "guzzlehttp/guzzle": "^7.5",
         "hashids/hashids": "^4.1",
+        "joshbrw/laravel-module-installer": "^2.0",
         "kkomelin/laravel-translatable-string-exporter": "^1.17",
         "laravel/fortify": "^1.18",
         "laravel/framework": "^9.11",
@@ -27,6 +29,7 @@
         "maatwebsite/excel": "^3.1",
         "mercadopago/dx-php": "^2.5",
         "munafio/chatify": "1.2",
+        "nwidart/laravel-modules": "9.*",
         "paragonie/constant_time_encoding": "^2.6",
         "paragonie/recaptcha": "^2.1",
         "paytm/js-checkout": "dev-master",
@@ -57,7 +60,8 @@
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
+            "Database\\Seeders\\": "database/seeders/",
+            "Modules\\": "Modules/"
         },
         "files": [
             "app/helper.php"
@@ -91,7 +95,10 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "joshbrw/laravel-module-installer": true
+        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true

@@ -11,7 +11,7 @@
             $color = 'theme-4';
         }
     @endphp
-    <title>@yield('title') | {{ Utility::getsettings('app_name') }}</title>
+    <title>@yield('title')</title>
     <!-- Meta -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />

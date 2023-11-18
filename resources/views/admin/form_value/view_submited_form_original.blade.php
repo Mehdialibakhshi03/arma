@@ -48,12 +48,12 @@
                                         <div class="col-md-12">
                                             <div class="table-responsive py-4">
                                                 {{ $dataTable->table(['width' => '100%']) }}
-                                                {!! Form::open(['route' => ['mass.export.csv'], 'method' => 'post', 'id' => 'mass_export']) !!}
+                                                {!! Form::open(['route' => ['admin.mass.export.csv'], 'method' => 'post', 'id' => 'mass_export']) !!}
                                                 {{ Form::hidden('form_id', $forms_details->id) }}
                                                 {{ Form::hidden('start_date') }}
                                                 {{ Form::hidden('end_date') }}
                                                 {!! Form::close() !!}
-                                                {!! Form::open(['route' => ['mass.export.xlsx'], 'method' => 'post', 'id' => 'mass_export_xlsx']) !!}
+                                                {!! Form::open(['route' => ['admin.mass.export.xlsx'], 'method' => 'post', 'id' => 'mass_export_xlsx']) !!}
                                                 {{ Form::hidden('form_id', $forms_details->id) }}
                                                 {{ Form::hidden('start_date') }}
                                                 {{ Form::hidden('end_date') }}
@@ -199,7 +199,7 @@
                         "serverSide": true,
                         "processing": true,
                         "ajax": {
-                            "url": "{{ route('formvalues.index') }}",
+                            "url": "{{ route('admin.formvalues.index') }}",
                             "type": "GET",
                             "data": function(data) {
                                 for (var i = 0, len = data.columns.length; i < len; i++) {

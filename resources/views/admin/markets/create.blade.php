@@ -71,13 +71,13 @@
                                                     </p>
                                                     @enderror
                                                 </div>
-                                                <div class="col-md-3">
+                                                <div class="col-12">
                                                     <label>Commodity</label>
                                                     <select  id="FormValues" name="form_id[]" class="form-control my-select" data-live-search="true"
                                                             multiple>
                                                         @foreach ($form_values as $form_value)
                                                             <option value="{{ $form_value->id }}">
-                                                                {{ $form_value->User->name.'/'.$form_value->getFormArray()[0][4]->value }}
+                                                                {{ $form_value->getFormArray()[0][0]->value.'/'.$form_value->User->name }}
                                                             </option>
                                                         @endforeach
                                                     </select>

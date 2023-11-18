@@ -53,11 +53,11 @@
                 <div id="settings-profile"
                      aria-labelledby="settings-profile-tab">
                     <div class="row">
-                        <div class="col-12">
+                        <div class="col-12 col-xl-6">
                             <div class="card">
                                 <div class="card-body">
-                                    <div class="text-white">
-                                        Edit User
+                                    <div>
+                                        <h3>Edit User</h3>
                                         <hr>
                                     </div>
                                     <div class="settings-profile">
@@ -111,26 +111,26 @@
                                                     </p>
                                                     @enderror
                                                 </div>
-
-                                                <div class="col-md-6 mb-2">
-                                                    <label for="role_request_id">Select User Type</label>
-                                                    <select
-                                                        id="role_request_id"
-                                                        type="text"
-                                                        class="form-control"
-                                                        name="role_request_id">
-                                                        @if($user->type!='Admin')
-                                                            <option value="0">Nothing</option>
-                                                            @foreach($userTypes as $type)
-                                                                <option
-                                                                    {{ $user->role_request_id==$type->id ? 'selected' : '' }} value="{{ $type->id }}">{{ $type->name }}</option>
-                                                            @endforeach
-                                                        @else
-                                                            <option value="1">Admin</option>
-                                                        @endif
-                                                    </select>
-                                                </div>
-
+                                                @can('user')
+                                                    <div class="col-md-6 mb-2">
+                                                        <label for="role_request_id">Role Request</label>
+                                                        <select
+                                                            id="role_request_id"
+                                                            type="text"
+                                                            class="form-control"
+                                                            name="role_request_id">
+                                                            @if($user->type!='Admin')
+                                                                <option value="0">Nothing</option>
+                                                                @foreach($userTypes as $type)
+                                                                    <option
+                                                                        {{ $user->role_request_id==$type->id ? 'selected' : '' }} value="{{ $type->id }}">{{ $type->name }}</option>
+                                                                @endforeach
+                                                            @else
+                                                                <option value="1">Admin</option>
+                                                            @endif
+                                                        </select>
+                                                    </div>
+                                                @endcan
                                                 <div class="col-md-6 mb-2">
                                                     <label for="mobile_number">Mobile Number</label>
                                                     <input id="mobile_number" type="text" name="mobile_number"
@@ -143,8 +143,8 @@
                                                     </p>
                                                     @enderror
                                                 </div>
-
-                                                <div class="col-md-6 mb-2">
+                                                @can('user')
+                                                <div class="col-12 mb-2">
                                                     <label for="status">User Status</label>
                                                     <select name="active_status" id="status"
                                                             class="form-control">
@@ -154,108 +154,178 @@
                                                         @endforeach
                                                     </select>
                                                 </div>
+
                                                 <div class="col-12 mb-3 mb-2">
                                                     <label for="note">Note:</label>
                                                     <textarea rows="5" id="note" name="note"
                                                               class="form-control">{{ $user->note }}</textarea>
                                                 </div>
+                                                @endcan
                                                 <div class="col-md-12">
                                                     <button class="btn btn-info btn-sm mb-2" type="submit">
                                                         Update
                                                     </button>
-                                                    <a href="{{ route('admin.users.index',['type'=>$type]) }}"
-                                                       class="btn btn-secondary btn-sm mb-2">
-                                                        Back
-                                                    </a>
                                                 </div>
                                             </div>
                                         </form>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="text-white">
-                                        Send Message
-                                        <hr>
+                            @can('user-edit')
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div>
+                                            <h3>
+                                                Reset Password
+                                            </h3>
+                                            <hr>
+                                        </div>
+                                        <div class="settings-profile">
+                                            <form method="POST"
+                                                  action="{{ route('admin.user.reset_password',['user'=>$user->id]) }}">
+                                                @csrf
+                                                <div class="row mt-4">
+                                                    <div class="col-12 position-relative mb-3">
+                                                        <label for="new_password">Generate Password</label>
+                                                        <input name="new_password" id="new_password"
+                                                               class="form-control"
+                                                               data-character-set="a-z,A-Z,0-9,#">
+                                                        @error('new_password')
+                                                        <p class="input-error-validate position-absolute">
+                                                            {{ $message }}
+                                                        </p>
+                                                        @enderror
+                                                        <button style="bottom: 0;right: 0" onclick="randString()"
+                                                                class="btn btn-info position-absolute"
+                                                                type="button">
+                                                            Generate Password
+                                                        </button>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <button class="btn btn-info btn-sm mb-2" type="submit">
+                                                            Reset Password
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
                                     </div>
-                                    <div class="settings-profile">
-                                        <form method="POST"
-                                              action="{{ route('admin.user.sendMessage',['user'=>$user->id]) }}">
-                                            @csrf
-                                            <div class="row mt-4">
-                                                <div class="col-md-6 mb-2">
-                                                    <label for="title">Subject</label>
-                                                    <input id="title" type="text" name="title"
-                                                           class="form-control" value="{{ old('title') }}">
-                                                    @error('title')
-                                                    <p class="input-error-validate">
-                                                        {{ $message }}
-                                                    </p>
-                                                    @enderror
+                                </div>
+                            @endcan
+                        </div>
+                        @can('user')
+                            <div class="col-12 col-xl-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div>
+                                            <h3>Send Message</h3>
+                                            <hr>
+                                        </div>
+                                        <div class="settings-profile">
+                                            <form method="POST"
+                                                  action="{{ route('admin.user.sendMessage',['user'=>$user->id]) }}">
+                                                @csrf
+                                                <div class="row mt-4">
+                                                    <div class="col-md-6 mb-2">
+                                                        <label for="title">Subject</label>
+                                                        <input id="title" type="text" name="title"
+                                                               class="form-control" value="{{ old('title') }}">
+                                                        @error('title')
+                                                        <p class="input-error-validate">
+                                                            {{ $message }}
+                                                        </p>
+                                                        @enderror
+                                                    </div>
+                                                    <div class="col-12 mb-2">
+                                                        <label for="message">Message:</label>
+                                                        <textarea rows="10" id="message" name="message"
+                                                                  class="form-control">{{ old('message') }}</textarea>
+                                                        @error('message')
+                                                        <p class="input-error-validate">
+                                                            {{ $message }}
+                                                        </p>
+                                                        @enderror
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <button class="btn btn-info btn-sm mb-2" type="submit"> Send
+                                                            Email
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                                <div class="col-12 mb-2">
-                                                    <label for="message">Message:</label>
-                                                    <textarea rows="10" id="message" name="message"
-                                                              class="form-control">{{ old('message') }}</textarea>
-                                                    @error('message')
-                                                    <p class="input-error-validate">
-                                                        {{ $message }}
-                                                    </p>
-                                                    @enderror
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div>
+                                            <h3>
+                                                Role & Permissions
+                                            </h3>
+                                            <hr>
+                                        </div>
+                                        <div class="settings-profile">
+                                            <form method="POST"
+                                                  action="{{ route('admin.user.update_role',['user'=>$user->id]) }}">
+                                                @csrf
+                                                <div class="row mt-4">
+                                                    <div class="form-group col-md-3">
+                                                        <label for="role">Roles</label>
+                                                        <select class="form-control" name="role" id="role">
+                                                            <option value="">-</option>
+                                                            @foreach ($roles as $role)
+                                                                <option
+                                                                    value="{{ $role->name }}" {{ in_array($role->id , $user->roles->pluck('id')->toArray()) ? 'selected' : '' }}>{{ $role->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="accordion col-md-12 mt-3" id="accordionPermission">
+                                                        <div class="card">
+                                                            <div class="card-header p-1" id="headingOne">
+                                                                <h2 class="mb-0">
+                                                                    <button class="btn btn-link btn-block text-right"
+                                                                            type="button" data-toggle="collapse"
+                                                                            data-target="#collapsePermission"
+                                                                            aria-expanded="true"
+                                                                            aria-controls="collapseOne">
+                                                                        Permissions
+                                                                    </button>
+                                                                </h2>
+                                                            </div>
+
+                                                            <div id="collapsePermission" class="collapse"
+                                                                 aria-labelledby="headingOne"
+                                                                 data-parent="#accordionPermission">
+                                                                <div class="card-body row">
+                                                                    @foreach ($permissions as $permission)
+                                                                        <div class="form-group form-check col-md-3">
+                                                                            <input type="checkbox"
+                                                                                   class="form-check-input"
+                                                                                   id="permission_{{ $permission->id }}"
+                                                                                   name="{{ $permission->name }}"
+                                                                                   value="{{ $permission->name }}"
+                                                                                {{ in_array( $permission->id , $user->permissions->pluck('id')->toArray() ) ? 'checked' : '' }}
+                                                                            >
+                                                                            <label class="form-check-label mr-3"
+                                                                                   for="permission_{{ $permission->id }}">{{ $permission->name }}</label>
+                                                                        </div>
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <button class="btn btn-info btn-sm mb-2" type="submit">
+                                                            submit
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                                <div class="col-md-12">
-                                                    <button class="btn btn-info btn-sm mb-2" type="submit"> Send
-                                                        Email
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </form>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="text-white">
-                                        Reset Password
-                                        <hr>
-                                    </div>
-                                    <div class="settings-profile">
-                                        <form method="POST"
-                                              action="{{ route('admin.user.reset_password',['user'=>$user->id]) }}">
-                                            @csrf
-                                            <div class="row mt-4">
-                                                <div class="col-12 position-relative mb-3">
-                                                    <label for="new_password">Generate Password</label>
-                                                    <input name="new_password" id="new_password"
-                                                           class="form-control"
-                                                           data-character-set="a-z,A-Z,0-9,#">
-                                                    @error('new_password')
-                                                    <p class="input-error-validate position-absolute">
-                                                        {{ $message }}
-                                                    </p>
-                                                    @enderror
-                                                    <button style="bottom: 0;right: 0" onclick="randString()"
-                                                            class="btn btn-info position-absolute"
-                                                            type="button">
-                                                        Generate Password
-                                                    </button>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <button class="btn btn-info btn-sm mb-2" type="submit">
-                                                        Reset Password
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        @endcan
                     </div>
                 </div>
             </div>

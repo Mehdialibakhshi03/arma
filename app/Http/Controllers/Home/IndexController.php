@@ -3,25 +3,36 @@
 namespace App\Http\Controllers\Home;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendNewUserRegisteredForAdminJob;
+use App\Models\Market;
 use App\Models\Message;
+use App\Models\Setting;
+use Carbon\Carbon;
 
 class IndexController extends Controller
 {
-    public function index(): \Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\Foundation\Application
+    public function index()
     {
-//        auth()->loginUsingId(1);
         $UserRegistered = session()->exists('UserRegistered');
+        session()->forget('UserRegistered');
         $UserRegistered_message = Message::where('type', 'UserRegistered')->first();
-        return view('home.index.index', compact('UserRegistered', 'UserRegistered_message'));
+        $markets = Market::where('start', '<', Carbon::now())->where('end', '>', Carbon::now())->where('status', 1)->get();
+        return view('home.index.index', compact('UserRegistered', 'UserRegistered_message', 'markets'));
     }
 
     public function redirectUser()
     {
-        $user=auth()->user();
-        if ($user->hasRole(['Admin','Seller'])) {
-            return redirect()->route('admin.dashboard');
-        } else {
-            return redirect()->route('home');
+        $user_check = auth()->check();
+        if ($user_check){
+            $user = auth()->user();
+            if ($user->hasRole(['Admin', 'Seller'])) {
+                return redirect()->route('admin.dashboard');
+            } else {
+                return redirect()->route('home.index');
+            }
+        }else{
+            return redirect()->route('home.index');
         }
+
     }
 }

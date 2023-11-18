@@ -7,7 +7,7 @@
         </div>
         <ul class="breadcrumb">
             <li class="breadcrumb-item">{!! Html::link(route('home'), __('Dashboard'), []) !!}</li>
-            <li class="breadcrumb-item">{!! Html::link(route('forms.index'), __('Forms'), []) !!}</li>
+            <li class="breadcrumb-item">{!! Html::link(route('admin.forms.index'), __('Forms'), []) !!}</li>
             <li class="breadcrumb-item active"> {{ __('Design Form') }} </li>
         </ul>
     </div>
@@ -17,7 +17,7 @@
         <div class="main-content" style="min-height: 517px;">
             <section class="section">
                 <div class="section-body">
-                    {{ Form::model($form, ['route' => ['forms.design.update', $form->id], 'data-validate', 'method' => 'PUT', 'id' => 'design-form']) }}
+                    {{ Form::model($form, ['route' => ['admin.forms.design.update', $form->id], 'data-validate', 'method' => 'PUT', 'id' => 'design-form']) }}
                     <div class="row">
                         <div class="col-xl-12 order-xl-1">
                             <div class="card">

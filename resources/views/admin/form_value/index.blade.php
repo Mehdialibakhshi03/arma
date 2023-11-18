@@ -58,7 +58,7 @@
                         "serverSide": true,
                         "processing": true,
                         "ajax": {
-                            "url": "{{ route('formvalues.index') }}",
+                            "url": "{{ route('admin.formvalues.index') }}",
                             "type": "GET",
                             "data": function(data) {
                                 for (var i = 0, len = data.columns.length; i < len; i++) {
