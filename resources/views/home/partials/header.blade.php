@@ -160,6 +160,8 @@
 {{--                        </div>--}}
 {{--                    </div>--}}
 {{--                </li>--}}
+
+
                 @auth
                     <li class="nav-item dropdown header-img-icon">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
@@ -175,6 +177,16 @@
                                 <div class="info text-center">
                                     <p class="name font-weight-bold mb-0">{{ auth()->user()->name }}</p>
                                     <p class="email text-muted mb-3">{{ auth()->user()->email }}</p>
+                                    @if(auth()->user()->hasRole(['admin']))
+                                        <p class="email text-muted mb-3">Admin</p>
+                                        <a href="{{ route('admin.dashboard') }}">Dashboard</a>
+                                    @elseif(auth()->user()->hasRole['seller'])
+                                        <p class="email text-muted mb-3">Seller</p>
+                                        <a href="{{ route('admin.dashboard') }}">Dashboard</a>
+                                    @elseif(auth()->user()->hasRole['buyer'])
+                                        <p class="email text-muted mb-3">Buyer</p>
+                                        <a href="{{ route('profile') }}">profile</a>
+                                    @endif
                                 </div>
                             </div>
                             <div class="dropdown-body">

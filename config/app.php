@@ -192,7 +192,8 @@ return [
         App\Providers\UtilityFacadesServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
         RachidLaasri\LaravelInstaller\Providers\LaravelInstallerServiceProvider::class,
-        Stevebauman\Location\LocationServiceProvider::class
+        Stevebauman\Location\LocationServiceProvider::class,
+        Nwidart\Modules\LaravelModulesServiceProvider::class,
 
 
     ],
@@ -253,6 +254,7 @@ return [
         'Paytm' => Paytm\JsCheckout\Facades\Paytm::class,
         'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
         'DataTables' => Yajra\DataTables\Facades\DataTables::class,
+        'Module' => Nwidart\Modules\Facades\Module::class,
 
     ])->toArray(),
 

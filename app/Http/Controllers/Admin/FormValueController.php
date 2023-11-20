@@ -6,8 +6,11 @@ use App\DataTables\FormValuesDataTable;
 use App\Exports\FormValuesExport;
 use App\Facades\UtilityFacades;
 use App\Http\Controllers\Controller;
+use App\Jobs\CustomMessageToUserJob;
 use App\Models\Form;
 use App\Models\FormValue;
+use App\Models\MailMessages;
+use App\Models\Setting;
 use App\Models\UserForm;
 use App\Models\UserStatus;
 use Illuminate\Http\Request;
@@ -57,6 +60,14 @@ class FormValueController extends Controller
         $form_value->update([
             'status' => $status
         ]);
+        //send email to user
+        $st=UserStatus::where('id',$status)->first();
+        $email = $form_value->User->email;
+        $mail = MailMessages::where('type', 'changeStatusFormToUser')->first();
+        $message = $mail->text;
+        $message=str_replace('{status}',$st->title,$message);
+        $title = $mail->title;
+        dispatch(new CustomMessageToUserJob($message, $title, '', $email));
         session()->flash('success', 'Status Change Successfully!');
         return response()->json([1]);
     }
@@ -143,12 +154,27 @@ class FormValueController extends Controller
 
     public function submit_form(Request $request)
     {
+        $user = auth()->user();
+        $user_info = 'Name: ' . $user->name . ' Email: ' . $user->email;
         try {
             $form_value_id = $request->form_value_id;
             $form_value = FormValue::where('id', $form_value_id)->first();
             session()->forget('success');
             $form_value->update(['status' => 0]);
-            $rout = route('admin.form.values', ['status' => 0, 'user' => auth()->user()->id]);
+            $rout = route('admin.form.values', ['status' => 0, 'user' => $user->id]);
+            $email = Setting::where('key', 'email')->pluck('value')->first();
+            //send email to admin
+            $mail = MailMessages::where('type', 'formFilledToAdmin')->first();
+            $message = $mail->text;
+            $title = $mail->title;
+            $message = str_replace('{user}', $user_info, $message);
+            dispatch(new CustomMessageToUserJob($message, $title, '', $email));
+            //send email to user
+            $email = $user->email;
+            $mail = MailMessages::where('type', 'formFilledToUser')->first();
+            $message = $mail->text;
+            $title = $mail->title;
+            dispatch(new CustomMessageToUserJob($message, $title, '', $email));
             return response()->json([1, 'Form Submitted Successfully', $rout]);
         } catch (\Exception $exception) {
             return response()->json([0, $exception->getMessage()]);

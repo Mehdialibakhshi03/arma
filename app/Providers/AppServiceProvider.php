@@ -4,11 +4,10 @@ namespace App\Providers;
 
 use App\Models\Header1;
 use App\Models\Header2;
-use App\Models\Setting;
-use App\Models\User;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Schema;
+use Modules\Setting\app\Models\Setting;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,6 +29,9 @@ class AppServiceProvider extends ServiceProvider
         $footer_logo = Setting::where('key', 'footer_logo')->pluck('value')->first();
         $start_market = Setting::where('key', 'start_market')->pluck('value')->first();
         $end_market = Setting::where('key', 'end_market')->pluck('value')->first();
+        $admin_avatar = Setting::where('key', 'admin_avatar')->pluck('value')->first();
+        $side_bar_color = Setting::where('key', 'side_bar_color')->pluck('value')->first();
+        $top_bar_color = Setting::where('key', 'top_bar_color')->pluck('value')->first();
         view()->share(
             compact(
                 'header1',
@@ -42,7 +44,10 @@ class AppServiceProvider extends ServiceProvider
                 'robot_index',
                 'meta_description',
                 'start_market',
-                'end_market'
+                'admin_avatar',
+                'end_market',
+                'side_bar_color',
+                'top_bar_color'
             ));
     }
 }

@@ -1,28 +1,17 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
-    dir="{{ \App\Facades\UtilityFacades::getsettings('rtl') == '1' ? 'rtl' : '' }}">
-
+<html lang="en"
+      dir="ltr">
 <head>
-    @php
-        $primary_color = \App\Facades\UtilityFacades::getsettings('color');
-        if (isset($primary_color)) {
-            $color = $primary_color;
-        } else {
-            $color = 'theme-4';
-        }
-    @endphp
-    <title>Admin Panel | @yield('title')</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
+    <title>Admin Panel | {{  $title }}</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
     <!-- Favicon icon -->
     <link rel="icon"
-        href="{{ Utility::getsettings('favicon_logo') ? Storage::url('uploads/appLogo/app-favicon-logo.png') : '' }}"
-        type="image/png">
+          href="{{ imageExist(env('UPLOAD_SETTING'),$fav_icon) }}"
+          type="image/png">
     <link rel="stylesheet" href="{{ asset('assets/css/plugins/notifier.css') }}">
-
     <!-- font css -->
     <link rel="stylesheet" href="{{ asset('assets/fonts/tabler-icons.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/fonts/feather.css') }}">
@@ -36,124 +25,117 @@
     <link rel="stylesheet" href="{{ asset('assets/css/plugins/flatpickr.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" id="main-style-link">
     <link rel="stylesheet" href="{{ asset('assets/css/customizer.css') }}">
-
-
-    @if (Utility::getsettings('rtl') == '1')
-        <link rel="stylesheet" href="{{ asset('assets/css/style-rtl.css') }}" id="main-style-link">
-    @endif
-    @if (Utility::getsettings('dark_mode') == 'on')
-        <link rel="stylesheet" href="{{ asset('assets/css/style-dark.css') }}">
-    @else
-        <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" id="main-style-link">
-    @endif
+    <link rel="stylesheet" href="{{ asset('assets/css/style-rtl.css') }}" id="main-style-link">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" id="main-style-link">
     <link rel="stylesheet" href="{{ asset('vendor/css/custom.css') }}">
     @stack('style')
-
 </head>
 
-<body class="{{ $color }}">
-    <div class="loader-bg">
-        <div class="loader-track">
-            <div class="loader-fill"></div>
-        </div>
+<body class="theme-4">
+<div class="loader-bg">
+    <div class="loader-track">
+        <div class="loader-fill"></div>
     </div>
-    <!-- [ Pre-loader ] End -->
-    <!-- [ Mobile header ] start -->
-    <div class="dash-mob-header dash-header">
-        <div class="pcm-logo">
-            @if (setting('app_logo'))
-                {!! Form::image(asset('vendor/img/prime-white.png'), null, [
-                    'class' => 'logo logo-lg img_setting w-100',
-                ]) !!}
-            @else
-                {!! Html::link(route('home'), config('app.name'), []) !!}
-            @endif
-        </div>
-        <div class="pcm-toolbar">
-            <a href="#!" class="dash-head-link" id="mobile-collapse">
-                <div class="hamburger hamburger--arrowturn">
-                    <div class="hamburger-box">
-                        <div class="hamburger-inner"></div>
-                    </div>
+</div>
+<!-- [ Pre-loader ] End -->
+<!-- [ Mobile header ] start -->
+<div class="dash-mob-header dash-header">
+    <div class="pcm-logo">
+        @if (setting('app_logo'))
+            {!! Form::image(asset('vendor/img/prime-white.png'), null, [
+                'class' => 'logo logo-lg img_setting w-100',
+            ]) !!}
+        @else
+            {!! Html::link(route('home'), config('app.name'), []) !!}
+        @endif
+    </div>
+    <div class="pcm-toolbar">
+        <a href="#!" class="dash-head-link" id="mobile-collapse">
+            <div class="hamburger hamburger--arrowturn">
+                <div class="hamburger-box">
+                    <div class="hamburger-inner"></div>
                 </div>
-                <!-- <i data-feather="menu"></i> -->
-            </a>
-            <a href="#!" class="dash-head-link" id="header-collapse">
-                <i data-feather="more-vertical"></i>
-            </a>
-        </div>
+            </div>
+            <!-- <i data-feather="menu"></i> -->
+        </a>
+        <a href="#!" class="dash-head-link" id="header-collapse">
+            <i data-feather="more-vertical"></i>
+        </a>
     </div>
-    <!-- [ Mobile header ] End -->
-    <!-- [ navigation menu ] start -->
-    @include('admin.layouts.sidebar')
+</div>
 
-    <!-- [ navigation menu ] end -->
-    <!-- [ Header ] start -->
-    @include('admin.include.header')
 
-    <!-- Modal -->
-    <div class="modal notification-modal fade" id="notification-modal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <button type="button" class="btn-close float-end" data-bs-dismiss="modal"
+<!-- [ Mobile header ] End -->
+<!-- [ navigation menu ] start -->
+@include('admin.layouts.sidebar')
+
+<!-- [ navigation menu ] end -->
+<!-- [ Header ] start -->
+@include('admin.include.header')
+
+<!-- Modal -->
+<div class="modal notification-modal fade" id="notification-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="btn-close float-end" data-bs-dismiss="modal"
                         aria-label="Close"></button>
-                    <h6 class="mt-2">
-                        <i data-feather="monitor" class="me-2"></i>{{ __('Desktop settings') }}
-                    </h6>
-                    <hr />
-                    <div class="form-check form-switch">
-                        <input type="checkbox" class="form-check-input" id="pcsetting1" checked />
-                        <label class="form-check-label f-w-600 pl-1"
-                            for="pcsetting1">{{ __('Allow desktop notification') }}</label>
-                    </div>
-                    <p class="text-muted ms-5">
-                        {{ __('you get lettest content at a time when data will updated') }}
-                    </p>
-                    <div class="form-check form-switch">
-                        <input type="checkbox" class="form-check-input" id="pcsetting2" />
-                        <label class="form-check-label f-w-600 pl-1" for="pcsetting2">{{ __('Store Cookie') }}</label>
-                    </div>
-                    <h6 class="mb-0 mt-5">
-                        <i data-feather="save" class="me-2"></i>{{ __('Application settings') }}
-                    </h6>
-                    <hr />
-                    <div class="form-check form-switch">
-                        <input type="checkbox" class="form-check-input" id="pcsetting3" />
-                        <label class="form-check-label f-w-600 pl-1"
-                            for="pcsetting3">{{ __('Backup Storage') }}</label>
-                    </div>
-                    <p class="text-muted mb-4 ms-5">
-                        {{ __('Automaticaly take backup as par schedule') }}
-                    </p>
-                    <div class="form-check form-switch">
-                        <input type="checkbox" class="form-check-input" id="pcsetting4" />
-                        <label class="form-check-label f-w-600 pl-1"
-                            for="pcsetting4">{{ __('Allow guest to print file') }}</label>
-                    </div>
-                    <h6 class="mb-0 mt-5">
-                        <i data-feather="cpu" class="me-2"></i>{{ __('System settings') }}
-                    </h6>
-                    <hr />
-                    <div class="form-check form-switch">
-                        <input type="checkbox" class="form-check-input" id="pcsetting5" checked />
-                        <label class="form-check-label f-w-600 pl-1"
-                            for="pcsetting5">{{ __('View other user chat') }}</label>
-                    </div>
-                    <p class="text-muted ms-5">{{ __('Allow to show public user message') }}</p>
+                <h6 class="mt-2">
+                    <i data-feather="monitor" class="me-2"></i>{{ __('Desktop settings') }}
+                </h6>
+                <hr/>
+                <div class="form-check form-switch">
+                    <input type="checkbox" class="form-check-input" id="pcsetting1" checked/>
+                    <label class="form-check-label f-w-600 pl-1"
+                           for="pcsetting1">{{ __('Allow desktop notification') }}</label>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light-danger btn-sm" data-bs-dismiss="modal">
-                        {{ __('Close') }}
-                    </button>
-                    <button type="button" class="btn btn-light-primary btn-sm">
-                        {{ __('Save changes') }}
-                    </button>
+                <p class="text-muted ms-5">
+                    {{ __('you get lettest content at a time when data will updated') }}
+                </p>
+                <div class="form-check form-switch">
+                    <input type="checkbox" class="form-check-input" id="pcsetting2"/>
+                    <label class="form-check-label f-w-600 pl-1" for="pcsetting2">{{ __('Store Cookie') }}</label>
                 </div>
+                <h6 class="mb-0 mt-5">
+                    <i data-feather="save" class="me-2"></i>{{ __('Application settings') }}
+                </h6>
+                <hr/>
+                <div class="form-check form-switch">
+                    <input type="checkbox" class="form-check-input" id="pcsetting3"/>
+                    <label class="form-check-label f-w-600 pl-1"
+                           for="pcsetting3">{{ __('Backup Storage') }}</label>
+                </div>
+                <p class="text-muted mb-4 ms-5">
+                    {{ __('Automaticaly take backup as par schedule') }}
+                </p>
+                <div class="form-check form-switch">
+                    <input type="checkbox" class="form-check-input" id="pcsetting4"/>
+                    <label class="form-check-label f-w-600 pl-1"
+                           for="pcsetting4">{{ __('Allow guest to print file') }}</label>
+                </div>
+                <h6 class="mb-0 mt-5">
+                    <i data-feather="cpu" class="me-2"></i>{{ __('System settings') }}
+                </h6>
+                <hr/>
+                <div class="form-check form-switch">
+                    <input type="checkbox" class="form-check-input" id="pcsetting5" checked/>
+                    <label class="form-check-label f-w-600 pl-1"
+                           for="pcsetting5">{{ __('View other user chat') }}</label>
+                </div>
+                <p class="text-muted ms-5">{{ __('Allow to show public user message') }}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light-danger btn-sm" data-bs-dismiss="modal">
+                    {{ __('Close') }}
+                </button>
+                <button type="button" class="btn btn-light-primary btn-sm">
+                    {{ __('Save changes') }}
+                </button>
             </div>
         </div>
     </div>
-    <!-- [ Header ] end -->
+</div>
+<!-- [ Header ] end -->
 </body>
 
 <!-- [ Main Content ] start -->
@@ -234,8 +216,12 @@
 <script src="{{ asset('assets/js/plugins/popper.min.js') }}"></script>
 <script src="{{ asset('assets/js/plugins/perfect-scrollbar.min.js') }}"></script>
 {{--<script src="{{ asset('assets/js/plugins/bootstrap.min.js') }}"></script>--}}
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"
+        integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+"
+        crossorigin="anonymous"></script>
 <script src="{{ asset('assets/js/plugins/feather.min.js') }}"></script>
 <script src="{{ asset('assets/js/dash.js') }}"></script>
 <script src="{{ asset('vendor/modules/tooltip.js') }}"></script>
@@ -254,6 +240,7 @@
         function gtag() {
             dataLayer.push(arguments);
         }
+
         gtag('js', new Date());
         gtag('config', '{{ setting('gtag') }}');
     </script>
@@ -263,7 +250,7 @@
     feather.replace();
     var pctoggle = document.querySelector("#pct-toggler");
     if (pctoggle) {
-        pctoggle.addEventListener("click", function() {
+        pctoggle.addEventListener("click", function () {
             if (
                 !document.querySelector(".pct-customizer").classList.contains("active")
             ) {
@@ -273,6 +260,7 @@
             }
         });
     }
+
     function removeClassByPrefix(node, prefix) {
         for (let i = 0; i < node.classList.length; i++) {
             let value = node.classList[i];
@@ -281,6 +269,7 @@
             }
         }
     }
+
     function FormPending(form_value_id) {
         $.ajax({
             url: "{{ route('admin.submit.form') }}",
@@ -309,6 +298,7 @@
             }
         })
     }
+
     function CopyFormValue(form_value_id) {
         $.ajax({
             url: "{{ route('admin.copy.form') }}",

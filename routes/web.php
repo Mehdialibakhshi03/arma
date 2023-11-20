@@ -11,7 +11,6 @@ use App\Http\Controllers\Admin\MarketController;
 use App\Http\Controllers\Admin\MessagesController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
-use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Home\IndexController;
 use App\Http\Controllers\HomeController;
@@ -34,14 +33,6 @@ Auth::routes();
 Route::group(['middleware' => ['auth', 'xss', 'verified', '2fa']], function () {
 
 });
-
-
-
-Route::get('/settings', function () {
-    dd('ok');
-})->name('settings');
-
-
 
 Route::resource('role', '\App\Http\Controllers\Admin\RoleController');
 Route::post('/role-permission/{id}', [
@@ -75,8 +66,6 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
     //header1
 
     //Config
-    Route::get('setting/index', [SettingController::class, 'index'])->name('setting.index');
-    Route::put('setting/update', [SettingController::class, 'update'])->name('setting.update');
     Route::middleware('permission:user')->group(function () {
         //users
         Route::get('users/{type}/index', [UserController::class, 'index'])->name('users.index');

@@ -2,6 +2,7 @@
 
 namespace App\DataTables;
 
+use Modules\Setting\app\Models\Setting;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
 use App\Facades\UtilityFacades;

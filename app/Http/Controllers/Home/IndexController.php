@@ -25,7 +25,7 @@ class IndexController extends Controller
         $user_check = auth()->check();
         if ($user_check){
             $user = auth()->user();
-            if ($user->hasRole(['Admin', 'Seller'])) {
+            if ($user->hasRole(['admin', 'seller'])) {
                 return redirect()->route('admin.dashboard');
             } else {
                 return redirect()->route('home.index');

@@ -1,18 +1,12 @@
 {{--  {{ dd($forms) }}  --}}
-<nav class="dash-sidebar light-sidebar transprent-bg">
+<nav class="dash-sidebar light-sidebar transprent-bg" style="background-color: {{ $side_bar_color }} !important;">
     <div class="navbar-wrapper">
         <div class="m-header">
             <a href="{{ route('home') }}" class="b-brand text-center">
                 <!-- ========   change your logo hear   ============ -->
-                @if (Utility::getsettings('dark_mode') == 'on')
-                    <img
-                        src="{{ asset('/storage/app/uploads/avatar/avatar.png') }}"
-                        class="app-logo img_setting w-75"/>
-                @else
-                    <img
-                        src="{{ asset('/storage/app/uploads/appLogo/78x78.png') }}"
-                        class="app-logo img_setting w-75"/>
-                @endif
+                    <img width="100" src="{{ imageExist(env('UPLOAD_SETTING'),$logo) }}"
+                        class="app-logo img_setting"/>
+
             </a>
         </div>
         <div class="navbar-content">
@@ -111,9 +105,22 @@
                             @endif
                         </a>
 
-
+                        @php
+                            $need_to_confirm_count=\App\Models\FormValue::where('status',3)->count();
+                        @endphp
                         <ul
                             class="dash-submenu {{ Request::route()->getName() == 'view.form.values' ? 'd-block' : '' }}">
+                            @can('form-need-confirm')
+                            <li class="dash-item d-flex align-items-center">
+                                <a href="{{ route('admin.form.values',['status'=>3]) }}" class="dash-link"><span
+                                        class="dash-mtext custom-weight">{{ __('Need To Confirm') }}
+                                </a>
+
+                                @if($need_to_confirm_count>0)
+                                    <span class="circle-notification">{{ $need_to_confirm_count }}</span>
+                                @endif
+                            </li>
+                            @endcan
                             <li class="dash-item d-flex align-items-center">
                                 <a href="{{ route('admin.form.values',['status'=>0]) }}" class="dash-link"><span
                                         class="dash-mtext custom-weight">{{ __('Pending') }}
@@ -146,7 +153,7 @@
 
 
                             <li class="dash-item {{ request()->is('settings*') ? 'active' : '' }}">
-                                <a class="dash-link" href="{{ route('settings') }}">{{ __('Settings') }}</a>
+                                <a class="dash-link" href="{{ route('admin.settings.index') }}">{{ __('Settings') }}</a>
                             </li>
 
                         </ul>

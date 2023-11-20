@@ -8,7 +8,7 @@
         "php": "^8.0.2",
         "akaunting/laravel-setting": "^1.2",
         "anhskohbo/no-captcha": "^3.4",
-        "avatar/module-setting": "dev-main",
+        "avatar/setting-module": "dev-main",
         "bacon/bacon-qr-code": "^2.0",
         "ckeditor/ckeditor": "^4.16",
         "coingate/coingate-php": "3.0",
@@ -29,7 +29,7 @@
         "maatwebsite/excel": "^3.1",
         "mercadopago/dx-php": "^2.5",
         "munafio/chatify": "1.2",
-        "nwidart/laravel-modules": "9.*",
+        "nwidart/laravel-modules": "^10.0",
         "paragonie/constant_time_encoding": "^2.6",
         "paragonie/recaptcha": "^2.1",
         "paytm/js-checkout": "dev-master",
@@ -59,8 +59,6 @@
     "autoload": {
         "psr-4": {
             "App\\": "app/",
-            "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/",
             "Modules\\": "Modules/"
         },
         "files": [

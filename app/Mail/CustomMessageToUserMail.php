@@ -39,11 +39,8 @@ class CustomMessageToUserMail extends Mailable
      */
     public function content(): Content
     {
-        $user_mail = $this->user_mail;
-        $user_mail = UserMail::where('id', $user_mail)->first();
-        $user_mail->update(['status' => 1]);
         return new Content(
-            markdown: 'emails.customMessageToUser',
+            markdown: 'admin.emails.customMessageToUser',
             with: ['text' => $this->message]
         );
     }
