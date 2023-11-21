@@ -22,5 +22,8 @@
         "postcss": "^8.4.6",
         "sass": "^1.32.11",
         "tailwindcss": "^3.0.18"
+    },
+    "dependencies": {
+        "tradingeconomics": "^2.2.9"
     }
 }
