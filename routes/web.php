@@ -89,7 +89,6 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
         Route::resource('forms', FormController::class);
         Route::get('design/{id}', [FormController::class, 'design'])->name('forms.design');
         Route::put('/forms/design/{id}', [FormController::class, 'designUpdate'])->name('forms.design.update');
-        Route::get('/forms/fill/{id}', [FormController::class, 'fill'])->name('forms.fill')->middleware('permission:form-fill');
         Route::get('/forms/survey/{id}', [FormController::class, 'publicFill'])->name('forms.survey');
         Route::get('/forms/qr/{id}', [FormController::class, 'qrCode'])->name('forms.survey.qr');
         Route::put('/forms/fill/{id}', [FormController::class, 'fillStore'])->name('forms.fill.store');
@@ -100,6 +99,7 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
         Route::get('form-status/{id}', [FormController::class, 'formStatus'])->name('form.status');
         Route::post('forms/destroy/{form}', [FormController::class, 'destroy'])->name('forms.destroy')->middleware('permission:form-delete');
     });
+    Route::get('/forms/fill/{id}', [FormController::class, 'fill'])->name('forms.fill')->middleware('permission:form-fill');
     //FormValues
     Route::middleware('permission:commodity')->group(function () {
         Route::get('/form-values/{id}/download/pdf', [FormValueController::class, 'download_pdf'])->name('download.form.values.pdf');

@@ -13,6 +13,7 @@ class IndexController extends Controller
 {
     public function index()
     {
+
         $UserRegistered = session()->exists('UserRegistered');
         session()->forget('UserRegistered');
         $UserRegistered_message = Message::where('type', 'UserRegistered')->first();

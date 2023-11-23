@@ -56,6 +56,7 @@ class FormValueController extends Controller
     {
         $form_id = $request->form_id;
         $status = $request->status;
+        $previous_status = $request->previous_status;
         $form_value = FormValue::where('id', $form_id)->first();
         $form_value->update([
             'status' => $status

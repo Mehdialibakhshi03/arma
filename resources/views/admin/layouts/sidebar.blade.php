@@ -2,10 +2,10 @@
 <nav class="dash-sidebar light-sidebar transprent-bg" style="background-color: {{ $side_bar_color }} !important;">
     <div class="navbar-wrapper">
         <div class="m-header">
-            <a href="{{ route('home') }}" class="b-brand text-center">
+            <a href="{{ route('home.index') }}" class="b-brand text-center">
                 <!-- ========   change your logo hear   ============ -->
-                    <img width="100" src="{{ imageExist(env('UPLOAD_SETTING'),$logo) }}"
-                        class="app-logo img_setting"/>
+                <img width="100" src="{{ imageExist(env('UPLOAD_SETTING'),$logo) }}"
+                     class="app-logo img_setting"/>
 
             </a>
         </div>
@@ -86,6 +86,19 @@
                         </a>
                     </li>
                 @endcan
+                @can('form-fill')
+                    <li class="">
+                        <a href="{{ route('admin.forms.fill',['id'=>1]) }}" class="dash-link">
+                            <span class="dash-micon">
+                                <i class="fa fa-pen"></i>
+                            </span>
+                            <span class="dash-mtext custom-weight">
+                                Sales Offer
+                            </span>
+                        </a>
+                    </li>
+                @endcan
+
                 @php
                     $pending_count=\App\Models\FormValue::where('status',0)->count();
                 @endphp
@@ -111,19 +124,19 @@
                         <ul
                             class="dash-submenu {{ Request::route()->getName() == 'view.form.values' ? 'd-block' : '' }}">
                             @can('form-need-confirm')
-                            <li class="dash-item d-flex align-items-center">
-                                <a href="{{ route('admin.form.values',['status'=>3]) }}" class="dash-link"><span
-                                        class="dash-mtext custom-weight">{{ __('Need To Confirm') }}
-                                </a>
+                                <li class="dash-item d-flex align-items-center">
+                                    <a href="{{ route('admin.form.values',['status'=>3]) }}" class="dash-link"><span
+                                            class="dash-mtext custom-weight">{{ __('Need To Confirm') }}
+                                    </a>
 
-                                @if($need_to_confirm_count>0)
-                                    <span class="circle-notification">{{ $need_to_confirm_count }}</span>
-                                @endif
-                            </li>
+                                    @if($need_to_confirm_count>0)
+                                        <span class="circle-notification">{{ $need_to_confirm_count }}</span>
+                                    @endif
+                                </li>
                             @endcan
                             <li class="dash-item d-flex align-items-center">
                                 <a href="{{ route('admin.form.values',['status'=>0]) }}" class="dash-link"><span
-                                        class="dash-mtext custom-weight">{{ __('Pending') }}
+                                        class="dash-mtext custom-weight">{{ __('Seller Commodity Request') }}
                                 </a>
 
                                 @if($pending_count>0)
@@ -132,7 +145,7 @@
                             </li>
                             <li class="dash-item d-flex align-items-center">
                                 <a href="{{ route('admin.form.values',['status'=>2]) }}" class="dash-link"><span
-                                        class="dash-mtext custom-weight">{{ __('Denied') }}
+                                        class="dash-mtext custom-weight">{{ __('Denied Commodity') }}
                                 </a>
                             </li>
                             <li class="dash-item d-flex align-items-center">

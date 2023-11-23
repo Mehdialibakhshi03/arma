@@ -15,4 +15,6 @@
     <link rel="stylesheet" href="{{ asset('home/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('home/css/timer.css') }}">
     <link rel="stylesheet" href="{{ asset('home/css/developer.css') }}">
+    <link rel="stylesheet" href="{{ asset('home/css/developer.css') }}">
+    <link rel="stylesheet" href="{{ asset('home/css/font-awsome.css') }}">
 </head>

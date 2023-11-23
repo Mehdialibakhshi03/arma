@@ -1,13 +1,8 @@
-@php
-    $users = \Auth::user();
-    $currantLang = $users->currentLanguage();
-    $languages = Utility::languages();
-@endphp
 <header class="dash-header transprent-bg" style="background-color: {{ $top_bar_color }} !important;">
     <div class="header-wrapper">
         <div class="ms-auto rtlheader">
             <ul class="list-unstyled">
-                <li class="dropdown dash-h-item">
+                <li id="profile-toggle" class="dropdown dash-h-item">
                     <a class="dash-head-link custom-headers dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown"
                         href="#" role="button" aria-haspopup="false" aria-expanded="false">
                         <img src="{{ imageExist(env('UPLOAD_SETTING'),$admin_avatar) }}" class="user-avtar ms-2" />
@@ -16,11 +11,7 @@
                         </span>
                         <i class="ti ti-chevron-down drp-arrow nocolor"></i>
                     </a>
-                    <div class="dropdown-menu dash-h-dropdown">
-                        <a href="#" class="dropdown-item">
-                            <i class="ti ti-user"></i>
-                            <span>{{ __('Profile') }}</span>
-                        </a>
+                    <div id="profile-dropdown" class="dropdown-menu dash-h-dropdown">
                         <a href="{{ route('logout') }}"
                             onclick="event.preventDefault();document.getElementById('logout-form').submit();"
                             class="dropdown-item">

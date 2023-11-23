@@ -8,6 +8,7 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.4/moment-timezone-with-data.js"></script>
 <script src="{{ asset('home/js/timer.js') }}"></script>
 <script src="{{ asset('home/js/yscountdown.min.js') }}"></script>
+<script src="{{ asset('home/js/font-awsome.js') }}"></script>
 <script>
     let header1Width = $('#scroll-container').find('div')[0].clientWidth;
     let width = screen.width;

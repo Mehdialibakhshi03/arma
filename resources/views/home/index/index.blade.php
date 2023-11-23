@@ -36,55 +36,70 @@
 @endsection
 
 @section('content')
-    @if(count($markets)==0 and $alert_active==1)
-        <div style="background-color: {{ $alert_bg_color }} !important;height: {{ $alert_height.'px' }} !important;" class="d-flex align-items-center justify-content-center mb-0">
+    @if($alert_active==1)
+        <div style="background-color: {{ $alert_bg_color }} !important;height: {{ $alert_height.'px' }} !important;"
+             class="d-flex align-items-center justify-content-center mb-0">
             <p style="color: {{ $alert_text_color }};font-size: {{ $alert_font_size }}px !important;margin: 0 !important;">{{ $alert_description }}</p>
         </div>
     @endif
     <div class="landing-feature">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="">
-                    <h3>
-                        <span>Market: </span>
-                        @if(count($markets)>0)
-                            <span class="text-success">Open</span>
-                        @else
-                            <span class="text-danger">Close</span>
-                        @endif
-                    </h3>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="row justify-content-between">
+                        <div class="">
+                            <h3>
+                                <span>Market: </span>
+                                @if(count($markets)>0)
+                                    <span class="text-success">Open</span>
+                                @else
+                                    <span class="text-danger">Close</span>
+                                @endif
+                            </h3>
 
-                    <span style="font-weight: bolder">Total Trade Value:$ 210.650.800</span>
+                            <span style="font-weight: bolder">Total Trade Value:$ 210.650.800</span>
+                        </div>
+                        <div style="justify-content: center;display: flex" class="col-md-4 d-flex">
+                            <div class="clock">
+                                <div class="column">
+                                    <div class="timer" id="hours"></div>
+                                    <div class="text hour">Hour</div>
+                                </div>
+                                <div style="font-family:none !important" class="timer">:</div>
+                                <div class="column">
+                                    <div class="timer" id="minutes"></div>
+                                    <div class="text">MIN</div>
+                                </div>
+                                <div style="font-family: normal !important" class="timer">:</div>
+                                <div class="column">
+                                    <div class="timer" id="seconds"></div>
+                                    <div class="text">SEC</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3>{{ Carbon\Carbon::now()->format('l') }}</h3>
+                            <span>{{ Carbon\Carbon::now()->format('d M Y g:i A') }}</span>
+                        </div>
+                    </div>
                 </div>
+
             </div>
-            <div style="justify-content: center;display: flex" class="col-md-4 d-flex">
-                <div class="clock">
-                    <div class="column">
-                        <div class="timer" id="hours"></div>
-                        <div class="text hour">Hour</div>
+        </div>
+
+    </div>
+
+    <div class="landing-feature">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="row">
+                        @include('home.partials.market')
                     </div>
-                    <div style="font-family:none !important" class="timer">:</div>
-                    <div class="column">
-                        <div class="timer" id="minutes"></div>
-                        <div class="text">MIN</div>
-                    </div>
-                    <div style="font-family: normal !important" class="timer">:</div>
-                    <div class="column">
-                        <div class="timer" id="seconds"></div>
-                        <div class="text">SEC</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div>
-                    <h3>{{ Carbon\Carbon::now()->format('l') }}</h3>
-                    <span>{{ Carbon\Carbon::now()->format('d M Y g:i A') }}</span>
                 </div>
             </div>
         </div>
     </div>
-
-    @include('home.partials.market')
 
 
     <!-- Button trigger modal -->

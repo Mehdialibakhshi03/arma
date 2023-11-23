@@ -841,8 +841,8 @@
             e.clearSelection();
         });
     </script>
-    <script type="text/javascript"
-            src='https://maps.googleapis.com/maps/api/js?key=AIzaSyCQJhryzT4sv3xKSeyFf--hCMOYw-UU1cs&libraries=places'></script>
+{{--    <script type="text/javascript"--}}
+{{--            src='https://maps.googleapis.com/maps/api/js?key=AIzaSyCQJhryzT4sv3xKSeyFf--hCMOYw-UU1cs&libraries=places'></script>--}}
     <script type="text/javascript" src="{{ asset('vendor/locationpicker/locationpicker.jquery.js') }}"></script>
     <script src="{{ asset('vendor/ckeditor/ckeditor.js') }}"></script>
     <script>

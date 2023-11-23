@@ -327,6 +327,10 @@
             }
         })
     }
+
+    $('#profile-toggle').click(function () {
+        $('#profile-dropdown').slideToggle();
+    })
 </script>
 
 @include('admin.layouts.includes.alerts')

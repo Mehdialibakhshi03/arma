@@ -1,4 +1,4 @@
-@import url("http://fonts.googleapis.com/css?family=Overpass:300,400,600,700&amp;display=swap");
+/*@import url("http://fonts.googleapis.com/css?family=Overpass:300,400,600,700&amp;display=swap");*/
 @import url("bootstrap.min.css");
 @import url("ionicons.min.css");
 @import url("jquery.mCustomScrollbar.min.css");
@@ -2732,4 +2732,8 @@ body{
         max-width: 700px !important;
         margin: 1.75rem auto;
     }
+}
+
+.bid-bottom{
+    width: 100px !important;
 }
