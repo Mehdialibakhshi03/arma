@@ -633,7 +633,13 @@ class FormController extends Controller
                 if ($user->hasRole('Admin')) {
                     $route = null;
                 } else {
-                    $route = route('admin.form.values', ['status' => 3, 'user' => auth()->user()->id]);
+                    if (session()->exists('market')){
+                        $route=route('admin.markets.index');
+                        session()->forget('market');
+                    }else{
+                        $route = route('admin.form.values', ['status' => 3, 'user' => auth()->user()->id]);
+                    }
+
                 }
                 return response()->json(['is_success' => true, 'message' => __($success_msg), 'redirect' => $route], 200);
             } else {

@@ -9,13 +9,13 @@
     </a>
 @endcan
 
-@can('commodity-duplicate')
-    <button type="button" onclick="CopyFormValue({{ $formValue->id }})" class="btn btn-sm small btn btn-warning"
-            data-bs-toggle="tooltip" data-bs-placement="bottom"
-            data-bs-original-title="{{ __('Duplicate Form') }}">
-        <i class="ti ti-squares-diagonal"></i>
-    </button>
-@endcan
+{{--@can('commodity-duplicate')--}}
+{{--    <button type="button" onclick="CopyFormValue({{ $formValue->id }})" class="btn btn-sm small btn btn-warning"--}}
+{{--            data-bs-toggle="tooltip" data-bs-placement="bottom"--}}
+{{--            data-bs-original-title="{{ __('Duplicate Form') }}">--}}
+{{--        <i class="ti ti-squares-diagonal"></i>--}}
+{{--    </button>--}}
+{{--@endcan--}}
 @can('commodity-edit')
     {{--    @if($formValue->status==3)--}}
     <a href="{{ route('admin.formvalues.edit', $formValue->id) }}" data-bs-toggle="tooltip"

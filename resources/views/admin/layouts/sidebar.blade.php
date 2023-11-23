@@ -148,12 +148,6 @@
                                         class="dash-mtext custom-weight">{{ __('Denied Commodity') }}
                                 </a>
                             </li>
-                            <li class="dash-item d-flex align-items-center">
-                                <a href="{{ route('admin.form.values',['status'=>1]) }}"
-                                   class="dash-link font10pt"><span
-                                        class="dash-mtext custom-weight">{{ __('Approved Commodity') }}
-                                </a>
-                            </li>
                         </ul>
                     </li>
                 @endcan
@@ -209,7 +203,25 @@
                         </ul>
                     </li>
                 @endcan
-
+                @can('markets')
+                    <li class="dash-item dash-hasmenu {{ request()->is('admin-panel/management/markets*') ? 'active dash-trigger' : 'collapsed' }}">
+                        <a href="#!" class="dash-link">
+                            <span class="dash-micon">
+                <i class="ti ti-table"></i></span><span
+                                class="dash-mtext">{{ __('Markets') }}</span><span class="dash-arrow"><i
+                                    data-feather="chevron-right"></i></span></a>
+                        <ul class="dash-submenu">
+                            <li class="dash-item {{ request()->is('admin-panel/management/messages/markets*') ? 'active' : '' }}">
+                                <a class="dash-link"
+                                   href="{{ route('admin.markets.index') }}">{{ __('Markets') }}</a>
+                            </li>
+                            <li class="dash-item {{ request()->is('admin-panel/management/messages/markets*') ? 'active' : '' }}">
+                                <a class="dash-link"
+                                   href="{{ route('admin.market.setting.index') }}">{{ __('Market Setting') }}</a>
+                            </li>
+                        </ul>
+                    </li>
+                @endcan
             </ul>
         </div>
     </div>

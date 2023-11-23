@@ -27,6 +27,11 @@ class FormValue extends Model
         return $this->belongsTo(UserStatus::class, 'status', 'id');
     }
 
+    public function Market()
+    {
+        return $this->hasOne(Market::class, 'form_value_id', 'id');
+    }
+
     public function getFormArray()
     {
         return json_decode($this->json);
@@ -200,7 +205,7 @@ class FormValue extends Model
 
     public function Markets()
     {
-        return $this->belongsToMany(Market::class, 'form_market','formvalue_id','market_id');
+        return $this->belongsToMany(Market::class, 'form_market', 'formvalue_id', 'market_id');
     }
 
 

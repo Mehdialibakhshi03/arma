@@ -10,6 +10,7 @@ use App\Jobs\CustomMessageToUserJob;
 use App\Models\Form;
 use App\Models\FormValue;
 use App\Models\MailMessages;
+use App\Models\Market;
 use App\Models\Setting;
 use App\Models\UserForm;
 use App\Models\UserStatus;
@@ -56,21 +57,29 @@ class FormValueController extends Controller
     {
         $form_id = $request->form_id;
         $status = $request->status;
-        $previous_status = $request->previous_status;
         $form_value = FormValue::where('id', $form_id)->first();
         $form_value->update([
             'status' => $status
         ]);
+        if ($status == 1) {
+            Market::create([
+                'form_value_id' => $form_value->id,
+            ]);
+        }
+        if ($status == 2) {
+            $form_value->Market->delete();
+        }
         //send email to user
-        $st=UserStatus::where('id',$status)->first();
+        $st = UserStatus::where('id', $status)->first();
         $email = $form_value->User->email;
         $mail = MailMessages::where('type', 'changeStatusFormToUser')->first();
         $message = $mail->text;
-        $message=str_replace('{status}',$st->title,$message);
+        $message = str_replace('{status}', $st->title, $message);
         $title = $mail->title;
         dispatch(new CustomMessageToUserJob($message, $title, '', $email));
         session()->flash('success', 'Status Change Successfully!');
-        return response()->json([1]);
+        $rout = route('admin.form.values', ['status' => 0]);
+        return response()->json([1, $rout]);
     }
 
     public function edit($id)

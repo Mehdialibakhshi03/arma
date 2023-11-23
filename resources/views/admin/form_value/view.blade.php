@@ -41,19 +41,19 @@
                 <div class="float-end justify-content-between d-flex">
                     @can('commodity-change-status')
                         @if($form_value->Status->id==1)
-                            <button onclick="ChangeFormValueStatus({{ $form_value->id }},2,{{ $form_value->Status->id }})" type="button"
+                            <button onclick="ChangeFormValueStatus({{ $form_value->id }},2)" type="button"
                                     class="btn btn-danger ml5">{{ __('Deny') }}</button>
                         @endif
 
                         @if($form_value->Status->id==2)
-                            <button onclick="ChangeFormValueStatus({{ $form_value->id }},1,{{ $form_value->Status->id }})" type="button"
+                            <button onclick="ChangeFormValueStatus({{ $form_value->id }},1)" type="button"
                                     class="btn btn-success ml5">{{ __('Approve') }}</button>
                         @endif
 
                         @if($form_value->Status->id==0)
-                            <button onclick="ChangeFormValueStatus({{ $form_value->id }},1,{{ $form_value->Status->id }})" type="button"
+                            <button onclick="ChangeFormValueStatus({{ $form_value->id }},1)" type="button"
                                     class="btn btn-success ml5">{{ __('Approve') }}</button>
-                            <button onclick="ChangeFormValueStatus({{ $form_value->id }},2,{{ $form_value->Status->id }})" type="button"
+                            <button onclick="ChangeFormValueStatus({{ $form_value->id }},2)" type="button"
                                     class="btn btn-danger ml5">{{ __('Deny') }}</button>
                         @endif
                     @endcan
@@ -384,20 +384,19 @@
         }
     </script>
     <script>
-        function ChangeFormValueStatus(form_id, status,previous_status) {
+        function ChangeFormValueStatus(form_id, status) {
             $.ajax({
                 url: "{{ route('admin.formValue.changeStatus') }}",
                 data: {
                     _token: '{{ csrf_token() }}',
                     form_id: form_id,
                     status: status,
-                    previous_status: previous_status
                 },
                 method: "Post",
                 dataType: "json",
                 success: function (msg) {
                     if (msg[0] === 1) {
-                        window.location.reload();
+                        window.location.href=msg[1];
                     }
                 },
             })

@@ -1,13 +1,13 @@
 @extends('admin.layouts.main')
 
 @section('title')
-    {{ $status }} {{ __('Markets') }}
+    {{ __('Markets') }}
 @endsection
 
 @section('breadcrumb')
     <div class="col-md-12 mb-3">
         <div class="page-header-title">
-            <h4 class="m-b-10">{{ $status }} {{ __('Markets') }}</h4>
+            <h4 class="m-b-10">{{ __('Markets') }}</h4>
         </div>
     </div>
 @endsection
@@ -20,23 +20,17 @@
                         <div>
                             <div class="card">
                                 <div class="card-body">
-                                    <div class="col-12">
-                                        <h5 class="text-white mb-2">
-                                            {{ $status.' Market ' }}({{ count($markets) }})
-                                        </h5>
-                                    </div>
                                     <div class="col-md-12">
-                                        <a class="btn btn-secondary" href="{{ route('admin.market.create',['status'=>$status]) }}">+ create</a>
                                         <div class="markets-pair-list">
                                             <div id="alert"></div>
                                             <table class="table table-striped">
                                                 <thead>
                                                 <tr>
                                                     <th>#</th>
-                                                    <th>Title</th>
-                                                    <th>Description</th>
+                                                    <th>commodity</th>
                                                     <th>start</th>
                                                     <th>end</th>
+                                                    <th>status</th>
                                                     <th>action</th>
                                                 </tr>
                                                 </thead>
@@ -47,10 +41,7 @@
                                                             {{ $markets->firstItem()+$key }}
                                                         </td>
                                                         <td>
-                                                            {{ $item->title }}
-                                                        </td>
-                                                        <td>
-                                                            {{ $item->description }}
+                                                            {{ FormValueHelper($item->FormValue->json)['commodity'] }}
                                                         </td>
                                                         <td>
                                                             {{ $item->start }}
@@ -59,8 +50,12 @@
                                                             {{ $item->end }}
                                                         </td>
                                                         <td>
-                                                            <button onclick="removeModal({{ $item->id }},event)" class="btn btn-sm btn-danger">Remove</button>
-                                                            <a href="{{ route('admin.market.edit',['market'=>$item->id,'status'=>$status]) }}" class="btn btn-sm btn-info">Edit</a>
+                                                            {{ $item->status }}
+                                                        </td>
+                                                        <td>
+                                                                <?php session()->put('market',true); ?>
+                                                            <a href="{{ route('admin.formvalues.edit', $item->FormValue->id) }}" class="btn btn-sm btn-info">Edit</a>
+                                                            <a href="{{ route('admin.market.edit',['market'=>$item->id,]) }}" class="btn btn-sm btn-primary">settings</a>
                                                         </td>
                                                     </tr>
                                                 @endforeach

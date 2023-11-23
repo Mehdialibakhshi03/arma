@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\FormController;
 use App\Http\Controllers\Admin\FormValueController;
 use App\Http\Controllers\Admin\Header1Controller;
 use App\Http\Controllers\Admin\Header2Controller;
+use App\Http\Controllers\Admin\MarketController;
 use App\Http\Controllers\Admin\MessagesController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
@@ -122,6 +123,16 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
         Route::get('messages/alerts/index', [MessagesController::class, 'alerts'])->name('alerts.index');
         Route::get('messages/alerts/{alert}/edit', [MessagesController::class, 'alert_edit'])->name('alert.edit');
         Route::put('messages/alerts/{alert}/update', [MessagesController::class, 'alert_update'])->name('alert.update');
+    });
+
+    //Markets
+    Route::middleware('permission:markets')->group(function () {
+        Route::get('markets', [MarketController::class, 'index'])->name('markets.index');
+        Route::get('market/{market}/edit', [MarketController::class, 'edit'])->name('market.edit');
+        Route::post('market/remove', [MarketController::class, 'remove'])->name('market.remove');
+        Route::put('market/{market}/update', [MarketController::class, 'update'])->name('market.update');
+        Route::get('market/setting/index_setting', [MarketController::class, 'setting_index'])->name('market.setting.index');
+        Route::put('market/setting/update_setting', [MarketController::class, 'setting_update'])->name('market.setting.update_setting');
     });
 });
 Route::post('ckeditor/image_upload', [CKEditorController::class, 'upload'])->name('upload');

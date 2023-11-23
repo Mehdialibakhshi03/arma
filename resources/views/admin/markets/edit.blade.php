@@ -11,7 +11,8 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div>
-                                        <a href="{{ route('admin.markets.index',['status'=>$status]) }}" class="btn btn-secondary btn-sm mb-2">
+                                        <a href="{{ route('admin.markets.index') }}"
+                                           class="btn btn-secondary btn-sm mb-2">
                                             <i class="icon ion-md-arrow-back mr-1"></i>
                                             <span>
                                                 Back
@@ -19,41 +20,13 @@
                                         </a>
                                     </div>
                                     <div class="settings-profile">
-                                        <form method="POST" action="{{ route('admin.market.update',['status'=>$status,'market'=>$market->id]) }}">
+                                        <form method="POST"
+                                              action="{{ route('admin.market.update',['market'=>$market->id]) }}">
                                             @csrf
                                             @method('put')
                                             <div class="row mt-4">
-                                                <div class="col-12 col-md-9 mb-3">
-                                                    <label for="title">Title</label>
-                                                    <input id="title" type="text" name="title" class="form-control"
-                                                           placeholder="title" value="{{ $market->title }}">
-                                                    @error('title')
-                                                    <p class="input-error-validate">
-                                                        {{ $message }}
-                                                    </p>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-md-3 mb-3">
-                                                    <label for="priority">Priority</label>
-                                                    <input id="priority" type="text" name="priority" class="form-control"
-                                                           placeholder="priority" value="{{ $market->priority }}">
-                                                    @error('priority')
-                                                    <p class="input-error-validate">
-                                                        {{ $message }}
-                                                    </p>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-12 mb-3">
-                                                    <label for="description">Description</label>
-                                                    <textarea name="description" id="description" class="form-control">{{ $market->description }}</textarea>
-                                                    @error('description')
-                                                    <p class="input-error-validate">
-                                                        {{ $message }}
-                                                    </p>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label for="start">Open Market At</label>
+                                                <div class="col-12 col-md-4 mb-3">
+                                                    <label for="start">start</label>
                                                     <input id="start" type="datetime-local" name="start" class="form-control"
                                                            value="{{ $market->start }}">
                                                     @error('start')
@@ -62,29 +35,39 @@
                                                     </p>
                                                     @enderror
                                                 </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label for="end">Close Market At</label>
+                                                <div class="col-12 col-md-4 mb-3">
+                                                    <label for="end">end</label>
                                                     <input id="end" type="datetime-local" name="end" class="form-control"
-                                                           placeholder="end" value="{{ $market->end }}">
+                                                           value="{{ $market->end }}">
                                                     @error('end')
                                                     <p class="input-error-validate">
                                                         {{ $message }}
                                                     </p>
                                                     @enderror
                                                 </div>
-                                                <div class="col-12">
-                                                    <label>Commodity</label>
-                                                    <select  id="FormValues" name="form_id[]" class="form-control my-select" data-live-search="true"
-                                                             multiple>
-                                                        @foreach ($form_values as $form_value)
-                                                            <option {{ in_array($market->id,$form_value->Markets()->pluck('market_id')->toArray()) ? 'selected=selected' : '' }} value="{{ $form_value->id }}">
-                                                                {{ $form_value->User->name.'/'.$form_value->getFormArray()[0][0]->value }}
-                                                            </option>
-                                                        @endforeach
+                                                <div class="col-12 col-md-4 mb-3">
+                                                    <label for="status">status</label>
+                                                    <select name="status" class="form-control">
+                                                        <option
+                                                            {{ $market->status == 1?'selected=selected' : '' }} value="1">
+                                                            Active
+                                                        </option>
+                                                        <option
+                                                            {{ $market->status == 0?'selected=selected' : '' }} value="0">
+                                                            Inactive
+                                                        </option>
                                                     </select>
+                                                    @error('status')
+                                                    <p class="input-error-validate">
+                                                        {{ $message }}
+                                                    </p>
+                                                    @enderror
                                                 </div>
+
                                                 <div class="col-md-12 mt-3">
-                                                    <input type="submit" value="Edit">
+                                                    <button type="submit" class="btn btn-primary btn-block btn-sm">
+                                                        Update
+                                                    </button>
                                                 </div>
                                             </div>
                                         </form>
@@ -100,17 +83,9 @@
 @endsection
 
 @push('style')
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css" integrity="sha512-ARJR74swou2y0Q2V9k0GbzQ/5vJ2RBSoCWokg4zkfM29Fb3vZEQyv0iWBMW/yvKgyHSR/7D64pFMmU8nYmbRkg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-@endpush
 
+@endpush
 @push('script')
-    <!-- MDB -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/js/bootstrap-select.min.js" integrity="sha512-yDlE7vpGDP7o2eftkCiPZ+yuUyEcaBwoJoIhdXv71KZWugFqEphIS3PU60lEkFaz8RxaVsMpSvQxMBaKVwA5xg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script>
-        $('#FormValues').selectpicker({
-            'title':'Select Commodity'
-        });
-    </script>
+
 @endpush
 

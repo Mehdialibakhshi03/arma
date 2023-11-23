@@ -68,11 +68,22 @@ class FormValuesDataTable extends DataTable
 //                            $query->select('form_id')->from('assign_forms_users')->where('user_id', $user_id);
 //                        })->OrWhere('assign_type', 'public');
 //                });
-            $form_values =  $model->where('status', $this->status)->where('parent',0)->where('user_id',$user_id);
+            if ($this->status==2){
+                $form_values =  $model->where('status', $this->status)->where('user_id',$user_id);
+            }else{
+                $form_values =  $model->where('status','!=',2)->where('user_id',$user_id);
+            }
+
         } else {
-            $form_values = FormValue::where('status', $this->status)->select(['form_values.*', 'forms.title'])
-                ->join('forms', 'forms.id', '=', 'form_values.form_id')
-                ->leftJoin('users', 'users.id', 'form_values.user_id');
+            if ($this->status==2) {
+                $form_values = FormValue::where('status' ,$this->status)->select(['form_values.*', 'forms.title'])
+                    ->join('forms', 'forms.id', '=', 'form_values.form_id')
+                    ->leftJoin('users', 'users.id', 'form_values.user_id');
+            }else{
+                $form_values = FormValue::where('status','!=' ,2)->select(['form_values.*', 'forms.title'])
+                    ->join('forms', 'forms.id', '=', 'form_values.form_id')
+                    ->leftJoin('users', 'users.id', 'form_values.user_id');
+            }
 
 
         }

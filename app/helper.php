@@ -206,10 +206,10 @@ if (!function_exists('convert')) {
 if (!function_exists('imageExist')) {
     function imageExist($env, $image)
     {
-        $path = $env .'/'. $image;
+        $path = $env . '/' . $image;
 
         if (file_exists($path) and !is_dir($path)) {
-            $src = url($env . '/'.$image);
+            $src = url($env . '/' . $image);
 
 
         } else {
@@ -569,7 +569,7 @@ if (!function_exists('calculate_price')) {
         $fabrics = $cart['fabric'];
         //calculate product price
         $product_price = Product::where('id', $product_id)->first()->price;
-        $product_price=0;
+        $product_price = 0;
         //calculate option prices
         $option_prices = 0;
         foreach ($options as $option) {
@@ -579,12 +579,12 @@ if (!function_exists('calculate_price')) {
         //calculate fabric and side control
         $fabric_measurement_price = 0;
         $side_control_price = 0;
-        $fabric_prices=0;
+        $fabric_prices = 0;
         foreach ($fabrics as $fabric) {
             $product_attr_variation_id = $fabric['fabric_price_product_attr_variation_id'];
             $product_attr_variation = ProductAttrVariation::where('id', $product_attr_variation_id)->first();
             $fabric_price = $fabric['price'];
-            $fabric_prices=$fabric_prices+$fabric_price;
+            $fabric_prices = $fabric_prices + $fabric_price;
 //            foreach ($measurements as $measurement) {
 //                $width = $measurement['width'];
 //                $drop = $measurement['drop'];
@@ -626,15 +626,26 @@ if (!function_exists('fabricPriceHelper')) {
 if (!function_exists('imageExist')) {
     function imageExist($env, $image)
     {
-        $path = $env .'/'. $image;
+        $path = $env . '/' . $image;
 
         if (file_exists($path) and !is_dir($path)) {
-            $src = url($env . '/'.$image);
+            $src = url($env . '/' . $image);
 
 
         } else {
             $src = url('no_image.png');
         }
         return $src;
+    }
+}
+
+if (!function_exists('FormValueHelper')) {
+    function FormValueHelper($form_value_json)
+    {
+        $form_value = json_decode($form_value_json);
+        $commodity = $form_value[0][5]->value;
+        return [
+            'commodity' => $commodity,
+        ];
     }
 }
