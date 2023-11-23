@@ -7,7 +7,6 @@ use App\Http\Controllers\Admin\FormController;
 use App\Http\Controllers\Admin\FormValueController;
 use App\Http\Controllers\Admin\Header1Controller;
 use App\Http\Controllers\Admin\Header2Controller;
-use App\Http\Controllers\Admin\MarketController;
 use App\Http\Controllers\Admin\MessagesController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
@@ -110,31 +109,19 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
         Route::post('formvalues/changeStatus', [FormValueController::class, 'changeStatus'])->name('formValue.changeStatus')->middleware('permission:commodity-change-status');
         //Route::get('/form-values/{id}/view', ['as' => 'view.form.values', 'uses' => '\App\Http\Controllers\Admin\FormValueController@showSubmitedForms'])->middleware(['auth', 'xss']);
         Route::resource('formvalues', FormValueController::class);
-        Route::get('/form-values/{id}/download/csv2', [FormValueController::class,'download_csv_2'])->name('download.form.values.csv2');
-        Route::post('/mass/export/xlsx', [FormValueController::class,'export_xlsx'])->name('mass.export.xlsx');
-        Route::post('/mass/export/csv', [FormValueController::class,'export'])->name('mass.export.csv');
+        Route::get('/form-values/{id}/download/csv2', [FormValueController::class, 'download_csv_2'])->name('download.form.values.csv2');
+        Route::post('/mass/export/xlsx', [FormValueController::class, 'export_xlsx'])->name('mass.export.xlsx');
+        Route::post('/mass/export/csv', [FormValueController::class, 'export'])->name('mass.export.csv');
         Route::post('filter-chart/{id}', [FormValueController::class, 'getGraphData'])->name('filter_chart');
     });
     //messages
-    Route::middleware('permission:message')->group(function(){
+    Route::middleware('permission:message')->group(function () {
         Route::get('messages/emails/index', [MessagesController::class, 'emails'])->name('emails.index');
         Route::get('messages/emails/{id}/edit', [MessagesController::class, 'email_edit'])->name('email.edit');
         Route::put('messages/emails/{mail}/update', [MessagesController::class, 'email_update'])->name('email.update');
         Route::get('messages/alerts/index', [MessagesController::class, 'alerts'])->name('alerts.index');
         Route::get('messages/alerts/{alert}/edit', [MessagesController::class, 'alert_edit'])->name('alert.edit');
         Route::put('messages/alerts/{alert}/update', [MessagesController::class, 'alert_update'])->name('alert.update');
-    });
-
-
-
-    //Markets
-    Route::middleware('permission:markets')->group(function(){
-    Route::get('markets/{status}', [MarketController::class, 'index'])->name('markets.index');
-    Route::get('market/{status}/create', [MarketController::class, 'create'])->name('market.create');
-    Route::post('market/{status}/store', [MarketController::class, 'store'])->name('market.store');
-    Route::get('market/{status}/create/{market}', [MarketController::class, 'edit'])->name('market.edit');
-    Route::put('market/{status}/update/{market}', [MarketController::class, 'update'])->name('market.update');
-    Route::post('market/remove', [MarketController::class, 'remove'])->name('market.remove');
     });
 });
 Route::post('ckeditor/image_upload', [CKEditorController::class, 'upload'])->name('upload');
