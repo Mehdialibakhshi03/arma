@@ -30,7 +30,7 @@
                                                     <th>commodity</th>
                                                     <th>start</th>
                                                     <th>end</th>
-                                                    <th>status</th>
+                                                    <th>min price ($)</th>
                                                     <th>action</th>
                                                 </tr>
                                                 </thead>
@@ -50,7 +50,7 @@
                                                             {{ $item->end }}
                                                         </td>
                                                         <td>
-                                                            {{ $item->status }}
+                                                            {{ $item->min_price }}
                                                         </td>
                                                         <td>
                                                                 <?php session()->put('market',true); ?>

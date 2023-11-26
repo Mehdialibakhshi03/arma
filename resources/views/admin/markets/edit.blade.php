@@ -46,23 +46,16 @@
                                                     @enderror
                                                 </div>
                                                 <div class="col-12 col-md-4 mb-3">
-                                                    <label for="status">status</label>
-                                                    <select name="status" class="form-control">
-                                                        <option
-                                                            {{ $market->status == 1?'selected=selected' : '' }} value="1">
-                                                            Active
-                                                        </option>
-                                                        <option
-                                                            {{ $market->status == 0?'selected=selected' : '' }} value="0">
-                                                            Inactive
-                                                        </option>
-                                                    </select>
-                                                    @error('status')
+                                                    <label for="min_price">min wallet for bidding ($)</label>
+                                                    <input id="min_price" type="number" name="min_price" class="form-control"
+                                                           value="{{ $market->min_price }}">
+                                                    @error('min_price')
                                                     <p class="input-error-validate">
                                                         {{ $message }}
                                                     </p>
                                                     @enderror
                                                 </div>
+
 
                                                 <div class="col-md-12 mt-3">
                                                     <button type="submit" class="btn btn-primary btn-block btn-sm">

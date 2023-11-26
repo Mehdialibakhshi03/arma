@@ -314,6 +314,12 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <div class="form-group col-md-3">
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox" id="can_bid" name="can_bid" {{ $user->can_bid==1 ? 'checked' : '' }}>
+                                                            <label class="form-check-label" for="can_bid">this User Can Bid</label>
+                                                        </div>
+                                                    </div>
                                                     <div class="col-md-12">
                                                         <button class="btn btn-info btn-sm mb-2" type="submit">
                                                             submit

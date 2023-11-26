@@ -55,6 +55,12 @@ class UserController extends Controller
             $user->syncRoles($request->role);
             $permissions = $request->except(['_token', 'role']);
             $user->syncPermissions($permissions);
+            if ($request->has('can_bid')){
+                $can_bid=1;
+            }else{
+                $can_bid=0;
+            }
+            $user->update(['can_bid'=>$can_bid]);
             $message = 'The Item Has Been Updated Successfully';
             session()->flash('success', $message);
         } catch (\Exception $exception) {
