@@ -2,27 +2,26 @@
     @can('form-fill')
         <a class="btn  btn-sm small btn btn-primary edit_form cust_btn" data-bs-toggle="tooltip"
            data-bs-placement="bottom"
-           title="{{ __('Fill Form') }}" data-bs-original-title="{{ __('Fill Form') }}" href="{{ route('admin.forms.fill', $form->id) }}"
+           data-bs-original-title="{{ __('Fill Form') }}" href="{{ route('admin.forms.fill', $form->id) }}"
            id="edit-form"><i class="ti ti-list"></i></a>
     @endcan
 @endif
 
 @can('form-duplicate')
     <a href="#" class="btn btn-sm small btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="bottom"
-       title="{{ __('Duplicate Form') }}" data-bs-original-title="{{ __('Duplicate Form') }}"
+        data-bs-original-title="{{ __('Duplicate Form') }}"
        onclick="document.getElementById('duplicate-form-{{ $form->id }}').submit();"><i
             class="ti ti-squares-diagonal"></i></a>
 @endcan
 
 @can('form-edit')
-    <a class="btn btn-sm small btn btn-info edit_form cust_btn" data-bs-toggle="tooltip" data-bs-placement="bottom"
-       title="{{ __('Design Form') }}" data-bs-original-title="{{ __('Design Form') }}"
+    <a class="btn btn-sm small btn btn-info edit_form cust_btn" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-original-title="{{ __('Design Form') }}"
        href="{{ route('admin.forms.design', $form->id) }}"
        id="edit-form"><i class="ti ti-brush"></i></a>
 @endcan
 @can('form-edit')
     <a class="btn btn-sm small btn btn-primary edit_form cust_btn" href="{{ route('admin.forms.edit', $form->id) }}"
-       data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ __('Edit Form') }}"
+       data-bs-toggle="tooltip" data-bs-placement="bottom"
        data-bs-original-title="{{ __('Edit Form') }}"
        id="edit-form"><i class="ti ti-edit"></i></a>
 @endcan
@@ -34,7 +33,7 @@
         'class' => 'd-inline',
     ]) !!}
     <a href="#" class="btn btn-sm small btn btn-danger show_confirm" data-bs-toggle="tooltip"
-       data-bs-placement="bottom" title="{{ __('delete') }}" data-bs-original-title="{{ __('Delete') }}"
+       data-bs-placement="bottom" data-bs-original-title="{{ __('Delete') }}"
        id="delete-form-{{ $form->id }}"><i class="ti ti-trash mr-0"></i></a>
     {!! Form::close() !!}
 @endcan

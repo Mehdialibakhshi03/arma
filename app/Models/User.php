@@ -24,7 +24,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name', 'email', 'password', 'type', 'profile', 'active_status', 'email_verified_at', 'lang', 'created_by', 'country',
-        'country_code', 'phone', 'isVerified', 'phone_verified_at','role_request_id','company_name','mobile_number'
+        'country_code', 'phone', 'isVerified', 'phone_verified_at', 'role_request_id', 'company_name', 'mobile_number'
     ];
 
     protected $hidden = [
@@ -44,7 +44,6 @@ class User extends Authenticatable
     {
         return $this->lang;
     }
-
 
 
     public function getAvatarImageAttribute()
@@ -70,12 +69,18 @@ class User extends Authenticatable
             } else {
                 return 60 - $seconds;
             }
-        }else{
+        } else {
             return 60;
         }
     }
 
-    public function UserStatus(){
-        return $this->belongsTo(UserStatus::class,'active_status','id');
+    public function UserStatus()
+    {
+        return $this->belongsTo(UserStatus::class, 'active_status', 'id');
+    }
+
+    public function wallets()
+    {
+        return $this->hasMany(Wallet::class,'user_id');
     }
 }

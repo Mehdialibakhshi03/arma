@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\DataTables\FormValuesDataTable;
 use App\Http\Controllers\Controller;
+use App\Models\FormValue;
 use App\Models\Market;
 use App\Models\MarketSetting;
+use App\Models\User;
 use App\Models\UserStatus;
 use Illuminate\Http\Request;
 
@@ -13,7 +15,7 @@ class MarketController extends Controller
 {
     public function index()
     {
-        $markets = Market::latest()->paginate(100);
+        $markets = Market::orderBy('start','desc')->paginate(100);
         return view('admin.markets.index', compact('markets'));
     }
 

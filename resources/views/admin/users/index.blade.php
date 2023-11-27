@@ -70,6 +70,11 @@
                                                         <i class="icon ion-md-eye text-white"></i>
                                                         Edit
                                                     </a>
+                                                    <a href="{{ route('admin.user.wallet',['user'=>$item->id]) }}"
+                                                       class="btn btn-sm btn-info mr-1">
+                                                        <i class="icon ion-md-eye text-white"></i>
+                                                        wallet
+                                                    </a>
                                                     {{--                                                            <a href="{{ route('admin.user.mails',['type'=>$type,'user'=>$item->id]) }}"--}}
                                                     {{--                                                               class="btn btn-sm btn-warning mr-1">--}}
                                                     {{--                                                                Mails--}}

@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\MessagesController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\WalletController;
 use App\Http\Controllers\Home\IndexController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
@@ -80,6 +81,9 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
         //roles
         Route::resource('roles', '\App\Http\Controllers\Admin\RoleController');
         Route::delete('role', [RoleController::class, 'delete'])->name('role.delete');
+        //wallet
+        Route::get('/wallet/{user}/index',[WalletController::class,'index'])->name('user.wallet');
+        Route::post('/wallet_change',[WalletController::class,'wallet_change'])->name('user.wallet.change');
     });
     Route::post('users/reset_password/{user}', [UserController::class, 'reset_password'])->middleware('permission:user|user-edit')->name('user.reset_password');
     Route::get('users/{type}/{user}', [UserController::class, 'edit'])->middleware('permission:user|user-edit')->name('user.edit');
@@ -91,7 +95,6 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
         Route::put('/forms/design/{id}', [FormController::class, 'designUpdate'])->name('forms.design.update');
         Route::get('/forms/survey/{id}', [FormController::class, 'publicFill'])->name('forms.survey');
         Route::get('/forms/qr/{id}', [FormController::class, 'qrCode'])->name('forms.survey.qr');
-        Route::put('/forms/fill/{id}', [FormController::class, 'fillStore'])->name('forms.fill.store');
         Route::post('/form-duplicate', [FormController::class, 'duplicate'])->name('forms.duplicate')->middleware('permission:form-duplicate');
         Route::post('ckeditors/upload', [FormController::class, 'ckupload'])->name('ckeditors.upload');
         Route::post('dropzone/upload/{id}', [FormController::class, 'dropzone'])->name('dropzone.upload');
@@ -99,6 +102,7 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
         Route::get('form-status/{id}', [FormController::class, 'formStatus'])->name('form.status');
         Route::post('forms/destroy/{form}', [FormController::class, 'destroy'])->name('forms.destroy')->middleware('permission:form-delete');
     });
+    Route::put('/forms/fill/{id}', [FormController::class, 'fillStore'])->name('forms.fill.store');
     Route::get('/forms/fill/{id}', [FormController::class, 'fill'])->name('forms.fill')->middleware('permission:form-fill');
     //FormValues
     Route::middleware('permission:commodity')->group(function () {

@@ -28,9 +28,11 @@
                                                 <tr>
                                                     <th>#</th>
                                                     <th>commodity</th>
+                                                    <th>User</th>
                                                     <th>start</th>
                                                     <th>end</th>
                                                     <th>min price ($)</th>
+                                                    <th>status</th>
                                                     <th>action</th>
                                                 </tr>
                                                 </thead>
@@ -44,6 +46,9 @@
                                                             {{ FormValueHelper($item->FormValue->json)['commodity'] }}
                                                         </td>
                                                         <td>
+                                                            {{ $item->FormValue->User->name }}
+                                                        </td>
+                                                        <td>
                                                             {{ $item->start }}
                                                         </td>
                                                         <td>
@@ -53,9 +58,14 @@
                                                             {{ $item->min_price }}
                                                         </td>
                                                         <td>
-                                                                <?php session()->put('market',true); ?>
-                                                            <a href="{{ route('admin.formvalues.edit', $item->FormValue->id) }}" class="btn btn-sm btn-info">Edit</a>
-                                                            <a href="{{ route('admin.market.edit',['market'=>$item->id,]) }}" class="btn btn-sm btn-primary">settings</a>
+                                                            {{ $item->status }}
+                                                        </td>
+                                                        <td>
+                                                                <?php session()->put('market', true); ?>
+                                                            <a href="{{ route('admin.formvalues.edit', $item->FormValue->id) }}"
+                                                               class="btn btn-sm btn-info">Edit</a>
+                                                            <a href="{{ route('admin.market.edit',['market'=>$item->id,]) }}"
+                                                               class="btn btn-sm btn-primary">settings</a>
                                                         </td>
                                                     </tr>
                                                 @endforeach

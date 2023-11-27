@@ -19,7 +19,7 @@ class FormValue extends Model
 
     public function User()
     {
-        return $this->hasOne('App\Models\User', 'id', 'user_id');
+        return $this->belongsTo(User::class);
     }
 
     public function Status()

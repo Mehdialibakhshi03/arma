@@ -643,7 +643,7 @@ if (!function_exists('FormValueHelper')) {
     function FormValueHelper($form_value_json)
     {
         $form_value = json_decode($form_value_json);
-        $commodity = $form_value[0][5]->value;
+        $commodity = $form_value[0][9]->value;
         return [
             'commodity' => $commodity,
         ];
