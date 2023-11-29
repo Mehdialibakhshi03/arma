@@ -2337,7 +2337,7 @@ tbody.ob-heading {
     }
 
     .landing-feature {
-        padding: 50px 0 30px;
+        padding: 10px 0 30px;
     }
 
     .landing-sub {
@@ -2716,13 +2716,12 @@ tbody.ob-heading {
 }
 
 
-
 #counter {
     font-size: 40px;
 }
 
 
-body{
+body {
     overflow-x: hidden;
 }
 
@@ -2734,6 +2733,18 @@ body{
     }
 }
 
-.bid-bottom{
+.bid-bottom {
     width: 100px !important;
+}
+
+.text-bold {
+    font-weight: bold !important;
+}
+
+.cursor-pointer {
+    cursor: pointer !important;
+}
+
+#timer_section {
+    height: 70px !important;
 }

@@ -30,12 +30,14 @@ class WalletController extends Controller
             $user_id = $request->user_id;
             $type = $request->type;
             $amount = $request->amount;
+            $description =$request->description;
             $status = 'change by admin';
             wallet::create([
                 'user_id' => $user_id,
                 'type' => $type,
                 'amount' => $amount,
                 'status' => $status,
+                'description' => $description,
             ]);
             session()->flash('success', 'wallet change successfully');
             return response()->json([1]);

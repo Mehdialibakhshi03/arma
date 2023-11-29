@@ -46,6 +46,7 @@ Route::get('form-detail/id', [HomeController::class, 'form_details'])->name('for
 /////////////////////////////////web
 Route::get('/', [IndexController::class, 'index'])->name('home.index');
 Route::get('/redirect-user', [IndexController::class, 'redirectUser'])->name('home');
+Route::get('/bid/{market}', [IndexController::class, 'bid'])->name('home.bid');
 Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
     //dashboard
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');

@@ -8,6 +8,7 @@ use App\Models\Market;
 use App\Models\Message;
 use App\Models\Setting;
 use Carbon\Carbon;
+use http\Env\Request;
 
 class IndexController extends Controller
 {
@@ -17,8 +18,7 @@ class IndexController extends Controller
         $UserRegistered = session()->exists('UserRegistered');
         session()->forget('UserRegistered');
         $UserRegistered_message = Message::where('type', 'UserRegistered')->first();
-//        $markets = Market::where('start', '<', Carbon::now())->where('end', '>', Carbon::now())->where('status', 1)->get();
-        $markets = Market::all();
+        $markets = Market::where('start', '>', Carbon::today())->get();
         return view('home.index.index', compact('UserRegistered', 'UserRegistered_message', 'markets'));
     }
 
@@ -36,5 +36,10 @@ class IndexController extends Controller
             return redirect()->route('home.index');
         }
 
+    }
+
+    public function bid(Market $market)
+    {
+        return view('home.market.index',compact('market'));
     }
 }

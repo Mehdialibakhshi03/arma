@@ -32,6 +32,20 @@
         };
         @endif
 
+        function slidemore(market_id) {
+            $('#more_table_' + market_id).slideToggle();
+            let svg = $('#slide_more_angle_' + market_id).find('svg');
+            let hasClass = svg.hasClass('fa-angle-down');
+            if (hasClass) {
+                svg.removeClass('fa-angle-down');
+                svg.addClass('fa-angle-up');
+            } else {
+                svg.removeClass('fa-angle-up');
+                svg.addClass('fa-angle-down');
+            }
+
+        }
+
     </script>
 @endsection
 
@@ -42,61 +56,49 @@
             <p style="color: {{ $alert_text_color }};font-size: {{ $alert_font_size }}px !important;margin: 0 !important;">{{ $alert_description }}</p>
         </div>
     @endif
-    <div class="landing-feature">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <div class="row justify-content-between">
-                        <div class="">
-                            <h3>
-                                <span>Market: </span>
-                                @if(count($markets)>0)
-                                    <span class="text-success">Open</span>
-                                @else
-                                    <span class="text-danger">Close</span>
-                                @endif
-                            </h3>
+    <div class="landing-feature container">
+        <div class="row justify-content-between">
+            <div class="col-12 col-md-4 mb-3">
+                <h3>
+                    <span>Market: </span>
+                    @if(count($markets)>0)
+                        <span class="text-success">Open</span>
+                    @else
+                        <span class="text-danger">Close</span>
+                    @endif
+                </h3>
 
-                            <span style="font-weight: bolder">Total Trade Value:$ 210.650.800</span>
-                        </div>
-                        <div style="justify-content: center;display: flex" class="col-md-4 d-flex">
-                            <div class="clock">
-                                <div class="column">
-                                    <div class="timer" id="hours"></div>
-                                    <div class="text hour">Hour</div>
-                                </div>
-                                <div style="font-family:none !important" class="timer">:</div>
-                                <div class="column">
-                                    <div class="timer" id="minutes"></div>
-                                    <div class="text">MIN</div>
-                                </div>
-                                <div style="font-family: normal !important" class="timer">:</div>
-                                <div class="column">
-                                    <div class="timer" id="seconds"></div>
-                                    <div class="text">SEC</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <h3>{{ Carbon\Carbon::now()->format('l') }}</h3>
-                            <span>{{ Carbon\Carbon::now()->format('d M Y g:i A') }}</span>
-                        </div>
+                <span style="font-weight: bolder">Total Trade Value:$ 210.650.800</span>
+            </div>
+            <div id="timer_section" class="col-12 col-md-4 d-flex justify-content-center mb-3">
+                <div class="clock">
+                    <div class="column">
+                        <div class="timer" id="hours"></div>
+                        <div class="text hour">Hour</div>
+                    </div>
+                    <div style="font-family:none !important" class="timer">:</div>
+                    <div class="column">
+                        <div class="timer" id="minutes"></div>
+                        <div class="text">MIN</div>
+                    </div>
+                    <div style="font-family: normal !important" class="timer">:</div>
+                    <div class="column">
+                        <div class="timer" id="seconds"></div>
+                        <div class="text">SEC</div>
                     </div>
                 </div>
-
+            </div>
+            <div class="col-12 col-md-4 mb-3">
+                <h3>{{ Carbon\Carbon::now()->format('l') }}</h3>
+                <span>{{ Carbon\Carbon::now()->format('d M Y g:i A') }}</span>
             </div>
         </div>
-
     </div>
 
-    <div class="landing-feature">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <div class="row">
-                        @include('home.partials.market')
-                    </div>
-                </div>
+    <div class="landing-feature container">
+        <div class="row">
+            <div class="col-12">
+                @include('home.partials.market')
             </div>
         </div>
     </div>

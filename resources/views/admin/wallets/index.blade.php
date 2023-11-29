@@ -43,6 +43,11 @@
                                     </button>
                                 </div>
 
+                                <div>
+                                    <label for="wallet_description">Description *</label>
+                                    <textarea id="wallet_description" class="form-control form-control-sm" name="wallet_description"></textarea>
+                                </div>
+
                             </div>
                             <div class="col-md-12">
                                 <div class="markets-pair-list">
@@ -54,6 +59,7 @@
                                             <th>amount</th>
                                             <th>status</th>
                                             <th>type</th>
+                                            <th>description</th>
                                             <th>created at</th>
                                         </tr>
                                         </thead>
@@ -71,6 +77,9 @@
                                                 </td>
                                                 <td>
                                                     {{ $item->type }}
+                                                </td>
+                                                <td>
+                                                    {{ $item->description }}
                                                 </td>
                                                 <td>
                                                     {{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d') }}
@@ -101,8 +110,13 @@
     <script>
         function changeUserWallet(user_id, type) {
             let amount = $('#wallet').val();
+            let wallet_description = $('#wallet_description').val();
             if (amount<10){
                 alert('minimum amount is 10$');
+                return false;
+            }
+            if (wallet_description.length==0){
+                alert('wallet description is required');
                 return false;
             }
             $.ajax({
@@ -111,7 +125,8 @@
                     _token: "{{ csrf_token() }}",
                     user_id: user_id,
                     type: type,
-                    amount: amount
+                    amount: amount,
+                    wallet_description: wallet_description,
                 },
                 dataType: 'json',
                 method: 'post',
