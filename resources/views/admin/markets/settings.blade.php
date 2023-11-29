@@ -16,10 +16,9 @@
                                             @method('put')
                                             <div class="row mt-4">
                                                 <div class="col-12 col-md-6 mb-3">
-                                                    <label for="ready_to_duration">Ready To duration(TIME)</label>
-                                                    <input id="ready_to_duration" type="time" name="ready_to_duration"
-                                                           class="form-control"
-                                                           placeholder="title" value="{{ $ready_to_duration }}">
+                                                    <label for="ready_to_duration">Ready To duration(min)</label>
+                                                    <input id="ready_to_duration" type="number" name="ready_to_duration"
+                                                           class="form-control" value="{{ $ready_to_duration }}">
                                                     @error('ready_to_duration')
                                                     <p class="input-error-validate">
                                                         {{ $message }}
@@ -27,10 +26,10 @@
                                                     @enderror
                                                 </div>
                                                 <div class="col-12 col-md-6 mb-3">
-                                                    <label for="open_duration">Open duration(TIME)</label>
-                                                    <input id="open_duration" type="time" name="open_duration"
+                                                    <label for="open_duration">Open duration(min)</label>
+                                                    <input id="open_duration" type="number" name="open_duration"
                                                            class="form-control"
-                                                           placeholder="title" value="{{ $open_duration }}">
+                                                           value="{{ $open_duration }}">
                                                     @error('open_duration')
                                                     <p class="input-error-validate">
                                                         {{ $message }}
@@ -38,8 +37,8 @@
                                                     @enderror
                                                 </div>
                                                 <div class="col-12 col-md-6 mb-3">
-                                                    <label for="q_1">Q-1 duration(TIME)</label>
-                                                    <input id="q_1" type="time" name="q_1"
+                                                    <label for="q_1">Q-1 duration(min)</label>
+                                                    <input id="q_1" type="number" name="q_1"
                                                            class="form-control" value="{{ $q_1 }}">
                                                     @error('q_1')
                                                     <p class="input-error-validate">
@@ -48,10 +47,20 @@
                                                     @enderror
                                                 </div>
                                                 <div class="col-12 col-md-6 mb-3">
-                                                    <label for="q_2">Q-2 duration(TIME)</label>
-                                                    <input id="q_2" type="time" name="q_2"
+                                                    <label for="q_2">Q-2 duration(min)</label>
+                                                    <input id="q_2" type="number" name="q_2"
                                                            class="form-control" value="{{ $q_2 }}">
                                                     @error('q_2')
+                                                    <p class="input-error-validate">
+                                                        {{ $message }}
+                                                    </p>
+                                                    @enderror
+                                                </div>
+                                                <div class="col-12 col-md-6 mb-3">
+                                                    <label for="q_3">Q-3 duration(min)</label>
+                                                    <input id="q_3" type="number" name="q_3"
+                                                           class="form-control" value="{{ $q_3 }}">
+                                                    @error('q_3')
                                                     <p class="input-error-validate">
                                                         {{ $message }}
                                                     </p>
