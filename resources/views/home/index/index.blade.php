@@ -46,10 +46,55 @@
 
         }
 
+        $(document).ready(function () {
+            setInterval(function () {
+                let getSeconds = new Date().getSeconds();
+                if (getSeconds === 0) {
+                    refreshMarketTable();
+                }
+            }, 1000)
+        });
+
+        function refreshMarketTable() {
+            $.ajax({
+                url: "{{ route('home.refreshMarketTable') }}",
+                dataType: "json",
+                method: "post",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                },
+                success: function (msg) {
+                    if(msg[0]===1){
+                        $('#market_table').html(msg[1]);
+                    }
+                }
+            })
+        }
+
+        function checkTime(i) {
+            if (i < 10) {
+                i = "0" + i;
+            }
+            return i;
+        }
+
+        function startTime() {
+            var dayOfWeek=moment().format("dddd");
+            let clock=moment().format("ll  h:mm a")
+            let time_now='<h3 id="dayOfWeek">'+dayOfWeek+'</h3><span>'+clock+'</span>'
+            $('#time_now').html(time_now);
+            t = setTimeout(function() {
+                startTime()
+            }, 500);
+        }
+        startTime();
+
+
     </script>
 @endsection
 
 @section('content')
+    <div id="time"></div>
     @if($alert_active==1)
         <div style="background-color: {{ $alert_bg_color }} !important;height: {{ $alert_height.'px' }} !important;"
              class="d-flex align-items-center justify-content-center mb-0">
@@ -88,7 +133,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-md-4 mb-3">
+            <div class="col-12 col-md-4 mb-3" id="time_now">
                 <h3>{{ Carbon\Carbon::now()->format('l') }}</h3>
                 <span>{{ Carbon\Carbon::now()->format('d M Y g:i A') }}</span>
             </div>
@@ -97,7 +142,7 @@
 
     <div class="landing-feature container">
         <div class="row">
-            <div class="col-12">
+            <div id="market_table" class="col-12">
                 @include('home.partials.market')
             </div>
         </div>
@@ -105,107 +150,6 @@
 
 
     <!-- Button trigger modal -->
-
-
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">More Information</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <table class="table table-striped">
-
-                        <tr>
-                            <th scope="col">Specification</th>
-                            <th scope="col">Available</th>
-                            <th scope="col">Inspection</th>
-                            <th scope="col">
-                                <button class="btn btn-sm btn-danger">Log in/Register</button>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope="col">Analysis</th>
-                            <th scope="col">
-                                <button class="btn btn-sm btn-danger">Log in/Register</button>
-                            </th>
-                            <th scope="col">MSDS</th>
-                            <th scope="col">
-                                <button class="btn btn-sm btn-danger">Log in/Register</button>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope="col">Min – Max Quantity</th>
-                            <th scope="col">10.000-40.000 MT</th>
-                            <th scope="col">Partial Shipment</th>
-                            <th scope="col">
-                                <button class="btn btn-sm btn-danger">Log in/Register</button>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope="col">Loading Port</th>
-                            <th scope="col">
-                                <button class="btn btn-sm btn-danger">Log in/Register</button>
-                            </th>
-                            <th scope="col">Loading Port</th>
-                            <th scope="col">
-                                <button class="btn btn-sm btn-danger">Log in/Register</button>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope="col">Delivery Date</th>
-                            <th scope="col">
-                                <button class="btn btn-sm btn-danger">Log in/Register</button>
-                            </th>
-                            <th scope="col">Demurrage/Dispatch</th>
-                            <th scope="col">
-                                <button class="btn btn-sm btn-danger">Log in/Register</button>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope="col">Target market</th>
-                            <th scope="col">
-                                <button class="btn btn-sm btn-danger">Log in/Register</button>
-                            </th>
-                            <th scope="col">Supplier</th>
-                            <th scope="col">
-                                <button class="btn btn-sm btn-danger">Log in/Register</button>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope="col">Price Type</th>
-                            <th scope="col">
-                                <button class="btn btn-sm btn-danger">Log in/Register</button>
-                            </th>
-                            <th scope="col">Payment Term</th>
-                            <th scope="col">
-                                <button class="btn btn-sm btn-danger">Log in/Register</button>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th scope="col">Insurance</th>
-                            <th scope="col">
-                                <button class="btn btn-sm btn-danger">Log in/Register</button>
-                            </th>
-                            <th scope="col">Documents</th>
-                            <th scope="col">
-                                <button class="btn btn-sm btn-danger">Log in/Register</button>
-                            </th>
-                        </tr>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
 
     <div class="landing-feature">
         <div class="container">

@@ -16,4 +16,9 @@ class Market extends Model
     {
         return $this->belongsTo(FormValue::class, 'form_value_id', 'id');
     }
+
+    public function Status()
+    {
+        return $this->belongsTo(MarketStatus::class, 'status','id');
+    }
 }

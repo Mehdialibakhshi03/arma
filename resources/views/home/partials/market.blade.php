@@ -30,12 +30,17 @@
             </td>
             <td>Middle East Gulf</td>
             <td>
-                {{ $market->created_at->format('d-m-Y H:i') }}
+                {{ \Carbon\Carbon::parse($market->start)->format('m-d-Y') }}
             </td>
-            <td>
-                {{ $market->status }}
+            <td style="color: {{ $market->Status->color }}">
+                @if ($market->status===1)
+                    {{ \Carbon\Carbon::parse($market->start)->format('H:i') }}
+                @else
+                    {{ $market->Status->title }}
+                    @endif
             </td>
-            <td id="slide_more_angle_{{ $market->id }}" onclick="slidemore({{ $market->id }})" class="slide_more_angle d-flex justify-content-center align-items-center cursor-pointer">
+            <td id="slide_more_angle_{{ $market->id }}" onclick="slidemore({{ $market->id }})"
+                class="slide_more_angle d-flex justify-content-center align-items-center cursor-pointer">
                 <span>more</span>
                 <i class="fa fa-angle-down ml-2 mt-1"></i>
             </td>
@@ -151,7 +156,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class="text-bold">Minimum Price </td>
+                        <td class="text-bold">Minimum Price</td>
                         <td>
                             @auth
                                 <span>Minimum Price</span>
