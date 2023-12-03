@@ -2,33 +2,24 @@
 
 namespace App\Http\Controllers\Home;
 
+use App\Events\SendMessageToClientEvent;
+use App\Events\test;
 use App\Http\Controllers\Controller;
-use App\Jobs\SendNewUserRegisteredForAdminJob;
+use App\Models\BidHistory;
 use App\Models\Market;
 use App\Models\MarketSetting;
 use App\Models\Message;
-use App\Models\Setting;
 use Carbon\Carbon;
-use http\Env\Request;
+use Illuminate\Http\Request;
 
 class IndexController extends Controller
 {
     public function index()
     {
-        $ready_to_duration = MarketSetting::where('key', 'ready_to_duration')->pluck('value')->first();
-        $open_duration = MarketSetting::where('key', 'open_duration')->pluck('value')->first();
-        $q_1 = MarketSetting::where('key', 'q_1')->pluck('value')->first();
-        $q_2 = MarketSetting::where('key', 'q_2')->pluck('value')->first();
-        $q_3 = MarketSetting::where('key', 'q_3')->pluck('value')->first();
-        $endMinutes=$open_duration+$q_1+$q_2+$q_3+3;
         $UserRegistered = session()->exists('UserRegistered');
         session()->forget('UserRegistered');
         $UserRegistered_message = Message::where('type', 'UserRegistered')->first();
-        $markets = Market::where('start', '>', Carbon::now()->copy()->addMinutes(-$endMinutes))->orderBy('start', 'asc')->get();
-        foreach ($markets as $market) {
-            $this->statusTimeMarket($market, $ready_to_duration, $open_duration, $q_1, $q_2, $q_3);
-        }
-        return view('home.index.index', compact('UserRegistered', 'UserRegistered_message', 'markets'));
+        return view('home.index.index', compact('UserRegistered', 'UserRegistered_message'));
     }
 
     public function redirectUser()
@@ -49,6 +40,12 @@ class IndexController extends Controller
 
     public function bid(Market $market)
     {
+        $ready_to_duration = MarketSetting::where('key', 'ready_to_duration')->pluck('value')->first();
+        $open_duration = MarketSetting::where('key', 'open_duration')->pluck('value')->first();
+        $q_1 = MarketSetting::where('key', 'q_1')->pluck('value')->first();
+        $q_2 = MarketSetting::where('key', 'q_2')->pluck('value')->first();
+        $q_3 = MarketSetting::where('key', 'q_3')->pluck('value')->first();
+        $endMinutes = $open_duration + $q_1 + $q_2 + $q_3 + 3;
         return view('home.market.index', compact('market'));
     }
 
@@ -59,7 +56,7 @@ class IndexController extends Controller
         $q_1 = MarketSetting::where('key', 'q_1')->pluck('value')->first();
         $q_2 = MarketSetting::where('key', 'q_2')->pluck('value')->first();
         $q_3 = MarketSetting::where('key', 'q_3')->pluck('value')->first();
-        $endMinutes=$open_duration+$q_1+$q_2+$q_3+3;
+        $endMinutes = $open_duration + $q_1 + $q_2 + $q_3 + 3;
 
         try {
             $markets = Market::where('start', '>', Carbon::now()->copy()->addMinutes(-$endMinutes))->orderBy('start', 'asc')->get();
@@ -71,6 +68,20 @@ class IndexController extends Controller
         } catch (\Exception $e) {
             return response()->json([0, $e->getMessage()]);
         }
+    }
+
+    public function refreshMarket(Request $request)
+    {
+        $ready_to_duration = MarketSetting::where('key', 'ready_to_duration')->pluck('value')->first();
+        $open_duration = MarketSetting::where('key', 'open_duration')->pluck('value')->first();
+        $q_1 = MarketSetting::where('key', 'q_1')->pluck('value')->first();
+        $q_2 = MarketSetting::where('key', 'q_2')->pluck('value')->first();
+        $q_3 = MarketSetting::where('key', 'q_3')->pluck('value')->first();
+        $endMinutes = $open_duration + $q_1 + $q_2 + $q_3 + 3;
+        $market=Market::where('id',$request->market)->first();
+        $this->statusTimeMarket($market, $ready_to_duration, $open_duration, $q_1, $q_2, $q_3);
+        $market=Market::where('id',$request->market)->first();
+        return response()->json([1,$market->Status->title]);
     }
 
     public function statusTimeMarket($market, $ready_to_duration, $open_duration, $q_1, $q_2, $q_3)
@@ -106,5 +117,44 @@ class IndexController extends Controller
             //close
         }
         $market->update(['status' => $status]);
+    }
+
+    public function refreshBidTable(Request $request)
+    {
+        $bids=BidHistory::where('market_id',$request->market)->orderBy('price','desc')->take(5)->get();
+        $view =view('home.partials.bids_table',compact('bids'))->render();
+        return response()->json([1,$view]);
+    }
+
+    public function bid_market(Request $request)
+    {
+        $validator = $request->validate([
+            'price' => 'required',
+            'quantity' => 'required',
+        ]);
+        try {
+            //user must login
+            if (!auth()->check()) {
+                $msg = 'You must Login!';
+                return response()->json(['login', $msg]);
+            }
+            //user must bidder
+            if (!auth()->user()->hasRole('admin')) {
+                $msg = 'You must Bidder!';
+                return response()->json(['bidder', $msg]);
+            }
+            //user can bid or not
+            BidHistory::create([
+                'user_id' => 1,
+                'market_id' => $request->market,
+                'price' => $request->price,
+                'quantity' => $request->quantity,
+            ]);
+            return response()->json([1, 'success']);
+        } catch (\Exception $e) {
+            return response()->json([0, 'error']);
+        }
+
+
     }
 }

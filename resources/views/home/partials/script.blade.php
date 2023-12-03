@@ -1,7 +1,6 @@
 <script src="{{ asset('home/js/jquery-3.4.1.min.js') }}"></script>
 <script src="{{ asset('home/js/popper.min.js') }}"></script>
 <script src="{{ asset('home/js/bootstrap.min.js') }}"></script>
-<script src="{{ asset('js/app.js') }}"></script>
 <script src="{{ asset('home/js/amcharts-core.min.js') }}"></script>
 <script src="{{ asset('home/js/amcharts.min.js') }}"></script>
 <script src="{{ asset('home/js/custom.js') }}"></script>
@@ -48,13 +47,6 @@
 
     });
 </script>
-<script>
-    // var config = {
-    //     endDate: '2024-05-19 09:00',
-    //     timeZone: 'Europe/Dublin',
-    //     hours: $('#hours'),
-    //     minutes: $('#minutes'),
-    //     seconds: $('#seconds')
-    // };
-</script>
+
+<script src="{{ asset('js/app.js') }}"></script>
 @yield('script')

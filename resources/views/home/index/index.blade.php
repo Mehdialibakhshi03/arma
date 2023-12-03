@@ -12,16 +12,19 @@
         </script>
     @endif
     <script>
-        @if(count($markets)>0)
-        var config = {
-            endDate: '{{ \Carbon\Carbon::parse($markets[0]->end)->format('Y-m-d') }} 17:00',
-            timeZone: 'UTC',
-            hours: $('#hours'),
-            minutes: $('#minutes'),
-            seconds: $('#seconds'),
-            newSubMessage: 'and should be back online in a few minutes...'
-        };
-        @else
+        $(document).ready(function () {
+            refreshMarketTable();
+        });
+
+        {{--var config = {--}}
+        {{--    endDate: '{{ \Carbon\Carbon::parse($markets[0]->end)->format('Y-m-d') }} 17:00',--}}
+        {{--    timeZone: 'UTC',--}}
+        {{--    hours: $('#hours'),--}}
+        {{--    minutes: $('#minutes'),--}}
+        {{--    seconds: $('#seconds'),--}}
+        {{--    newSubMessage: 'and should be back online in a few minutes...'--}}
+        {{--};--}}
+
         var config = {
             endDate: '2020-05-05 17:00',
             timeZone: 'UTC',
@@ -30,7 +33,7 @@
             seconds: $('#seconds'),
             newSubMessage: 'and should be back online in a few minutes...'
         };
-        @endif
+
 
         function slidemore(market_id) {
             $('#more_table_' + market_id).slideToggle();
@@ -64,7 +67,7 @@
                     _token: "{{ csrf_token() }}",
                 },
                 success: function (msg) {
-                    if(msg[0]===1){
+                    if (msg[0] === 1) {
                         $('#market_table').html(msg[1]);
                     }
                 }
@@ -79,14 +82,15 @@
         }
 
         function startTime() {
-            var dayOfWeek=moment().format("dddd");
-            let clock=moment().format("ll  h:mm a")
-            let time_now='<h3 id="dayOfWeek">'+dayOfWeek+'</h3><span>'+clock+'</span>'
+            var dayOfWeek = moment().format("dddd");
+            let clock = moment().format("ll  h:mm a")
+            let time_now = '<h3 id="dayOfWeek">' + dayOfWeek + '</h3><span>' + clock + '</span>'
             $('#time_now').html(time_now);
-            t = setTimeout(function() {
+            t = setTimeout(function () {
                 startTime()
             }, 500);
         }
+
         startTime();
 
 
@@ -106,11 +110,11 @@
             <div class="col-12 col-md-4 mb-3">
                 <h3>
                     <span>Market: </span>
-                    @if(count($markets)>0)
+
                         <span class="text-success">Open</span>
-                    @else
-                        <span class="text-danger">Close</span>
-                    @endif
+{{--                    @else--}}
+{{--                        <span class="text-danger">Close</span>--}}
+{{--                    @endif--}}
                 </h3>
 
                 <span style="font-weight: bolder">Total Trade Value:$ 210.650.800</span>
@@ -143,7 +147,7 @@
     <div class="landing-feature container">
         <div class="row">
             <div id="market_table" class="col-12">
-                @include('home.partials.market')
+
             </div>
         </div>
     </div>

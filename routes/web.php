@@ -47,7 +47,10 @@ Route::get('form-detail/id', [HomeController::class, 'form_details'])->name('for
 Route::get('/', [IndexController::class, 'index'])->name('home.index');
 Route::get('/redirect-user', [IndexController::class, 'redirectUser'])->name('home');
 Route::get('/bid/{market}', [IndexController::class, 'bid'])->name('home.bid');
+Route::post('/bid_market/', [IndexController::class, 'bid_market'])->name('home.bid_market');
 Route::post('/refreshMarketTable', [IndexController::class, 'refreshMarketTable'])->name('home.refreshMarketTable');
+Route::post('/refreshMarket', [IndexController::class, 'refreshMarket'])->name('home.refreshMarket');
+Route::post('/refreshBidTable', [IndexController::class, 'refreshBidTable'])->name('home.refreshBidTable');
 Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
     //dashboard
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -142,8 +145,4 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
     });
 });
 Route::post('ckeditor/image_upload', [CKEditorController::class, 'upload'])->name('upload');
-
-
-
-
 

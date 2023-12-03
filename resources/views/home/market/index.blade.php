@@ -11,7 +11,103 @@
             seconds: $('#seconds'),
             newSubMessage: 'and should be back online in a few minutes...'
         };
+
+        function refreshBidTable() {
+            let market = {{ $market->id }};
+            $.ajax({
+                url: "{{ route('home.refreshBidTable') }}",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    market: market
+                },
+                dataType: "json",
+                method: 'post',
+                success:function(msg){
+                    if (msg){
+                        $('#bids_table').html(msg[1]);
+                    }
+                }
+            })
+        }
+
+        function Bid() {
+            $('.error').hide();
+            let price = $('#price').val();
+            let quantity = $('#quantity').val();
+            let market = {{ $market->id }};
+            $.ajax({
+                url: "{{  route('home.bid_market') }}",
+                data: {
+                    price: price,
+                    quantity: quantity,
+                    market: market,
+                    _token: "{{ csrf_token() }}",
+                },
+                dataType: 'json',
+                method: "post",
+                success: function (msg) {
+                    if (msg[0] === 'login') {
+                        alert(msg[1]);
+                    }
+                    if (msg[0] === 'bidder') {
+                        alert(msg[1]);
+                    }
+                    if (msg[0] === 1) {
+                        refreshBidTable();
+                    }
+                },
+                error: function (msg) {
+                    if (msg.responseJSON.errors) {
+                        let errors = msg.responseJSON.errors;
+                        $.each(errors, function (i, val) {
+                            console.log(i);
+                            $('#' + i + '_error').text(val);
+                            $('#' + i + '_error').show();
+                        })
+                    }
+                }
+            })
+        }
+        function refreshMarket() {
+            let market = {{ $market->id }};
+            $.ajax({
+                url: "{{  route('home.refreshMarket') }}",
+                data: {
+                    market: market,
+                    _token: "{{ csrf_token() }}",
+                },
+                dataType: 'json',
+                method: "post",
+                success: function (msg) {
+                    $('#market_status').html(msg[1]);
+                },
+
+            })
+        }
+        $(document).ready(function () {
+            refreshBidTable();
+            refreshMarket();
+            setInterval(function (){
+                refreshBidTable()
+            },3000);
+
+            setInterval(function () {
+                let getSeconds = new Date().getSeconds();
+                if (getSeconds === 0) {
+                    refreshMarket();
+                }
+            }, 1000)
+        });
+
     </script>
+@endsection
+
+@section('style')
+    <style>
+        .error {
+            display: none
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -33,7 +129,12 @@
                 <div style="width: 100%">
                     <div class="row mb-3 justify-content-around align-items-center">
                         <div class="col-12 col-md-6">
-                            <h5 class="text-center">Status:Open</h5>
+                            <h5 class="text-center">Status:
+
+                            <span id="market_status">
+                                Open
+                            </span>
+                            </h5>
                             <div style="display: flex;justify-content: center">
                                 <span
                                     style="display: flex;width: 110px;height: 110px;background-color: blue;justify-content: center;align-items: center;border-radius: 100%;color: white">
@@ -44,64 +145,48 @@
                     </div>
                     <div class="row mb-3 d-flex align-items-center" style="border: 1px solid black;height: 400px">
                         <div class="col-12 col-md-5">
-                            <div style="border: 1px solid black;height: 300px;display: flex;justify-content: center;align-items: center">
-                               <div>
-                                   <div>
-                                       <span>Min Price</span>
-                                       <span>350 USD/Mt</span>
-                                   </div>
-                                   <div>
-                                       <span>Quantity</span>
-                                       <span>30.000 Mt</span>
-                                   </div>
-                                   <div>
-                                       <span>Min Order</span>
-                                       <span>5.000 Mt</span>
-                                   </div>
-                               </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-7" style="height: 300px">
-                            <div style="border: 1px solid black;height: 300px;">
-                                <div style="border: 1px solid black;height: 300px;display: flex;justify-content: center;align-items: center">
+                            <div
+                                style="border: 1px solid black;height: 300px;display: flex;justify-content: center;align-items: center">
+                                <div>
                                     <div>
-                                        <div>
-                                            <span>Price</span>
-                                            <span>Quantity</span>
-                                        </div>
-                                        <div>
-                                            <span>350</span>
-                                            <span>1.000</span>
-                                        </div>
-                                        <div>
-                                            <span>460</span>
-                                            <span>30.000</span>
-                                        </div>
-                                        <div>
-                                            <span>670</span>
-                                            <span>15.000</span>
-                                        </div>
-                                        <div>
-                                            <span>340</span>
-                                            <span>8.000</span>
-                                        </div>
+                                        <span>Min Price</span>
+                                        <span>350 USD/Mt</span>
+                                    </div>
+                                    <div>
+                                        <span>Quantity</span>
+                                        <span>30.000 Mt</span>
+                                    </div>
+                                    <div>
+                                        <span>Min Order</span>
+                                        <span>5.000 Mt</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <div id="bids_table" class="col-12 col-md-7" style="height: 300px">
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label for="price">Price ($)</label>
+                            <input type="number" class="form-control" id="price" placeholder="Price">
+                            <p id="price_error" class="text-danger error"></p>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="quantity">Quantity</label>
+                            <input type="number" class="form-control" id="quantity" placeholder="Quantity">
+                            <p id="quantity_error" class="text-danger error"></p>
+                        </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-12 d-flex justify-content-center">
-                            <button class="btn btn-success" style="width: 150px;">
+                            <button onclick="Bid()" class="btn btn-success" style="width: 150px;">
                                 Bid
                             </button>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-12 d-flex justify-content-center" style="padding: 0">
-                            <textarea rows="5" style="width: 100%" class="form-control"></textarea>
-                        </div>
-                    </div>
+
                 </div>
             </div>
         </div>
