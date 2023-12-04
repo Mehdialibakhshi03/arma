@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WalletController;
 use App\Http\Controllers\Home\IndexController;
+use App\Http\Controllers\Home\MarketHomeController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -46,11 +47,11 @@ Route::get('form-detail/id', [HomeController::class, 'form_details'])->name('for
 /////////////////////////////////web
 Route::get('/', [IndexController::class, 'index'])->name('home.index');
 Route::get('/redirect-user', [IndexController::class, 'redirectUser'])->name('home');
-Route::get('/bid/{market}', [IndexController::class, 'bid'])->name('home.bid');
-Route::post('/bid_market/', [IndexController::class, 'bid_market'])->name('home.bid_market');
-Route::post('/refreshMarketTable', [IndexController::class, 'refreshMarketTable'])->name('home.refreshMarketTable');
-Route::post('/refreshMarket', [IndexController::class, 'refreshMarket'])->name('home.refreshMarket');
-Route::post('/refreshBidTable', [IndexController::class, 'refreshBidTable'])->name('home.refreshBidTable');
+Route::get('/bid/{market}', [MarketHomeController::class, 'bid'])->name('home.bid');
+Route::post('/bid_market/', [MarketHomeController::class, 'bid_market'])->name('home.bid_market');
+Route::post('/refreshMarketTable', [MarketHomeController::class, 'refreshMarketTable'])->name('home.refreshMarketTable');
+Route::post('/refreshMarket', [MarketHomeController::class, 'refreshMarket'])->name('home.refreshMarket');
+Route::post('/refreshBidTable', [MarketHomeController::class, 'refreshBidTable'])->name('home.refreshBidTable');
 Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
     //dashboard
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -133,6 +134,7 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
         Route::get('messages/alerts/{alert}/edit', [MessagesController::class, 'alert_edit'])->name('alert.edit');
         Route::put('messages/alerts/{alert}/update', [MessagesController::class, 'alert_update'])->name('alert.update');
     });
+
 
     //Markets
     Route::middleware('permission:markets')->group(function () {

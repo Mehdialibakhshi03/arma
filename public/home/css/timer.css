@@ -18,8 +18,8 @@
     bottom: 5px;
 }
 
-@media screen and (max-width:867px){
-    .clock{
+@media screen and (max-width: 867px) {
+    .clock {
         margin-top: 0 !important;
     }
 }
@@ -29,13 +29,16 @@
     display: inline-block;
     margin-top: 5px;
 }
-.column > div{
+
+.column > div {
     text-align: center !important;
 }
-.hour{
+
+.hour {
     transform: translateX(5px);
 }
 
-.text{
+.text {
     font-size: 12px;
 }
+

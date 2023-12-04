@@ -3,14 +3,6 @@
 @section('script')
     <script>
 
-        var config = {
-            endDate: '2024-11-11 17:00',
-            timeZone: 'UTC',
-            hours: $('#hours'),
-            minutes: $('#minutes'),
-            seconds: $('#seconds'),
-            newSubMessage: 'and should be back online in a few minutes...'
-        };
 
         function refreshBidTable() {
             let market = {{ $market->id }};
@@ -22,8 +14,8 @@
                 },
                 dataType: "json",
                 method: 'post',
-                success:function(msg){
-                    if (msg){
+                success: function (msg) {
+                    if (msg) {
                         $('#bids_table').html(msg[1]);
                     }
                 }
@@ -52,6 +44,9 @@
                     if (msg[0] === 'bidder') {
                         alert(msg[1]);
                     }
+                    if (msg[0] === 'better_Bid') {
+                        alert(msg[1]);
+                    }
                     if (msg[0] === 1) {
                         refreshBidTable();
                     }
@@ -68,6 +63,7 @@
                 }
             })
         }
+
         function refreshMarket() {
             let market = {{ $market->id }};
             $.ajax({
@@ -79,18 +75,49 @@
                 dataType: 'json',
                 method: "post",
                 success: function (msg) {
+                    console.log(msg);
                     $('#market_status').html(msg[1]);
+                    let market_is_open = msg[4];
+                    countdownTimmer(msg[2], msg[3]);
+                    if (market_is_open === 1) {
+                        $('.disabled_prop').prop('disabled', false)
+                    } else {
+                        $('.disabled_prop').prop('disabled', true)
+                    }
                 },
 
             })
         }
+
+        function countdownTimmer(timer2, color) {
+            var interval = setInterval(function () {
+                var timer = timer2.split(':');
+                //by parsing integer, I avoid all extra string processing
+                var minutes = parseInt(timer[0], 10);
+                var seconds = parseInt(timer[1], 10);
+                --seconds;
+                minutes = (seconds < 0) ? --minutes : minutes;
+                if (minutes < 0) clearInterval(interval);
+                seconds = (seconds < 0) ? 59 : seconds;
+                seconds = (seconds < 10) ? '0' + seconds : seconds;
+                //minutes = (minutes < 10) ?  minutes : minutes;
+                if (minutes < 0) {
+                    $('.countdown').html('0:00');
+                } else {
+                    $('.countdown').html(minutes + ':' + seconds);
+                }
+
+                $('.countdown').css('background', color)
+                timer2 = minutes + ':' + seconds;
+            }, 1000);
+        }
+
         $(document).ready(function () {
             refreshBidTable();
             refreshMarket();
-            setInterval(function (){
+            setInterval(function () {
                 refreshBidTable()
-            },3000);
-
+            }, 3000)
             setInterval(function () {
                 let getSeconds = new Date().getSeconds();
                 if (getSeconds === 0) {
@@ -98,6 +125,7 @@
                 }
             }, 1000)
         });
+
 
     </script>
 @endsection
@@ -131,14 +159,13 @@
                         <div class="col-12 col-md-6">
                             <h5 class="text-center">Status:
 
-                            <span id="market_status">
-                                Open
+                                <span id="market_status">
+                                {{ $market->status===7 ? 'Close' : '' }}
                             </span>
                             </h5>
                             <div style="display: flex;justify-content: center">
-                                <span
-                                    style="display: flex;width: 110px;height: 110px;background-color: blue;justify-content: center;align-items: center;border-radius: 100%;color: white">
-                                    05:00
+                                <span class="countdown countdownTimerBid {{ $market->status===7 ? 'bg-danger' : '' }}">
+                                    {{ $market->status===7 ? '0:00' : '' }}
                                 </span>
                             </div>
                         </div>
@@ -170,18 +197,21 @@
                     <div class="row">
                         <div class="form-group col-md-6">
                             <label for="price">Price ($)</label>
-                            <input type="number" class="form-control" id="price" placeholder="Price">
+                            <input disabled type="number" class="form-control disabled_prop" id="price"
+                                   placeholder="Price">
                             <p id="price_error" class="text-danger error"></p>
                         </div>
                         <div class="form-group col-md-6">
                             <label for="quantity">Quantity</label>
-                            <input type="number" class="form-control" id="quantity" placeholder="Quantity">
+                            <input disabled type="number" class="form-control disabled_prop" id="quantity"
+                                   placeholder="Quantity">
                             <p id="quantity_error" class="text-danger error"></p>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-12 d-flex justify-content-center">
-                            <button onclick="Bid()" class="btn btn-success" style="width: 150px;">
+                            <button disabled onclick="Bid()" class="btn btn-success disabled_prop"
+                                    style="width: 150px;">
                                 Bid
                             </button>
                         </div>

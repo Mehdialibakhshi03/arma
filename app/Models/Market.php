@@ -19,6 +19,11 @@ class Market extends Model
 
     public function Status()
     {
-        return $this->belongsTo(MarketStatus::class, 'status','id');
+        return $this->belongsTo(MarketStatus::class, 'status', 'id');
+    }
+
+    public function Bids()
+    {
+        return $this->hasMany(BidHistory::class, 'market_id');
     }
 }

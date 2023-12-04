@@ -9,6 +9,7 @@ use App\Models\Market;
 use App\Models\MarketSetting;
 use App\Models\User;
 use App\Models\UserStatus;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class MarketController extends Controller
@@ -28,10 +29,15 @@ class MarketController extends Controller
     {
         $request->validate([
             'start' => 'required|date',
-            'end' => 'required|date',
             'min_price' => 'required|numeric',
+            'min_wallet' => 'required|numeric',
+            'min_quantity' => 'required|numeric',
         ]);
-        $market->update($request->all());
+        $request['status']=7;
+        if (Carbon::now() < $request->start){
+            $request['status']=1;
+        }
+            $market->update($request->all());
         return redirect()->route('admin.markets.index')->with('success', 'Market updated successfully');
     }
 

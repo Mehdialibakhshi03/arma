@@ -2748,3 +2748,13 @@ body {
 #timer_section {
     height: 70px !important;
 }
+.countdownTimerBid {
+    display: flex;
+    width: 110px;
+    height: 110px;
+    font-size: 18pt;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100%;
+    color: white
+}

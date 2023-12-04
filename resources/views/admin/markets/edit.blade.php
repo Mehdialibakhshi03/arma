@@ -25,7 +25,7 @@
                                             @csrf
                                             @method('put')
                                             <div class="row mt-4">
-                                                <div class="col-12 col-md-4 mb-3">
+                                                <div class="col-12 col-md-6 mb-3">
                                                     <label for="start">start</label>
                                                     <input id="start" type="datetime-local" name="start" class="form-control"
                                                            value="{{ $market->start }}">
@@ -35,18 +35,18 @@
                                                     </p>
                                                     @enderror
                                                 </div>
-                                                <div class="col-12 col-md-4 mb-3">
-                                                    <label for="end">end</label>
-                                                    <input id="end" type="datetime-local" name="end" class="form-control"
-                                                           value="{{ $market->end }}">
-                                                    @error('end')
+                                                <div class="col-12 col-md-6 mb-3">
+                                                    <label for="min_wallet">min wallet for bidding ($)</label>
+                                                    <input id="min_wallet" type="number" name="min_wallet" class="form-control"
+                                                           value="{{ $market->min_price }}">
+                                                    @error('min_wallet')
                                                     <p class="input-error-validate">
                                                         {{ $message }}
                                                     </p>
                                                     @enderror
                                                 </div>
-                                                <div class="col-12 col-md-4 mb-3">
-                                                    <label for="min_price">min wallet for bidding ($)</label>
+                                                <div class="col-12 col-md-6 mb-3">
+                                                    <label for="min_price">min Price ($)</label>
                                                     <input id="min_price" type="number" name="min_price" class="form-control"
                                                            value="{{ $market->min_price }}">
                                                     @error('min_price')
@@ -55,8 +55,16 @@
                                                     </p>
                                                     @enderror
                                                 </div>
-
-
+                                                <div class="col-12 col-md-6 mb-3">
+                                                    <label for="min_quantity">min Quantity (Kg)</label>
+                                                    <input id="min_quantity" type="number" name="min_quantity" class="form-control"
+                                                           value="{{ $market->min_quantity }}">
+                                                    @error('min_quantity')
+                                                    <p class="input-error-validate">
+                                                        {{ $message }}
+                                                    </p>
+                                                    @enderror
+                                                </div>
                                                 <div class="col-md-12 mt-3">
                                                     <button type="submit" class="btn btn-primary btn-block btn-sm">
                                                         Update

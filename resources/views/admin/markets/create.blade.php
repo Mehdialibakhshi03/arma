@@ -61,16 +61,6 @@
                                                     </p>
                                                     @enderror
                                                 </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label for="end">Close Market At</label>
-                                                    <input id="end" type="datetime-local" name="end" class="form-control"
-                                                           placeholder="end" value="{{ old('end') }}">
-                                                    @error('end')
-                                                    <p class="input-error-validate">
-                                                        {{ $message }}
-                                                    </p>
-                                                    @enderror
-                                                </div>
                                                 <div class="col-12">
                                                     <label>Commodity</label>
                                                     <select  id="FormValues" name="form_id[]" class="form-control my-select" data-live-search="true"

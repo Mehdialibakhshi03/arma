@@ -30,7 +30,6 @@
                                                     <th>commodity</th>
                                                     <th>User</th>
                                                     <th>start</th>
-                                                    <th>end</th>
                                                     <th>min price ($)</th>
                                                     <th>status</th>
                                                     <th>action</th>
@@ -52,13 +51,10 @@
                                                             {{ $item->start }}
                                                         </td>
                                                         <td>
-                                                            {{ $item->end }}
-                                                        </td>
-                                                        <td>
                                                             {{ $item->min_price }}
                                                         </td>
-                                                        <td>
-                                                            {{ $item->status }}
+                                                        <td style="color: {{ $item->Status->color }}">
+                                                            {{ $item->Status->title }}
                                                         </td>
                                                         <td>
                                                                 <?php session()->put('market', true); ?>
@@ -93,6 +89,8 @@
 @endpush
 @push('script')
     <script>
+
+
         function removeModal(id, e) {
             e.stopPropagation();
             let remove_modal = $('#remove_modal');
