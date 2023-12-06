@@ -32,7 +32,7 @@ class Controller extends BaseController
         $benchmark6 = $benchmark5->copy()->addMinutes($q_3);
         $bids = $market->Bids;
         if ($market->status == 7) {
-            return [0, $market->status];
+            return [0, $market->status,$benchmark1,$benchmark2,$benchmark3,$benchmark4,$benchmark5,$benchmark6];
         }
 
         if ($now < $benchmark1) {
@@ -91,7 +91,7 @@ class Controller extends BaseController
 
         }
         $market->update(['status' => $status]);
-        return [$difference, $status];
+        return [$difference,$status,$benchmark1,$benchmark2,$benchmark3,$benchmark4,$benchmark5,$benchmark6];
     }
 
     public function convertTime($seconds)

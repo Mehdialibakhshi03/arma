@@ -11,17 +11,17 @@ use Illuminate\Http\Request;
 
 class MarketHomeController extends Controller
 {
-
-
     public function bid(Market $market)
     {
-        $this->statusTimeMarket($market);
-        $ready_to_duration = MarketSetting::where('key', 'ready_to_duration')->pluck('value')->first();
-        $open_duration = MarketSetting::where('key', 'open_duration')->pluck('value')->first();
-        $q_1 = MarketSetting::where('key', 'q_1')->pluck('value')->first();
-        $q_2 = MarketSetting::where('key', 'q_2')->pluck('value')->first();
-        $q_3 = MarketSetting::where('key', 'q_3')->pluck('value')->first();
-        $endMinutes = $open_duration + $q_1 + $q_2 + $q_3 + 3;
+        $result=$this->statusTimeMarket($market);
+        $market['difference']=$result[0];
+        $market['status']=$result[1];
+        $market['benchmark1']=$result[2];
+        $market['benchmark2']=$result[3];
+        $market['benchmark3']=$result[4];
+        $market['benchmark4']=$result[5];
+        $market['benchmark5']=$result[6];
+        $market['benchmark6']=$result[7];
         return view('home.market.index', compact('market'));
     }
 
@@ -35,7 +35,7 @@ class MarketHomeController extends Controller
         $endMinutes = $open_duration + $q_1 + $q_2 + $q_3 + 3;
 
         try {
-            $markets = Market::where('start', '>', Carbon::yesterday())->orderBy('start', 'desc')->get();
+            $markets = Market::where('start', '>', Carbon::yesterday())->orderBy('start', 'asc')->get();
             foreach ($markets as $market) {
                 $this->statusTimeMarket($market, $ready_to_duration, $open_duration, $q_1, $q_2, $q_3);
             }

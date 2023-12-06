@@ -2,6 +2,63 @@
 
 @section('script')
     <script>
+        $(document).ready(function () {
+            setInterval(function () {
+                refreshMarketTablewithJs({{ $market->id }})
+            }, 1000);
+        });
+        function refreshMarketTablewithJs(val) {
+            let statusText = '';
+            let market = $('#market-' + val);
+            let status = market.attr('data-status');
+            let difference = market.attr('data-difference');
+            let benchmark1 = market.attr('data-benchmark1');
+            let benchmark2 = market.attr('data-benchmark2');
+            let benchmark3 = market.attr('data-benchmark3');
+            let benchmark4 = market.attr('data-benchmark4');
+            let benchmark5 = market.attr('data-benchmark5');
+            let benchmark6 = market.attr('data-benchmark6');
+            let now = moment();
+            benchmark1 = new Date(benchmark1);
+            benchmark2 = new Date(benchmark2);
+            benchmark3 = new Date(benchmark3);
+            benchmark4 = new Date(benchmark4);
+            benchmark5 = new Date(benchmark5);
+            benchmark6 = new Date(benchmark6);
+            if (now < benchmark1) {
+                difference = benchmark1 - now;
+                status = 1;
+                statusText = 'long time to open';
+            } else if (benchmark1 < now && now < benchmark2) {
+                //ready to open
+                difference = benchmark2 - now;
+                status = 2;
+                statusText = 'ready to open';
+            } else if (benchmark2 < now && now < benchmark3) {
+                difference = benchmark3 - now;
+                status = 3;
+                statusText = 'open';
+            } else if (benchmark3 < now && now < benchmark4) {
+                difference = benchmark4 - now;
+                status = 4;
+                statusText = 'open(1/3)';
+            } else if (benchmark4 < now && now < benchmark5) {
+                difference = benchmark5 - now;
+                status = 5;
+                statusText = 'open(2/3)';
+            } else if (benchmark5 < now && now < benchmark6) {
+                difference = benchmark6 - now;
+                status = 6;
+                statusText = 'open(3/3)';
+            } else {
+                difference = 0;
+                status = 7;
+                statusText = 'close';
+            }
+            difference = parseInt(difference / 1000);
+            $('#market-difference-' + val).html(difference);
+            $('#market-status-' + val).html(statusText);
+        }
 
 
         function refreshBidTable() {
@@ -78,7 +135,7 @@
                     console.log(msg);
                     $('#market_status').html(msg[1]);
                     let market_is_open = msg[4];
-                    countdownTimmer(msg[2], msg[3]);
+                    // countdownTimmer(msg[2], msg[3]);
                     if (market_is_open === 1) {
                         $('.disabled_prop').prop('disabled', false)
                     } else {
@@ -159,12 +216,12 @@
                         <div class="col-12 col-md-6">
                             <h5 class="text-center">Status:
 
-                                <span id="market_status">
+                                <span id="market-status-{{ $market->id }}">
                                 {{ $market->status===7 ? 'Close' : '' }}
                             </span>
                             </h5>
                             <div style="display: flex;justify-content: center">
-                                <span class="countdown countdownTimerBid {{ $market->status===7 ? 'bg-danger' : '' }}">
+                                <span id="market-difference-{{ $market->id }}">
                                     {{ $market->status===7 ? '0:00' : '' }}
                                 </span>
                             </div>
@@ -222,6 +279,16 @@
         </div>
 
     </div>
+
+    <input type="hidden" id="market-{{ $market->id }}"
+           data-status="{{ $market->status }}"
+           data-difference="{{ $market->difference }}"
+           data-benchmark1="{{ $market->benchmark1 }}"
+           data-benchmark2="{{ $market->benchmark2 }}"
+           data-benchmark3="{{ $market->benchmark3 }}"
+           data-benchmark4="{{ $market->benchmark4 }}"
+           data-benchmark5="{{ $market->benchmark5 }}"
+           data-benchmark6="{{ $market->benchmark6 }}">
 
     @include('home.partials.footer')
 

@@ -8,13 +8,24 @@
         <th scope="col">Region</th>
         <th scope="col">Date</th>
         <th scope="col">Time</th>
+        <th scope="col">difference</th>
         <th scope="col"></th>
         <th scope="col"></th>
     </tr>
     </thead>
     <tbody>
     @foreach($markets as $key=>$market)
-        <tr>
+        <tr
+            id="market-{{ $market->id }}"
+            data-status="{{ $market->status }}"
+            data-difference="{{ $market->difference }}"
+            data-benchmark1="{{ $market->benchmark1 }}"
+            data-benchmark2="{{ $market->benchmark2 }}"
+            data-benchmark3="{{ $market->benchmark3 }}"
+            data-benchmark4="{{ $market->benchmark4 }}"
+            data-benchmark5="{{ $market->benchmark5 }}"
+            data-benchmark6="{{ $market->benchmark6 }}"
+        >
             <td>
                 {{ FormValueHelper($market->FormValue->json)['commodity'] }}
             </td>
@@ -32,12 +43,11 @@
             <td>
                 {{ \Carbon\Carbon::parse($market->start)->format('m-d-Y') }}
             </td>
-            <td style="color: {{ $market->Status->color }}">
-                @if ($market->status===1)
-                    {{ \Carbon\Carbon::parse($market->start)->format('H:i') }}
-                @else
-                    {{ $market->Status->title }}
-                    @endif
+            <td id="market-status-{{ $market->id }}" style="color: {{ $market->Status->color }}">
+                {{ \Carbon\Carbon::parse($market->start)->format('H:i') }}
+            </td>
+            <td id="market-difference-{{ $market->id }}">
+
             </td>
             <td id="slide_more_angle_{{ $market->id }}" onclick="slidemore({{ $market->id }})"
                 class="slide_more_angle d-flex justify-content-center align-items-center cursor-pointer">

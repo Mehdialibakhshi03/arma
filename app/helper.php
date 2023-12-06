@@ -669,3 +669,10 @@ if (!function_exists('FormValueHelper')) {
         ];
     }
 }
+
+if (!function_exists('Difference')) {
+    function Difference($time1,$time2)
+    {
+        return $time2->diffInSeconds($time1);
+    }
+}
