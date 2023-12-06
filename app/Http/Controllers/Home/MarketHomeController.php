@@ -81,10 +81,10 @@ class MarketHomeController extends Controller
                 return response()->json(['login', $msg]);
             }
             //user must bidder
-//            if (!auth()->user()->hasRole('admin')) {
-//                $msg = 'You must Bidder!';
-//                return response()->json(['bidder', $msg]);
-//            }
+            if (!auth()->user()->hasRole('buyer')) {
+                $msg = 'You must Buyer!';
+                return response()->json(['bidder', $msg]);
+            }
             //user can bid or not
             $pre_bid = BidHistory::where('user_id', auth()->id())->where('market_id', $request->market)->first();
             if ($pre_bid) {

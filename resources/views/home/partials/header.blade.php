@@ -185,7 +185,7 @@
                                         <a href="{{ route('admin.dashboard') }}">Dashboard</a>
                                     @elseif(auth()->user()->hasRole('buyer'))
                                         <p class="email text-muted mb-3">Buyer</p>
-                                        <a href="{{ route('profile') }}">profile</a>
+                                        <a href="{{ route('profile.index') }}">profile</a>
                                     @endif
                                 </div>
                             </div>

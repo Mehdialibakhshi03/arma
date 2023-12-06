@@ -24,6 +24,11 @@ class MarketController extends Controller
     {
         return view('admin.markets.edit', compact('market'));
     }
+    public function bids(Market $market)
+    {
+        $bids=$market->Bids;
+        return view('admin.markets.bids', compact('market','bids'));
+    }
 
     public function update(Market $market, Request $request)
     {

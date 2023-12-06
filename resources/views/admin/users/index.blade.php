@@ -37,6 +37,7 @@
                                             <th>name</th>
                                             <th>email</th>
                                             <th>status</th>
+                                            <th>Role</th>
                                             <th>created at</th>
                                             <th>Actions</th>
                                         </tr>
@@ -55,6 +56,9 @@
                                                 </td>
                                                 <td>
                                                     {{ $item->UserStatus->title }}
+                                                </td>
+                                                <td>
+                                                    {{ isset($item->Roles()->first()->name) ? $item->Roles()->first()->name : '-' }}
                                                 </td>
                                                 <td>
                                                     {{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d') }}

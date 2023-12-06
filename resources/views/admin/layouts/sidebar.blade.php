@@ -135,7 +135,7 @@
                                 </li>
                             @endcan
                             <li class="dash-item d-flex align-items-center">
-                                <a href="{{ route('admin.form.values',['status'=>0]) }}" class="dash-link"><span
+                                <a href="{{ route('admin.form.values',['status'=>1]) }}" class="dash-link"><span
                                         class="dash-mtext custom-weight">{{ __('Seller Commodity Request') }}
                                 </a>
 

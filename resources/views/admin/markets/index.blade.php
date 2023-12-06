@@ -59,9 +59,17 @@
                                                         <td>
                                                                 <?php session()->put('market', true); ?>
                                                             <a href="{{ route('admin.formvalues.edit', $item->FormValue->id) }}"
-                                                               class="btn btn-sm btn-info">Edit</a>
+                                                               class="btn btn-sm btn-info">
+                                                                Edit
+                                                            </a>
                                                             <a href="{{ route('admin.market.edit',['market'=>$item->id,]) }}"
-                                                               class="btn btn-sm btn-primary">settings</a>
+                                                               class="btn btn-sm btn-primary">
+                                                                settings
+                                                            </a>
+                                                            <a href="{{ route('admin.market.bids',['market'=>$item->id,]) }}"
+                                                               class="btn btn-sm btn-danger">
+                                                                Bids
+                                                            </a>
                                                         </td>
                                                     </tr>
                                                 @endforeach

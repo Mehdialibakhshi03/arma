@@ -19,7 +19,7 @@ class UserFactory extends Factory
      */
     public function definition()
     {
-        $email='seller'.rand(0,100).'@info.com';
+        $email='buyer'.rand(0,100).'@info.com';
         return [
             'name' => $this->faker->name(),
             'email' => $email,

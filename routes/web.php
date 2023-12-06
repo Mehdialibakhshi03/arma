@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WalletController;
 use App\Http\Controllers\Home\IndexController;
 use App\Http\Controllers\Home\MarketHomeController;
+use App\Http\Controllers\Home\ProfileController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -88,8 +89,8 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
         Route::resource('roles', '\App\Http\Controllers\Admin\RoleController');
         Route::delete('role', [RoleController::class, 'delete'])->name('role.delete');
         //wallet
-        Route::get('/wallet/{user}/index',[WalletController::class,'index'])->name('user.wallet');
-        Route::post('/wallet_change',[WalletController::class,'wallet_change'])->name('user.wallet.change');
+        Route::get('/wallet/{user}/index', [WalletController::class, 'index'])->name('user.wallet');
+        Route::post('/wallet_change', [WalletController::class, 'wallet_change'])->name('user.wallet.change');
     });
     Route::post('users/reset_password/{user}', [UserController::class, 'reset_password'])->middleware('permission:user|user-edit')->name('user.reset_password');
     Route::get('users/{type}/{user}', [UserController::class, 'edit'])->middleware('permission:user|user-edit')->name('user.edit');
@@ -114,7 +115,7 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
     Route::middleware('permission:commodity')->group(function () {
         Route::get('/form-values/{id}/download/pdf', [FormValueController::class, 'download_pdf'])->name('download.form.values.pdf');
         Route::get('/form-values/{id}/edit', [FormValueController::class, 'edit'])->name('edit.form.values');
-        Route::get('/form-values/{status}/view/{user?}', [FormValueController::class, 'showSubmitedForms'])->name('form.values');
+        Route::get('/form-values/{status}/view', [FormValueController::class, 'showSubmitedForms'])->name('form.values');
         Route::post('submit/Forms', [FormValueController::class, 'submit_form'])->name('submit.form')->middleware('permission:commodity-submit-preview');
         Route::post('copy/Forms', [FormValueController::class, 'copy_form'])->name('copy.form')->middleware('permission:commodity-duplicate');
         Route::post('formvalues/changeStatus', [FormValueController::class, 'changeStatus'])->name('formValue.changeStatus')->middleware('permission:commodity-change-status');
@@ -140,11 +141,15 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
     Route::middleware('permission:markets')->group(function () {
         Route::get('markets', [MarketController::class, 'index'])->name('markets.index');
         Route::get('market/{market}/edit', [MarketController::class, 'edit'])->name('market.edit');
+        Route::get('market/{market}/bids', [MarketController::class, 'bids'])->name('market.bids');
         Route::post('market/remove', [MarketController::class, 'remove'])->name('market.remove');
         Route::put('market/{market}/update', [MarketController::class, 'update'])->name('market.update');
         Route::get('market/setting/index_setting', [MarketController::class, 'setting_index'])->name('market.setting.index');
         Route::put('market/setting/update_setting', [MarketController::class, 'setting_update'])->name('market.setting.update_setting');
     });
+});
+Route::name('profile.')->prefix('/profile/')->group(function () {
+    Route::get('index', [ProfileController::class, 'index'])->name('index');
 });
 Route::post('ckeditor/image_upload', [CKEditorController::class, 'upload'])->name('upload');
 

@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class BidHistory extends Model
 {
     use HasFactory;
-    protected $table="bidhistories";
-    protected $guarded=[];
+
+    protected $table = "bidhistories";
+    protected $guarded = [];
+
+    public function User(){
+        return $this->belongsTo(User::class);
+    }
 }

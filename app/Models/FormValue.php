@@ -14,7 +14,7 @@ class FormValue extends Model
 
     public function Form()
     {
-        return $this->hasOne('App\Models\Form', 'id', 'form_id');
+        return $this->belongsTo(Form::class, 'form_id');
     }
 
     public function User()

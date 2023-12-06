@@ -32,14 +32,24 @@ class FormValueController extends Controller
 
     public function showSubmitedForms($status)
     {
+        $user = auth()->user();
         if ($status == 1) {
             $title = 'Approved Commodity';
         } else {
             $title = UserStatus::where('id', $status)->pluck('title')->first();
         }
-        session()->put('formValueStatus', $status);
-        $dataTable = new FormValuesDataTable();
-        return $dataTable->render('admin.form_value.view_submited_form', compact('title'));
+        $user_role = $user->Roles()->first()->name;
+        if ($user_role == 'admin') {
+            if ($status==2){
+                $form_values = FormValue::where('status',$status)->paginate(20);
+            }else{
+                $form_values = FormValue::whereIn('status',[0,1])->paginate(20);
+            }
+
+        } else {
+            $form_values = FormValue::where('status',$status)->where('user_id', $user->id)->paginate(20);
+        }
+        return view('admin.form_value.view_submited_form',compact('title','form_values'));
     }
 
     public function show($id)
@@ -67,7 +77,7 @@ class FormValueController extends Controller
             ]);
         }
         if ($status == 2) {
-            $form_value->Market->delete();
+            $form_value->Market()->delete();
         }
         //send email to user
         $st = UserStatus::where('id', $status)->first();
