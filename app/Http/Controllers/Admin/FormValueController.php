@@ -73,7 +73,8 @@ class FormValueController extends Controller
         ]);
         if ($status == 1) {
             Market::create([
-                'form_value_id' => $form_value->id,
+                'json' => $form_value->json,
+                'form_value_id' => $form_id,
             ]);
         }
         if ($status == 2) {
@@ -95,14 +96,9 @@ class FormValueController extends Controller
     public function edit($id)
     {
         if (\Auth::user()->can('commodity-edit')) {
-            $usr = \Auth::user();
-            $user_role = $usr->roles->first()->id;
             $form_value = FormValue::find($id);
-            $formallowededit = UserForm::where('role_id', $user_role)->where('form_id', $form_value->form_id)->count();
-
             $array = json_decode($form_value->json);
             $form = $form_value->Form;
-            $frm = Form::find($form_value->form_id);
             return view('admin.form.fill', compact('form', 'form_value', 'array'));
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));

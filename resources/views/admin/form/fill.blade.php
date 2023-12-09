@@ -60,19 +60,19 @@
     <script src="{{ asset('vendor/jqueryform/js/signature.js') }}"></script>
     <script src="{{ asset('vendor/jqueryform/js/jquery.rateyo.min.js') }}"></script>
     <script src="{{ asset('vendor/js/jquery.payment.min.js') }}"></script>
-    @if (UtilityFacades::getsettings('PAYTM_ENVIRONMENT') == 'production')
-        <script type="application/javascript" crossorigin="anonymous"
-                src="https:\\securegw.paytm.in\merchantpgpui\checkoutjs\merchants\{{ UtilityFacades::getsettings('PAYTM_MERCHANT_ID') }}.js"></script>
-    @else
-        <script type="application/javascript" crossorigin="anonymous"
-                src="https:\\securegw-stage.paytm.in\merchantpgpui\checkoutjs\merchants\{{ UtilityFacades::getsettings('PAYTM_MERCHANT_ID') }}.js"></script>
-    @endif
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <script
-        src="https://www.paypal.com/sdk/js?client-id={{ UtilityFacades::getsettings('paypal_sandbox_client_id') }}&currency={{ $form->currency_name }}">
-    </script>
-    <script src="https://checkout.flutterwave.com/v3.js"></script>
-    <script src="https://js.paystack.co/v1/inline.js"></script>
+{{--    @if (UtilityFacades::getsettings('PAYTM_ENVIRONMENT') == 'production')--}}
+{{--        <script type="application/javascript" crossorigin="anonymous"--}}
+{{--                src="https:\\securegw.paytm.in\merchantpgpui\checkoutjs\merchants\{{ UtilityFacades::getsettings('PAYTM_MERCHANT_ID') }}.js"></script>--}}
+{{--    @else--}}
+{{--        <script type="application/javascript" crossorigin="anonymous"--}}
+{{--                src="https:\\securegw-stage.paytm.in\merchantpgpui\checkoutjs\merchants\{{ UtilityFacades::getsettings('PAYTM_MERCHANT_ID') }}.js"></script>--}}
+{{--    @endif--}}
+{{--    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>--}}
+{{--    <script--}}
+{{--        src="https://www.paypal.com/sdk/js?client-id={{ UtilityFacades::getsettings('paypal_sandbox_client_id') }}&currency={{ $form->currency_name }}">--}}
+{{--    </script>--}}
+{{--    <script src="https://checkout.flutterwave.com/v3.js"></script>--}}
+{{--    <script src="https://js.paystack.co/v1/inline.js"></script>--}}
     <script>
         var form_value_id = $('#form_value_id').val();
         var SITEURL = '{{ URL::to('') }}';

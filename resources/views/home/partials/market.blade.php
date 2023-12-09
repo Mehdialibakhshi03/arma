@@ -27,17 +27,16 @@
             data-benchmark6="{{ $market->benchmark6 }}"
         >
             <td>
-                {{ FormValueHelper($market->FormValue->json)['commodity'] }}
+                {-
             </td>
             <td>
-                {{  FormValueHelper($market->FormValue->json)['commodity'] }}
+                -
             </td>
             <td>
-                {{--                {{ dd(json_decode($market->FormValue->json)[0][57]->values[0]) }}--}}
-                {{  FormValueHelper($market->FormValue->json)['packing'] }}
+                -
             </td>
             <td>
-                {{  FormValueHelper($market->FormValue->json)['incoterms'] }}
+               -
             </td>
             <td>Middle East Gulf</td>
             <td>

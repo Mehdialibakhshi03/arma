@@ -42,10 +42,10 @@
                                                             {{ $markets->firstItem()+$key }}
                                                         </td>
                                                         <td>
-                                                            {{ FormValueHelper($item->FormValue->json)['commodity'] }}
+                                                            -
                                                         </td>
                                                         <td>
-                                                            {{ $item->FormValue->User->name }}
+                                                           -
                                                         </td>
                                                         <td>
                                                             {{ $item->start }}
@@ -58,7 +58,7 @@
                                                         </td>
                                                         <td>
                                                                 <?php session()->put('market', true); ?>
-                                                            <a href="{{ route('admin.formvalues.edit', $item->FormValue->id) }}"
+                                                            <a href="{{ route('admin.market.form_edit', ['market'=>$item->id]) }}"
                                                                class="btn btn-sm btn-info">
                                                                 Edit
                                                             </a>

@@ -6,6 +6,16 @@
             setInterval(function () {
                 refreshMarketTablewithJs({{ $market->id }})
             }, 1000);
+
+            setInterval(function () {
+                refreshBidTable()
+            }, 3000)
+            setInterval(function () {
+                let getSeconds = new Date().getSeconds();
+                if (getSeconds === 0) {
+                    refreshMarket();
+                }
+            }, 1000)
         });
         function refreshMarketTablewithJs(val) {
             let statusText = '';
@@ -172,15 +182,7 @@
         $(document).ready(function () {
             refreshBidTable();
             refreshMarket();
-            setInterval(function () {
-                refreshBidTable()
-            }, 3000)
-            setInterval(function () {
-                let getSeconds = new Date().getSeconds();
-                if (getSeconds === 0) {
-                    refreshMarket();
-                }
-            }, 1000)
+
         });
 
 
@@ -248,7 +250,7 @@
                             </div>
                         </div>
                         <div id="bids_table" class="col-12 col-md-7" style="height: 300px">
-
+                            @include('home.partials.bids_table')
                         </div>
                     </div>
                     <div class="row">

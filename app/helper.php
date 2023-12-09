@@ -640,39 +640,14 @@ if (!function_exists('imageExist')) {
 }
 
 if (!function_exists('FormValueHelper')) {
-    function FormValueHelper($form_value_json)
+    function FormValueHelper($market)
     {
-        $form_value = json_decode($form_value_json);
-        $commodity = $form_value[0][9]->value;
-        $quantity = $form_value[0][24]->value;
-        $incoterms_options = $form_value[0][33]->values;
-        $incoterms=null;
-        foreach ($incoterms_options as $incoterms_option) {
-            if (isset($incoterms_option->selected)) {
-                $incoterms = $incoterms_option->value;
-                continue;
+        $json = json_decode($market->json)[0];
+        $array = [];
+        foreach ($json as $key => $item) {
+            if ($item->type == 'text') {
+                $array[$item->name]=$item->value;
             }
         }
-        $packing_options = $form_value[0][57]->values;
-        $packing = null;
-        foreach ($packing_options as $packing_option) {
-            if (isset($packing_option->selected)) {
-                $packing = $packing_option->value;
-                continue;
-            }
-        }
-        return [
-            'commodity' => $commodity,
-            'quantity' => $quantity,
-            'incoterms' => $incoterms,
-            'packing' => $packing,
-        ];
-    }
-}
-
-if (!function_exists('Difference')) {
-    function Difference($time1,$time2)
-    {
-        return $time2->diffInSeconds($time1);
     }
 }

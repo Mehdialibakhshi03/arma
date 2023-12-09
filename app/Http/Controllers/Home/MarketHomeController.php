@@ -22,7 +22,8 @@ class MarketHomeController extends Controller
         $market['benchmark4']=$result[5];
         $market['benchmark5']=$result[6];
         $market['benchmark6']=$result[7];
-        return view('home.market.index', compact('market'));
+        $bids = $market->Bids()->orderBy('price', 'desc')->take(10)->get();
+        return view('home.market.index', compact('market','bids'));
     }
 
     public function refreshMarketTable()
@@ -63,7 +64,7 @@ class MarketHomeController extends Controller
 
     public function refreshBidTable(Request $request)
     {
-        $bids = BidHistory::where('market_id', $request->market)->orderBy('price', 'desc')->take(5)->get();
+        $bids = BidHistory::where('market_id', $request->market)->orderBy('price', 'desc')->take(10)->get();
         $view = view('home.partials.bids_table', compact('bids'))->render();
         return response()->json([1, $view]);
     }

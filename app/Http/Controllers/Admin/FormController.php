@@ -63,41 +63,41 @@ class FormController extends Controller
         $user_role = $usr->roles->first()->id;
         $formallowededit = UserForm::where('role_id', $user_role)->where('form_id', $id)->count();
 //        if (\Auth::user()->can('edit-form') && $usr->type == 'Admin') {
-            $form = Form::find($id);
-            $next = Form::where('id', '>', $form->id)->first();
-            $previous = Form::where('id', '<', $form->id)->orderBy('id', 'desc')->first();
-            $form_roles = $form->Roles->pluck('id')->toArray();
-            $roles = Role::where('name', '!=', 'Super Admin')->pluck('name', 'id');
-            $formRole = $form->assignedroles->pluck('id')->toArray();
-            $form_role = Role::pluck('name', 'id');
-            $formUser = $form->assignedusers->pluck('id')->toArray();
-            $form_user = User::where('id', '!=', 1)->pluck('name', 'id');
-            $payment_type = [];
-            if (UtilityFacades::getsettings('stripesetting') == 'on') {
-                $payment_type['stripe'] = 'Stripe';
-            }
-            if (UtilityFacades::getsettings('paypalsetting') == 'on') {
-                $payment_type['paypal'] = 'Paypal';
-            }
-            if (UtilityFacades::getsettings('razorpaysetting') == 'on') {
-                $payment_type['razorpay'] = 'Razorpay';
-            }
-            if (UtilityFacades::getsettings('paytmsetting') == 'on') {
-                $payment_type['paytm'] = 'Paytm';
-            }
-            if (UtilityFacades::getsettings('flutterwavesetting') == 'on') {
-                $payment_type['flutterwave'] = 'Flutterwave';
-            }
-            if (UtilityFacades::getsettings('paystacksetting') == 'on') {
-                $payment_type['paystack'] = 'Paystack';
-            }
-            if (UtilityFacades::getsettings('coingatesetting') == 'on') {
-                $payment_type['coingate'] = 'Coingate';
-            }
-            if (UtilityFacades::getsettings('mercadosetting') == 'on') {
-                $payment_type['mercado'] = 'Mercado';
-            }
-            return view('admin.form.edit', compact('form', 'form_roles', 'roles', 'payment_type', 'form_user', 'formUser', 'formRole', 'form_role', 'next', 'previous'));
+        $form = Form::find($id);
+        $next = Form::where('id', '>', $form->id)->first();
+        $previous = Form::where('id', '<', $form->id)->orderBy('id', 'desc')->first();
+        $form_roles = $form->Roles->pluck('id')->toArray();
+        $roles = Role::where('name', '!=', 'Super Admin')->pluck('name', 'id');
+        $formRole = $form->assignedroles->pluck('id')->toArray();
+        $form_role = Role::pluck('name', 'id');
+        $formUser = $form->assignedusers->pluck('id')->toArray();
+        $form_user = User::where('id', '!=', 1)->pluck('name', 'id');
+        $payment_type = [];
+        if (UtilityFacades::getsettings('stripesetting') == 'on') {
+            $payment_type['stripe'] = 'Stripe';
+        }
+        if (UtilityFacades::getsettings('paypalsetting') == 'on') {
+            $payment_type['paypal'] = 'Paypal';
+        }
+        if (UtilityFacades::getsettings('razorpaysetting') == 'on') {
+            $payment_type['razorpay'] = 'Razorpay';
+        }
+        if (UtilityFacades::getsettings('paytmsetting') == 'on') {
+            $payment_type['paytm'] = 'Paytm';
+        }
+        if (UtilityFacades::getsettings('flutterwavesetting') == 'on') {
+            $payment_type['flutterwave'] = 'Flutterwave';
+        }
+        if (UtilityFacades::getsettings('paystacksetting') == 'on') {
+            $payment_type['paystack'] = 'Paystack';
+        }
+        if (UtilityFacades::getsettings('coingatesetting') == 'on') {
+            $payment_type['coingate'] = 'Coingate';
+        }
+        if (UtilityFacades::getsettings('mercadosetting') == 'on') {
+            $payment_type['mercado'] = 'Mercado';
+        }
+        return view('admin.form.edit', compact('form', 'form_roles', 'roles', 'payment_type', 'form_user', 'formUser', 'formRole', 'form_role', 'next', 'previous'));
 //        } else {
 //            if (\Auth::user()->can('edit-form') && $formallowededit > 0) {
 //                $form = Form::find($id);
@@ -633,13 +633,7 @@ class FormController extends Controller
                 if ($user->hasRole('Admin')) {
                     $route = null;
                 } else {
-                    if (session()->exists('market')){
-                        $route=route('admin.markets.index');
-                        session()->forget('market');
-                    }else{
-                        $route = route('admin.form.values', ['status' => 3, 'user' => auth()->user()->id]);
-                    }
-
+                    $route = route('admin.form.values', ['status' => 3, 'user' => auth()->user()->id]);
                 }
                 return response()->json(['is_success' => true, 'message' => __($success_msg), 'redirect' => $route], 200);
             } else {

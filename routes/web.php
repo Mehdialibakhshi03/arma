@@ -146,6 +146,8 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
         Route::put('market/{market}/update', [MarketController::class, 'update'])->name('market.update');
         Route::get('market/setting/index_setting', [MarketController::class, 'setting_index'])->name('market.setting.index');
         Route::put('market/setting/update_setting', [MarketController::class, 'setting_update'])->name('market.setting.update_setting');
+        Route::get('market/form_edit/{market}', [MarketController::class, 'form_edit'])->name('market.form_edit');
+        Route::put('market/form_update/{market}', [MarketController::class, 'form_update'])->name('market.form.update');
     });
 });
 Route::name('profile.')->prefix('/profile/')->group(function () {
