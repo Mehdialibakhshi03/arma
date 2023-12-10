@@ -99,6 +99,17 @@
                     </li>
                 @endcan
 
+                <li class="">
+                    <a href="{{ route('admin.sales_form') }}" class="dash-link">
+                            <span class="dash-micon">
+                                <i class="fa fa-pen"></i>
+                            </span>
+                        <span class="dash-mtext custom-weight">
+                                Sales Offer Original
+                            </span>
+                    </a>
+                </li>
+
                 @php
                     $pending_count=\App\Models\FormValue::where('status',0)->count();
                 @endphp

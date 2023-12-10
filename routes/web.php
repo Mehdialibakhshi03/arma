@@ -149,6 +149,9 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
         Route::get('market/form_edit/{market}', [MarketController::class, 'form_edit'])->name('market.form_edit');
         Route::put('market/form_update/{market}', [MarketController::class, 'form_update'])->name('market.form.update');
     });
+    //SaleForm
+    Route::get('/sales_form/create',[FormController::class,'sales_form'])->name('sales_form');
+    Route::post('/sales_form/fill',[FormController::class,'sales_form_fil'])->name('sales_form.fil');
 });
 Route::name('profile.')->prefix('/profile/')->group(function () {
     Route::get('index', [ProfileController::class, 'index'])->name('index');

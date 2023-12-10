@@ -639,15 +639,11 @@ if (!function_exists('imageExist')) {
     }
 }
 
-if (!function_exists('FormValueHelper')) {
-    function FormValueHelper($market)
+if (!function_exists('filed_name')) {
+    function filed_name($value)
     {
-        $json = json_decode($market->json)[0];
-        $array = [];
-        foreach ($json as $key => $item) {
-            if ($item->type == 'text') {
-                $array[$item->name]=$item->value;
-            }
-        }
+        $value=str_replace('/',' ',$value);
+        $value=str_replace(' ','_',$value);
+        return strtolower($value);
     }
 }

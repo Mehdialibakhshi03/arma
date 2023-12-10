@@ -11,10 +11,17 @@ use App\Models\AssignFormRole;
 use App\Models\AssignFormsRoles;
 use App\Models\AssignFormsUsers;
 use App\Models\AssignFormUser;
+use App\Models\Country;
+use App\Models\Currency;
 use App\Models\Form;
 use App\Models\FormComments;
 use App\Models\FormCommentsReply;
 use App\Models\FormValue;
+use App\Models\Incoterms;
+use App\Models\IncotermsVersion;
+use App\Models\PriceType;
+use App\Models\ToleranceWeightBy;
+use App\Models\Units;
 use App\Models\User;
 use App\Models\UserForm;
 use App\Rules\CommaSeparatedEmails;
@@ -743,5 +750,62 @@ class FormController extends Controller
         } else {
             return redirect()->back()->with('failed', __('Permission denied.'));
         }
+    }
+
+    public function sales_form()
+    {
+        $unites=Units::all();
+        $currencies=Currency::all();
+        $tolerance_weight_by=ToleranceWeightBy::all();
+        $Incoterms=Incoterms::all();
+        $incoterms_version=IncotermsVersion::all();
+        $countries=Country::all();
+        $priceTypes=PriceType::all();
+        return view('admin.sales_form.create',compact(
+            'unites',
+            'currencies',
+            'tolerance_weight_by',
+            'Incoterms',
+            'incoterms_version',
+            'countries',
+            'priceTypes',
+        ));
+    }
+
+    public function sales_form_fil(Request $request){
+
+        $request->validate([
+            'company_name'=>'required',
+            'company_type'=>'required',
+            'unit'=>'required',
+            'unit_other' => ['required_if:unit,other'],
+            'currency'=>'required',
+            'currency_other' => ['required_if:currency,other'],
+            'commodity' => 'required',
+            'type_grade' => 'required',
+            'hs_code' => 'required',
+            'cas_no' => 'required',
+            'product_more_details' => 'nullable',
+            'specification' => 'nullable',
+            'specification_file' => 'nullable',
+            'quality_inspection_report' => 'required',
+            'quality_inspection_report_file' => ['required_if:quality_inspection_report,Yes'],
+            'max_quantity'=>'required',
+            'min_order'=>'required',
+            'tolerance_weight'=>'required',
+            'tolerance_weight_by'=>'required',
+            'partial_shipment'=>'required',
+            'partial_shipment_number' => ['required_if:partial_shipment,Yes'],
+            'shipment_more_detail'=>'required',
+            'incoterms'=>'required',
+            'incoterms_other' => ['required_if:incoterms,other'],
+            'incoterms_version'=>'required',
+            'country'=>'required',
+            'port_city'=>'required',
+            'incoterms_more_detail'=>'nullable',
+            'price_type'=>'required',
+            'formulla'=>['required_if:price_type,Formulla'],
+            'price'=>['required_if:price_type,Fix'],
+       ]);
     }
 }
