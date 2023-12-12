@@ -19,6 +19,8 @@ use App\Models\FormCommentsReply;
 use App\Models\FormValue;
 use App\Models\Incoterms;
 use App\Models\IncotermsVersion;
+use App\Models\Packing;
+use App\Models\PaymentTerm;
 use App\Models\PriceType;
 use App\Models\ToleranceWeightBy;
 use App\Models\Units;
@@ -754,14 +756,16 @@ class FormController extends Controller
 
     public function sales_form()
     {
-        $unites=Units::all();
-        $currencies=Currency::all();
-        $tolerance_weight_by=ToleranceWeightBy::all();
-        $Incoterms=Incoterms::all();
-        $incoterms_version=IncotermsVersion::all();
-        $countries=Country::all();
-        $priceTypes=PriceType::all();
-        return view('admin.sales_form.create',compact(
+        $unites = Units::all();
+        $currencies = Currency::all();
+        $tolerance_weight_by = ToleranceWeightBy::all();
+        $Incoterms = Incoterms::all();
+        $incoterms_version = IncotermsVersion::all();
+        $countries = Country::all();
+        $priceTypes = PriceType::all();
+        $paymentTerms = PaymentTerm::all();
+        $packing = Packing::all();
+        return view('admin.sales_form.create', compact(
             'unites',
             'currencies',
             'tolerance_weight_by',
@@ -769,43 +773,73 @@ class FormController extends Controller
             'incoterms_version',
             'countries',
             'priceTypes',
+            'paymentTerms',
+            'packing',
         ));
     }
 
-    public function sales_form_fil(Request $request){
-
+    public function sales_form_fil(Request $request)
+    {
         $request->validate([
-            'company_name'=>'required',
-            'company_type'=>'required',
-            'unit'=>'required',
+            'company_name' => 'required',
+            'company_type' => 'required',
+            'unit' => 'required',
             'unit_other' => ['required_if:unit,other'],
-            'currency'=>'required',
+            'currency' => 'required',
             'currency_other' => ['required_if:currency,other'],
             'commodity' => 'required',
             'type_grade' => 'required',
-            'hs_code' => 'required',
-            'cas_no' => 'required',
+            'hs_code' => 'nullable',
+            'cas_no' => 'nullable',
             'product_more_details' => 'nullable',
             'specification' => 'nullable',
-            'specification_file' => 'nullable',
+            'specification_file' => ['required_if:specification,null'],
             'quality_inspection_report' => 'required',
             'quality_inspection_report_file' => ['required_if:quality_inspection_report,Yes'],
-            'max_quantity'=>'required',
-            'min_order'=>'required',
-            'tolerance_weight'=>'required',
-            'tolerance_weight_by'=>'required',
-            'partial_shipment'=>'required',
+            'max_quantity' => 'required',
+            'min_order' => 'required',
+            'tolerance_weight' => 'nullable',
+            'tolerance_weight_by' => 'nullable',
+            'partial_shipment' => 'nullable',
             'partial_shipment_number' => ['required_if:partial_shipment,Yes'],
-            'shipment_more_detail'=>'required',
-            'incoterms'=>'required',
+            'shipment_more_detail' => 'required',
+            'incoterms' => 'required',
             'incoterms_other' => ['required_if:incoterms,other'],
-            'incoterms_version'=>'required',
-            'country'=>'required',
-            'port_city'=>'required',
-            'incoterms_more_detail'=>'nullable',
-            'price_type'=>'required',
-            'formulla'=>['required_if:price_type,Formulla'],
-            'price'=>['required_if:price_type,Fix'],
-       ]);
+            'incoterms_version' => 'nullable',
+            'country' => 'required',
+            'port_city' => 'required',
+            'incoterms_more_detail' => 'nullable',
+            'price_type' => 'required',
+            'formulla' => ['required_if:price_type,Formulla'],
+            'price' => ['required_if:price_type,Fix'],
+            'payment_term' => 'required',
+            'payment_term_description' => 'required',
+            'packing' => 'required',
+            'packing_more_details' => 'nullable',
+            'packing_other' => 'required',
+            'marking_more_details' => 'nullable',
+            'picture_packing' => 'nullable',
+            'picture_packing_file' => ['required_if:picture_packing,Yes'],
+            'possible_buyers' => 'required',
+            'cost_per_unit' => ['required_if:possible_buyers,Yes'],
+            'origin_country' => 'required',
+            'origin_port_city' => 'required',
+            'origin_more_details' => 'nullable',
+            //
+            'has_loading' => 'nullable',
+            'loading_type' => ['required_if:has_loading,1'],
+            'loading_country' => ['required_unless:loading_type,null'],
+            'loading_port_city' => ['required_unless:loading_type,null'],
+            'loading_from' => ['required_unless:loading_type,null'],
+            'loading_to' => ['required_unless:loading_type,null'],
+            'bulk_loading_rate' => 'nullable|number|integer',
+            'bulk_shipping_term' => 'nullable',
+            'container_type' => 'nullable',
+            'container_thc_included' => 'nullable',
+            'flexi_tank_country_type' => ['required_if:loading_type,Flexi Tank'],
+            'flexi_tank_country_thc_included' => 'nullable',
+            'loading_more_details' => 'nullable',
+        ]);
+        $has_loading = $request->has('has_loading') ? 1 : 0;
     }
 }

@@ -48,6 +48,33 @@ return new class extends Migration
             $table->text('price_type')->nullable();
             $table->text('formulla')->nullable();
             $table->text('price')->nullable();
+            $table->text('payment_term')->nullable();
+            $table->text('payment_term_description')->nullable();
+            $table->text('packing')->nullable();
+            $table->text('packing_more_details')->nullable();
+            $table->text('packing_other')->nullable();
+            $table->text('marking_more_details')->nullable();
+            $table->text('picture_packing')->nullable();
+            $table->text('picture_packing_file')->nullable();
+            $table->text('possible_buyers')->nullable();
+            $table->text('cost_per_unit')->nullable();
+            $table->text('origin_country')->nullable();
+            $table->text('origin_port_city')->nullable();
+            $table->text('origin_more_details')->nullable();
+            //
+            $table->text('has_loading')->nullable();
+            $table->text('loading_type')->nullable();
+            $table->text('loading_country')->nullable();
+            $table->text('loading_port_city')->nullable();
+            $table->date('loading_from')->nullable();
+            $table->date('loading_to')->nullable();
+            $table->text('bulk_loading_rate')->nullable();
+            $table->text('bulk_shipping_term')->nullable();
+            $table->text('container_type')->nullable();
+            $table->text('container_thc_included')->nullable();
+            $table->text('flexi_tank_country_type')->nullable();
+            $table->text('flexi_tank_country_thc_included')->nullable();
+            $table->text('loading_more_details')->nullable();
             $table->timestamps();
         });
     }
