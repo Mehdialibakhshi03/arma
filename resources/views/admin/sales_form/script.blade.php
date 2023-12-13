@@ -15,6 +15,10 @@
         check_quality_packing_file();
         check_possible_buyers();
         check_loading_part();
+        check_discharging_part()
+        check_safety_file();
+        check_reach_certificate_file();
+        check_documents();
         show_errors();
     });
 
@@ -85,6 +89,26 @@
             let cost_per_unit = "{{ $errors->first('cost_per_unit') }}";
             let error_message = `<p class="input-error-validate">${cost_per_unit}</p>`;
             $(error_message).insertAfter($('#cost_per_unit'));
+        }
+        let loading_type = "{{ $errors->has('loading_type') }}";
+        if (loading_type) {
+            $('#loading_common_section').addClass('d-none');
+        }
+        let discharging_type = "{{ $errors->has('discharging_type') }}";
+        if (discharging_type) {
+            $('#discharging_common_section').addClass('d-none');
+        }
+        let safety_product_file = "{{ $errors->has('safety_product_file') }}";
+        if (safety_product_file) {
+            let safety_product_file = "{{ $errors->first('safety_product_file') }}";
+            let error_message = `<p class="input-error-validate">${safety_product_file}</p>`;
+            $(error_message).insertAfter($('#safety_product_file'));
+        }
+        let reach_certificate_file = "{{ $errors->has('reach_certificate_file') }}";
+        if (reach_certificate_file) {
+            let reach_certificate_file = "{{ $errors->first('reach_certificate_file') }}";
+            let error_message = `<p class="input-error-validate">${reach_certificate_file}</p>`;
+            $(error_message).insertAfter($('#reach_certificate_file'));
         }
     }
 
@@ -167,6 +191,30 @@
         }
     }
 
+    function check_safety_file() {
+        let quality_inspection_report = "{{ old('safety_product')==='Yes' ? true : false }}";
+        if (quality_inspection_report) {
+            addAttachmentFile($('input[name="safety_product"]'));
+        }
+    }
+
+    function check_reach_certificate_file() {
+        let quality_inspection_report = "{{ old('reach_certificate')==='Yes' ? true : false }}";
+        if (quality_inspection_report) {
+            addAttachmentFile($('input[name="reach_certificate"]'));
+        }
+    }
+    function check_documents() {
+        let documents_options = "{{ old('documents_options') }}";
+        documents_options=documents_options.split(",");
+        let documents_options_length=documents_options.length;
+        $('#documents_options').val(documents_options);
+        $('#documents_count').val(documents_options_length);
+        $.each(documents_options, function(key, value) {
+            $("#documents-box input[value='"+value+"']").prop('checked', true);
+        })
+    }
+
     function check_quality_packing_file() {
         let picture_packing_file = "{{ old('picture_packing')==='Yes' ? true : false }}";
         if (picture_packing_file) {
@@ -224,7 +272,7 @@
             field_type = 'text';
         }
         $('#' + id).parent().remove();
-        let element = '<div class="col-12 col-md-6 mb-3"><label for="' + id + `" class="mb-2">${field_label}<span class="text-danger">*</span></label>` +
+        let element = '<div class="col-12 mt-3 mb-3"><label for="' + id + `" class="mb-2">${field_label}<span class="text-danger">*</span></label>` +
             '<input required id="' + id + `" type="${field_type}" name="` + field_name + '" class="form-control" ' +
             '</div>';
         $(element).insertAfter($(tag).parent());
@@ -329,19 +377,20 @@
 
     function loadingOption(tag) {
         let value = $(tag).val();
-        if (value === 'Flexi Tank'){
-            value='Flexi_Tank';
+        if (value === 'Flexi Tank') {
+            value = 'Flexi_Tank';
         }
+        console.log(value);
         $('#loading_options_sections').removeClass('d-none');
         $('#loading_common_section').removeClass('d-none');
         $('.loading_part').addClass('d-none');
         $('.loading_part').find('input').prop('disabled', true);
         $('.loading_part').find('textarea').prop('disabled', true);
         $('.loading_part').find('select').prop('disabled', true);
-        $('#loading_options_'+value).removeClass('d-none');
-        $('#loading_options_'+value).find('input').prop('disabled', false);
-        $('#loading_options_'+value).find('textarea').prop('disabled', false)
-        $('#loading_options_'+value).find('select').prop('disabled', false);
+        $('#loading_options_' + value).removeClass('d-none');
+        $('#loading_options_' + value).find('input').prop('disabled', false);
+        $('#loading_options_' + value).find('textarea').prop('disabled', false)
+        $('#loading_options_' + value).find('select').prop('disabled', false);
     }
 
     function RemoveLoadingElement() {
@@ -352,11 +401,88 @@
         let has_loading = {{ old('has_loading')==1 ? 1 : 0 }};
         if (has_loading) {
             has_loading_change($('#has_loading'));
-            let pre_value="{{ old('loading_type') }}"
-            let input=$('#loading_options input[value="'+pre_value+'"]');
-            console.log(input);
+            let pre_value = "{{ old('loading_type') }}";
+            let input = $('#loading_options input[value="' + pre_value + '"]');
             loadingOption(input);
         }
+    }
+
+    //discharging part function
+    function has_discharging_change(tag) {
+        let value = $(tag).is(':checked');
+        if (value) {
+            $('#discharging_options').removeClass('d-none')
+            $('#discharging_options').find('input').prop('disabled', false);
+            $('#discharging_options').find('textarea').prop('disabled', false);
+            $('#discharging_options').find('select').prop('disabled', false);
+        } else {
+            $('#discharging_common_section').addClass('d-none');
+            $('#discharging_options').addClass('d-none');
+            $('#discharging_options').find('input').prop('disabled', true);
+            $('#discharging_options').find('textarea').prop('disabled', true);
+            $('#discharging_options').find('select').prop('disabled', true);
+            $('#discharging_options_sections').removeClass('d-none');
+            $('#discharging_options_sections').addClass('d-none');
+            $('.discharging_part').addClass('d-none');
+            $('.discharging_part').find('input').prop('disabled', true);
+            $('.discharging_part').find('textarea').prop('disabled', true);
+            $('.discharging_part').find('select').prop('disabled', true);
+        }
+    }
+
+    function dischargingOption(tag) {
+        let value = $(tag).val();
+        if (value === 'Flexi Tank') {
+            value = 'Flexi_Tank';
+        }
+        $('#discharging_options_sections').removeClass('d-none');
+        $('#discharging_common_section').removeClass('d-none');
+        $('.discharging_part').addClass('d-none');
+        $('.discharging_part').find('input').prop('disabled', true);
+        $('.discharging_part').find('textarea').prop('disabled', true);
+        $('.discharging_part').find('select').prop('disabled', true);
+        $('#discharging_options_' + value).removeClass('d-none');
+        $('#discharging_options_' + value).find('input').prop('disabled', false);
+        $('#discharging_options_' + value).find('textarea').prop('disabled', false)
+        $('#discharging_options_' + value).find('select').prop('disabled', false);
+    }
+
+    function RemoveDischargingElement() {
+        $('#discharging_options').remove();
+    }
+
+    function check_discharging_part() {
+        let has_discharging = {{ old('has_discharging')==1 ? 1 : 0 }};
+        if (has_discharging) {
+            has_discharging_change($('#has_discharging'));
+            let pre_value = "{{ old('discharging_type') }}"
+            let input = $('#discharging_options input[value="' + pre_value + '"]');
+            console.log(input);
+            dischargingOption(input);
+        }
+    }
+
+    //end
+
+    function documentOptions() {
+        let check_inputs = $("#documents-box input[type='checkbox']:checked");
+        let documents = '';
+        let pass = 'Yes';
+        $.each(check_inputs, function (index, value) {
+            let doc_val = $(value).val();
+            if (documents == '') {
+                documents = doc_val;
+            } else {
+                documents = documents + ',' + doc_val;
+            }
+        });
+        $('#documents_options').val(documents);
+        if (check_inputs.length < 2) {
+            pass = 'No';
+            $('#documents_options').val('');
+        }
+
+        $('#documents_count').val(pass);
     }
 
     $('select').selectpicker({

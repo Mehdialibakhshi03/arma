@@ -11,17 +11,24 @@ use App\Models\AssignFormRole;
 use App\Models\AssignFormsRoles;
 use App\Models\AssignFormsUsers;
 use App\Models\AssignFormUser;
+use App\Models\CargoInsurance;
 use App\Models\Country;
 use App\Models\Currency;
+use App\Models\Destination;
 use App\Models\Form;
 use App\Models\FormComments;
 use App\Models\FormCommentsReply;
 use App\Models\FormValue;
 use App\Models\Incoterms;
 use App\Models\IncotermsVersion;
+use App\Models\InspectionPlace;
 use App\Models\Packing;
 use App\Models\PaymentTerm;
 use App\Models\PriceType;
+use App\Models\QualityQuantityInspector;
+use App\Models\ShippingTerm;
+use App\Models\TargetMarket;
+use App\Models\THCIncluded;
 use App\Models\ToleranceWeightBy;
 use App\Models\Units;
 use App\Models\User;
@@ -765,6 +772,13 @@ class FormController extends Controller
         $priceTypes = PriceType::all();
         $paymentTerms = PaymentTerm::all();
         $packing = Packing::all();
+        $shipping_terms = ShippingTerm::all();
+        $thcincluded = THCIncluded::all();
+        $destination = Destination::all();
+        $targetMarket=TargetMarket::all();
+        $qualityQuantityInspector=QualityQuantityInspector::all();
+        $InspectionPlace=InspectionPlace::all();
+        $cargoInsurance=CargoInsurance::all();
         return view('admin.sales_form.create', compact(
             'unites',
             'currencies',
@@ -775,6 +789,13 @@ class FormController extends Controller
             'priceTypes',
             'paymentTerms',
             'packing',
+            'shipping_terms',
+            'thcincluded',
+            'destination',
+            'targetMarket',
+            'qualityQuantityInspector',
+            'InspectionPlace',
+            'cargoInsurance',
         ));
     }
 
@@ -833,12 +854,56 @@ class FormController extends Controller
             'loading_from' => ['required_unless:loading_type,null'],
             'loading_to' => ['required_unless:loading_type,null'],
             'bulk_loading_rate' => 'nullable|number|integer',
-            'bulk_shipping_term' => 'nullable',
-            'container_type' => 'nullable',
-            'container_thc_included' => 'nullable',
-            'flexi_tank_country_type' => ['required_if:loading_type,Flexi Tank'],
-            'flexi_tank_country_thc_included' => 'nullable',
+            'loading_bulk_shipping_term' => 'nullable',
+            'loading_container_type' => 'nullable',
+            'loading_container_thc_included' => 'nullable',
+            'loading_flexi_tank_type' => ['required_if:loading_type,Flexi Tank'],
+            'loading_flexi_tank_thc_included' => 'nullable',
             'loading_more_details' => 'nullable',
+            //
+            'has_discharging' => 'nullable',
+            'discharging_type' => ['required_if:has_discharging,1'],
+            'discharging_country' => ['required_unless:discharging_type,null'],
+            'discharging_port_city' => ['required_unless:discharging_type,null'],
+            'discharging_from' => ['required_unless:discharging_type,null'],
+            'discharging_to' => ['required_unless:discharging_type,null'],
+            'bulk_discharging_rate' => 'nullable|number|integer',
+            'discharging_bulk_shipping_term' => 'nullable',
+            'discharging_container_type' => 'nullable',
+            'discharging_container_thc_included' => 'nullable',
+            'discharging_flexi_tank_type' => ['required_if:discharging_type,Flexi Tank'],
+            'discharging_flexi_tank_thc_included' => 'nullable',
+            'discharging_more_details' => 'nullable',
+            //destination
+            'destination'=>'nullable',
+            'exclude_market'=>'nullable',
+            'target_market'=>'nullable',
+            //insoection
+            'quantity_quantity_inspection'=>'required',
+            'inspection_place'=>'required',
+            'inspection_more_detail'=>'nullable',
+            //insurance
+            'cargo_insurance'=>'nullable',
+            'insurance_more_details'=>'nullable',
+            //safety
+            'safety_product'=>'required',
+            'safety_product_file'=>['required_if:safety_product,Yes'],
+            //reach certificate
+            'reach_certificate'=>'required',
+            'reach_certificate_file'=>['required_if:reach_certificate,Yes'],
+            //documents
+            'documents_count'=>'required',
+            'documents_options'=>['required_if:documents_count,No'],
+            'document_more_detail'=>'nullable',
+            //contact person
+            'contact_person_name'=>'required',
+            'contact_person_job_title'=>'required',
+            'contact_person_email'=>'required',
+            'contact_person_mobile_phone'=>'required',
+            //last part
+            'last_more_detail'=>'nullable',
+            'accept_terms'=>'required',
+
         ]);
         $has_loading = $request->has('has_loading') ? 1 : 0;
     }

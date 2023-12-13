@@ -61,7 +61,7 @@ return new class extends Migration
             $table->text('origin_country')->nullable();
             $table->text('origin_port_city')->nullable();
             $table->text('origin_more_details')->nullable();
-            //
+            //loading
             $table->text('has_loading')->nullable();
             $table->text('loading_type')->nullable();
             $table->text('loading_country')->nullable();
@@ -69,12 +69,48 @@ return new class extends Migration
             $table->date('loading_from')->nullable();
             $table->date('loading_to')->nullable();
             $table->text('bulk_loading_rate')->nullable();
-            $table->text('bulk_shipping_term')->nullable();
-            $table->text('container_type')->nullable();
-            $table->text('container_thc_included')->nullable();
-            $table->text('flexi_tank_country_type')->nullable();
-            $table->text('flexi_tank_country_thc_included')->nullable();
+            $table->text('loading_bulk_shipping_term')->nullable();
+            $table->text('loading_container_type')->nullable();
+            $table->text('loading_container_thc_included')->nullable();
+            $table->text('loading_flexi_tank_type')->nullable();
+            $table->text('loading_flexi_tank_thc_included')->nullable();
             $table->text('loading_more_details')->nullable();
+            //discharging
+            $table->text('has_discharging')->nullable();
+            $table->text('discharging_type')->nullable();
+            $table->text('discharging_country')->nullable();
+            $table->text('discharging_port_city')->nullable();
+            $table->date('discharging_from')->nullable();
+            $table->date('discharging_to')->nullable();
+            $table->text('bulk_discharging_rate')->nullable();
+            $table->text('discharging_bulk_shipping_term')->nullable();
+            $table->text('discharging_container_type')->nullable();
+            $table->text('discharging_container_thc_included')->nullable();
+            $table->text('discharging_flexi_tank_type')->nullable();
+            $table->text('discharging_flexi_tank_thc_included')->nullable();
+            $table->text('discharging_more_details')->nullable();
+            //destination
+            $table->text('destination')->nullable();
+            $table->text('exclude_market')->nullable();
+            $table->text('target_market')->nullable();
+            //insurance
+            $table->text('cargo_insurance')->nullable();
+            $table->text('insurance_more_details')->nullable();
+            //safety
+            $table->text('safety_product')->nullable();
+            $table->text('safety_product_file')->nullable();
+            //documents
+            $table->text('documents_count')->nullable();
+            $table->text('documents_options')->nullable();
+            $table->text('document_more_detail')->nullable();
+            //contact_person
+            $table->text('contact_person_name')->nullable();
+            $table->text('contact_person_job_title')->nullable();
+            $table->text('contact_person_email')->nullable();
+            $table->text('contact_person_mobile_phone')->nullable();
+            //last part
+            $table->text('last_more_detail')->nullable();
+            $table->text('accept_terms')->nullable();
             $table->timestamps();
         });
     }

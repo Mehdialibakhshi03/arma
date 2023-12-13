@@ -74,31 +74,32 @@
                         </a>
                     </li>
                 @endcan
-                @can('form')
-                    <li class="">
-                        <a href="{{ route('admin.forms.index') }}" class="dash-link">
-                            <span class="dash-micon">
-                                <i class="fa fa-pen"></i>
-                            </span>
-                            <span class="dash-mtext custom-weight">
-                                {{ __('Forms Generator') }}
-                            </span>
-                        </a>
-                    </li>
-                @endcan
-                @can('form-fill')
-                    <li class="">
-                        <a href="{{ route('admin.forms.fill',['id'=>1]) }}" class="dash-link">
-                            <span class="dash-micon">
-                                <i class="fa fa-pen"></i>
-                            </span>
-                            <span class="dash-mtext custom-weight">
-                                Sales Offer
-                            </span>
-                        </a>
-                    </li>
-                @endcan
+{{--                @can('form')--}}
+{{--                    <li class="">--}}
+{{--                        <a href="{{ route('admin.forms.index') }}" class="dash-link">--}}
+{{--                            <span class="dash-micon">--}}
+{{--                                <i class="fa fa-pen"></i>--}}
+{{--                            </span>--}}
+{{--                            <span class="dash-mtext custom-weight">--}}
+{{--                                {{ __('Forms Generator') }}--}}
+{{--                            </span>--}}
+{{--                        </a>--}}
+{{--                    </li>--}}
+{{--                @endcan--}}
+{{--                @can('form-fill')--}}
+{{--                    <li class="">--}}
+{{--                        <a href="{{ route('admin.forms.fill',['id'=>1]) }}" class="dash-link">--}}
+{{--                            <span class="dash-micon">--}}
+{{--                                <i class="fa fa-pen"></i>--}}
+{{--                            </span>--}}
+{{--                            <span class="dash-mtext custom-weight">--}}
+{{--                                Sales Offer--}}
+{{--                            </span>--}}
+{{--                        </a>--}}
+{{--                    </li>--}}
+{{--                @endcan--}}
 
+                @can('form-fill')
                 <li class="">
                     <a href="{{ route('admin.sales_form') }}" class="dash-link">
                             <span class="dash-micon">
@@ -109,7 +110,7 @@
                             </span>
                     </a>
                 </li>
-
+                @endcan
                 @php
                     $pending_count=\App\Models\FormValue::where('status',0)->count();
                 @endphp

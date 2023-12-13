@@ -39,6 +39,24 @@
 
                                                 @include('admin.sales_form.loading')
 
+                                                @include('admin.sales_form.discharging')
+
+                                                @include('admin.sales_form.destination')
+
+                                                @include('admin.sales_form.insoection')
+
+                                                @include('admin.sales_form.insurance')
+
+                                                @include('admin.sales_form.safety')
+
+                                                @include('admin.sales_form.reach_certificate')
+
+                                                @include('admin.sales_form.documents')
+
+                                                @include('admin.sales_form.contact_person')
+
+                                                @include('admin.sales_form.last_section')
+
                                                 <div class="col-md-12 mt-3">
                                                     <button type="button" onclick="submitForm()"
                                                             class="btn btn-success">Create

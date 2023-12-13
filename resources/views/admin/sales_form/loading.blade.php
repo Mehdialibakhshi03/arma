@@ -22,7 +22,7 @@
         @php
             $name='Loading Type';
         @endphp
-        <label for="quality_inspection_report" class="mb-2">Loading Type</label>
+        <label for="quality_inspection_report" class="mb-2">Loading Type <span class="text-danger">*</span></label>
         <div>
             <div class="form-check form-check-inline mr-3">
                 <input onchange="loadingOption(this)"
@@ -53,6 +53,11 @@
             </div>
         </div>
     </div>
+    @error(filed_name($name))
+    <p class="input-error-validate">
+        {{ $message }}
+    </p>
+    @enderror
 </div>
 <div id="loading_common_section" class="d-none row">
     <div class="col-12 col-md-6 mb-3">
@@ -162,6 +167,11 @@
 
 <div id="loading_options_sections" class="d-none">
     <div id="loading_options_Bulk" class="loading_part row">
+        <div class="col-12">
+            <strong>
+                Loading
+            </strong>
+        </div>
         <div class="col-12 col-md-5 mb-3">
             @php
                 $label='Loading Rate';
@@ -193,7 +203,7 @@
         <div class="col-12 col-md-5 mb-3">
             @php
                 $label='Shipping Term';
-                    $name='Bulk Shipping Term';
+                    $name='Loading Bulk Shipping Term';
                     $is_required=0;
                     $required_span='';
                     $required='';
@@ -207,11 +217,11 @@
             <select onchange="hasOther(this)"
                     {{ $required }} id="{{ filed_name($name) }}" type="text"
                     name="{{ filed_name($name) }}" class="form-control ">
-                {{--        @foreach($countries as $item)--}}
-                {{--            <option--}}
-                {{--                {{ old(filed_name($name))==$item->title ? ' selected="selected"' : '' }}--}}
-                {{--                value="{{ $item->title }}">{{ $item->title }}</option>--}}
-                {{--        @endforeach--}}
+                        @foreach($shipping_terms as $item)
+                            <option
+                                {{ old(filed_name($name))==$item->title ? ' selected="selected"' : '' }}
+                                value="{{ $item->title }}">{{ $item->title }}</option>
+                        @endforeach
             </select>
             @error(filed_name($name))
             <p class="input-error-validate">
@@ -247,7 +257,7 @@
         <div class="col-12 col-md-6 mb-3">
             @php
                 $label='Container Type';
-                    $name='Container Type';
+                    $name='Loading Container Type';
                     $is_required=0;
                     $required_span='';
                     $required='';
@@ -276,7 +286,7 @@
         <div class="col-12 col-md-6 mb-3">
             @php
                 $label='THC Included';
-                    $name='Container THC Included';
+                    $name='Loading Container THC Included';
                     $is_required=0;
                     $required_span='';
                     $required='';
@@ -290,11 +300,11 @@
             <select onchange="hasOther(this)"
                     {{ $required }} id="{{ filed_name($name) }}" type="text"
                     name="{{ filed_name($name) }}" class="form-control ">
-                {{--        @foreach($countries as $item)--}}
-                {{--            <option--}}
-                {{--                {{ old(filed_name($name))==$item->title ? ' selected="selected"' : '' }}--}}
-                {{--                value="{{ $item->title }}">{{ $item->title }}</option>--}}
-                {{--        @endforeach--}}
+                        @foreach($thcincluded as $item)
+                            <option
+                                {{ old(filed_name($name))==$item->title ? ' selected="selected"' : '' }}
+                                value="{{ $item->title }}">{{ $item->title }}</option>
+                        @endforeach
             </select>
             @error(filed_name($name))
             <p class="input-error-validate">
@@ -329,8 +339,8 @@
     <div id="loading_options_Flexi_Tank" class="loading_part row">
         <div class="col-12 col-md-6 mb-3">
             @php
-                $label='Flexi Tank Country Type';
-                    $name='Flexi Tank Country Type';
+                $label='Flexi Tank Type';
+                    $name='Loading Flexi Tank Type';
                     $is_required=1;
                     $required_span='';
                     $required='';
@@ -359,7 +369,7 @@
         <div class="col-12 col-md-6 mb-3">
             @php
                 $label='THC Included';
-                    $name='Flexi Tank Country THC Included';
+                    $name='Loading Flexi Tank THC Included';
                     $is_required=0;
                     $required_span='';
                     $required='';
