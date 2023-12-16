@@ -9,6 +9,6 @@ class QualityQuantityInspector extends Model
 {
     use HasFactory;
 
-    protected $table = "qualityQuantityInspector";
+    protected $table = "qualityquantityinspector";
     protected $guarded = [];
 }

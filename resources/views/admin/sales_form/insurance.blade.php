@@ -21,7 +21,7 @@
     <select onchange="hasOther(this)"
             {{ $required }} id="{{ filed_name($name) }}" type="text"
             name="{{ filed_name($name) }}" class="form-control ">
-        @foreach($destination as $item)
+        @foreach($cargoInsurance as $item)
             <option
                 {{ old(filed_name($name))==$item->title ? ' selected="selected"' : '' }}
                 value="{{ $item->title }}">{{ $item->title }}</option>
@@ -48,15 +48,9 @@
     @endphp
     <label for="{{ filed_name($name) }}"
            class="mb-2">{!! $label.' '.$required_span !!}</label>
-    <select onchange="hasOther(this)"
-            {{ $required }} id="{{ filed_name($name) }}" type="text"
-            name="{{ filed_name($name) }}" class="form-control ">
-        @foreach($targetMarket as $item)
-            <option
-                {{ old(filed_name($name))==$item->title ? ' selected="selected"' : '' }}
-                value="{{ $item->title }}">{{ $item->title }}</option>
-        @endforeach
-    </select>
+    <input {{ $required }} id="{{ filed_name($name) }}" type="text"
+           name="{{ filed_name($name) }}" class="form-control"
+           value="{{ old(filed_name($name)) }}">
     @error(filed_name($name))
     <p class="input-error-validate">
         {{ $message }}

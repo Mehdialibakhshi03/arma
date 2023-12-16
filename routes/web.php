@@ -150,8 +150,9 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
         Route::put('market/form_update/{market}', [MarketController::class, 'form_update'])->name('market.form.update');
     });
     //SaleForm
-    Route::get('/sales_form/create',[FormController::class,'sales_form'])->name('sales_form');
-    Route::post('/sales_form/fill',[FormController::class,'sales_form_fil'])->name('sales_form.fil');
+    Route::get('/sale_form/{page_type?}/{item?}',[FormController::class,'sales_form'])->name('sale_form');
+    Route::post('/sales_form/update_or_store/{item?}',[FormController::class,'sales_form_update_or_store'])->name('sale_form.update_or_store');
+    Route::get('/sales_form/index/{status}',[FormController::class,'sales_form_index'])->name('sales_form.index');
 });
 Route::name('profile.')->prefix('/profile/')->group(function () {
     Route::get('index', [ProfileController::class, 'index'])->name('index');

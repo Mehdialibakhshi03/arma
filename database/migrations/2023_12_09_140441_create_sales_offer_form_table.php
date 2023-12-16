@@ -16,35 +16,39 @@ return new class extends Migration
         Schema::create('sales_offer_form', function (Blueprint $table) {
             $table->id();
             $table->integer('user_id');
-            $table->integer('unique_number');
+            $table->integer('unique_number')->nullable();
             $table->text('company_name')->nullable();
             $table->text('company_type')->nullable();
             $table->text('unit')->nullable();
             $table->text('unit_other')->nullable();
             $table->text('currency')->nullable();
             $table->text('currency_other')->nullable();
+            //product
             $table->text('commodity')->nullable();
             $table->text('type_grade')->nullable();
             $table->text('hs_code')->nullable();
             $table->text('cas_no')->nullable();
             $table->text('product_more_details')->nullable();
-            $table->text('specification')->nullable();
-            $table->text('specification_file')->nullable();
-            $table->text('quality_inspection_report')->nullable();
-            $table->text('quality_inspection_report_file')->nullable();
+            //quantity
             $table->text('max_quantity')->nullable();
             $table->text('min_order')->nullable();
             $table->text('tolerance_weight')->nullable();
             $table->text('tolerance_weight_by')->nullable();
+            //quality
+            $table->text('specification')->nullable();
+            $table->text('specification_file')->nullable();
+            $table->text('quality_inspection_report')->nullable();
+            $table->text('quality_inspection_report_file')->nullable();
+            //Partial Shipment & incoterms
             $table->text('partial_shipment')->nullable();
             $table->text('partial_shipment_number')->nullable();
-            $table->text('shipment_more_detail')->nullable();
+            $table->text('shipment_more_details')->nullable();
             $table->text('incoterms')->nullable();
             $table->text('incoterms_other')->nullable();
             $table->text('incoterms_version')->nullable();
             $table->text('country')->nullable();
             $table->text('port_city')->nullable();
-            $table->text('incoterms_more_detail')->nullable();
+            $table->text('incoterms_more_details')->nullable();
             $table->text('price_type')->nullable();
             $table->text('formulla')->nullable();
             $table->text('price')->nullable();
@@ -93,12 +97,19 @@ return new class extends Migration
             $table->text('destination')->nullable();
             $table->text('exclude_market')->nullable();
             $table->text('target_market')->nullable();
+            //inspection
+            $table->text('quality_quantity_inspection')->nullable();
+            $table->text('inspection_place')->nullable();
+            $table->text('inspection_more_detail')->nullable();
             //insurance
             $table->text('cargo_insurance')->nullable();
             $table->text('insurance_more_details')->nullable();
             //safety
             $table->text('safety_product')->nullable();
             $table->text('safety_product_file')->nullable();
+            //reach certificate
+            $table->text('reach_certificate')->nullable();
+            $table->text('reach_certificate_file')->nullable();
             //documents
             $table->text('documents_count')->nullable();
             $table->text('documents_options')->nullable();
@@ -111,6 +122,8 @@ return new class extends Migration
             //last part
             $table->text('last_more_detail')->nullable();
             $table->text('accept_terms')->nullable();
+            //status
+            $table->integer('status')->default(0);
             $table->timestamps();
         });
     }

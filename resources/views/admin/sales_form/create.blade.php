@@ -19,15 +19,17 @@
                                         </a>
                                     </div>
                                     <div class="settings-profile">
-                                        <form id="sales_form" method="POST" action="{{ route('admin.sales_form.fil') }}"
+                                        <form id="sales_form" method="POST" action="{{ $route }}"
                                               enctype="multipart/form-data">
                                             @csrf
                                             <div class="row mt-4">
                                                 @include('admin.sales_form.commodity')
 
-                                                @include('admin.sales_form.quality')
+                                                @include('admin.sales_form.product')
 
                                                 @include('admin.sales_form.quantity')
+
+                                                @include('admin.sales_form.quality')
 
                                                 @include('admin.sales_form.shipment_and_incoterm')
 
@@ -43,7 +45,7 @@
 
                                                 @include('admin.sales_form.destination')
 
-                                                @include('admin.sales_form.insoection')
+                                                @include('admin.sales_form.inspection')
 
                                                 @include('admin.sales_form.insurance')
 
@@ -84,6 +86,6 @@
 @endpush
 
 @push('script')
-@include('admin.sales_form.script')
+    @include('admin.sales_form.script')
 @endpush
 

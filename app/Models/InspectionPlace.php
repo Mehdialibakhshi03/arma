@@ -9,6 +9,6 @@ class InspectionPlace extends Model
 {
     use HasFactory;
 
-    protected $table = "inspectionPlaces";
+    protected $table = "inspectionplaces";
     protected $guarded = [];
 }

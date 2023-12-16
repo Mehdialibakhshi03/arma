@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\DataTables\FormsDataTable;
 use App\Facades\UtilityFacades;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SaleFormRequest;
 use App\Mail\FormSubmitEmail;
 use App\Mail\Thanksmail;
 use App\Models\AssignFormRole;
@@ -12,6 +13,7 @@ use App\Models\AssignFormsRoles;
 use App\Models\AssignFormsUsers;
 use App\Models\AssignFormUser;
 use App\Models\CargoInsurance;
+use App\Models\CompanyType;
 use App\Models\Country;
 use App\Models\Currency;
 use App\Models\Destination;
@@ -26,6 +28,7 @@ use App\Models\Packing;
 use App\Models\PaymentTerm;
 use App\Models\PriceType;
 use App\Models\QualityQuantityInspector;
+use App\Models\SalesOfferForm;
 use App\Models\ShippingTerm;
 use App\Models\TargetMarket;
 use App\Models\THCIncluded;
@@ -761,8 +764,25 @@ class FormController extends Controller
         }
     }
 
-    public function sales_form()
+    public function sales_form($page_type = 'Create', $item = 'null')
     {
+        $sale_form_exist = 0;
+        $route = null;
+        $form = [];
+        if ($page_type === 'Create') {
+            $route = route('admin.sale_form.update_or_store');
+//            $form_exist = SalesOfferForm::where('user_id', \auth()->id())->exists();
+//            if ($form_exist) {
+//                $sale_form_exist=1;
+//                $form = SalesOfferForm::where('user_id', \auth()->id())->first();
+//            }
+        }
+        if ($page_type === 'Edit') {
+            $sale_form_exist = 1;
+            $route = route('admin.sale_form.update_or_store', ['item' => $item]);
+            $form = SalesOfferForm::where('id', $item)->first();
+        }
+        $company_types = CompanyType::all();
         $unites = Units::all();
         $currencies = Currency::all();
         $tolerance_weight_by = ToleranceWeightBy::all();
@@ -775,11 +795,15 @@ class FormController extends Controller
         $shipping_terms = ShippingTerm::all();
         $thcincluded = THCIncluded::all();
         $destination = Destination::all();
-        $targetMarket=TargetMarket::all();
-        $qualityQuantityInspector=QualityQuantityInspector::all();
-        $InspectionPlace=InspectionPlace::all();
-        $cargoInsurance=CargoInsurance::all();
+        $targetMarket = TargetMarket::all();
+        $qualityQuantityInspector = QualityQuantityInspector::all();
+        $InspectionPlace = InspectionPlace::all();
+        $cargoInsurance = CargoInsurance::all();
         return view('admin.sales_form.create', compact(
+            'sale_form_exist',
+            'form',
+            'route',
+            'company_types',
             'unites',
             'currencies',
             'tolerance_weight_by',
@@ -799,9 +823,76 @@ class FormController extends Controller
         ));
     }
 
-    public function sales_form_fil(Request $request)
+    public function sales_form_update_or_store(Request $request,$item=null)
     {
-        $request->validate([
+        $rules = $this->rules($item);
+        $validator = Validator::make($request->all(), $rules);
+        $validate_items = $validator->valid();
+        $validate_items = collect($validate_items);
+        $env = env('SALE_OFFER_FORM');
+        $files = ['specification_file', 'picture_packing_file', 'quality_inspection_report_file', 'safety_product_file', 'reach_certificate_file'];
+        foreach ($files as $file) {
+            if ($validate_items->has($file)) {
+                if ($validate_items->has('form_id')) {
+                    $path = public_path($env, $file);
+                    unlink($path);
+                }
+                $file_name = $this->Upload_files($env, $validate_items[$file]);
+            } else {
+                if ($item!=null) {
+                    //is_update
+                    $form=SalesOfferForm::where('id',$item)->first();
+                    $file_name=$form[$file];
+                    }else{
+                    $file_name = '';
+                }
+
+            }
+            $validate_items[$file] = $file_name;
+        }
+        $has_loading = $validate_items->has('has_loading') ? 1 : 0;
+        $user_id = \auth()->id();
+        $validate_items['user_id'] = $user_id;
+        $validate_items['has_loading'] = $has_loading;
+        if ($item!=null) {
+            $form = SalesOfferForm::where('id', $item)->first();
+            $form->update($validate_items->except('_token')->all());
+            if ($validator->fails()) {
+                return redirect()->route('admin.sale_form', ['page_type' => 'Edit', 'item' => $form->id])->withErrors($validator->errors());
+            }
+            return redirect()->back()->with('success', 'updated successfully');
+        } else {
+            $sale_form = SalesOfferForm::create($validate_items->except('_token')->all());
+            if ($validator->fails()) {
+                return redirect()->route('admin.sale_form', ['page_type' => 'Edit', 'item' => $sale_form->id])->withErrors($validator->errors());
+            }
+        }
+    }
+
+    public function Upload_files($env, $file)
+    {
+        $fileNamePrimaryImage = generateFileName($file->getClientOriginalName());
+        $file->move(\public_path($env), $fileNamePrimaryImage);
+        return $fileNamePrimaryImage;
+    }
+
+    public function sales_form_index($status)
+    {
+        $user = \auth()->user();
+        if ($user->Roles[0]->name === 'admin') {
+            $user_id = null;
+        } else {
+            $user_id = $user->id;
+        }
+        $items = SalesOfferForm::when($user_id != null, function ($query, $user_id) {
+            $query->where('user_id', $user_id);
+        })->where('status', $status)->paginate(100);
+        return view('admin.sales_form.list', compact('items'));
+    }
+
+    public function rules($item)
+    {
+        $rules = [
             'company_name' => 'required',
             'company_type' => 'required',
             'unit' => 'required',
@@ -814,16 +905,16 @@ class FormController extends Controller
             'cas_no' => 'nullable',
             'product_more_details' => 'nullable',
             'specification' => 'nullable',
-            'specification_file' => ['required_if:specification,null'],
+            //file
             'quality_inspection_report' => 'required',
-            'quality_inspection_report_file' => ['required_if:quality_inspection_report,Yes'],
+            //file
             'max_quantity' => 'required',
             'min_order' => 'required',
             'tolerance_weight' => 'nullable',
             'tolerance_weight_by' => 'nullable',
             'partial_shipment' => 'nullable',
             'partial_shipment_number' => ['required_if:partial_shipment,Yes'],
-            'shipment_more_detail' => 'required',
+            'shipment_more_detail' => 'nullable',
             'incoterms' => 'required',
             'incoterms_other' => ['required_if:incoterms,other'],
             'incoterms_version' => 'nullable',
@@ -837,16 +928,16 @@ class FormController extends Controller
             'payment_term_description' => 'required',
             'packing' => 'required',
             'packing_more_details' => 'nullable',
-            'packing_other' => 'required',
+            'packing_other' => ['required_unless:packing,other'],
             'marking_more_details' => 'nullable',
             'picture_packing' => 'nullable',
-            'picture_packing_file' => ['required_if:picture_packing,Yes'],
-            'possible_buyers' => 'required',
+            //file
+            'possible_buyers' => 'nullable',
             'cost_per_unit' => ['required_if:possible_buyers,Yes'],
             'origin_country' => 'required',
             'origin_port_city' => 'required',
             'origin_more_details' => 'nullable',
-            //
+            //loading
             'has_loading' => 'nullable',
             'loading_type' => ['required_if:has_loading,1'],
             'loading_country' => ['required_unless:loading_type,null'],
@@ -860,7 +951,7 @@ class FormController extends Controller
             'loading_flexi_tank_type' => ['required_if:loading_type,Flexi Tank'],
             'loading_flexi_tank_thc_included' => 'nullable',
             'loading_more_details' => 'nullable',
-            //
+            //discharging
             'has_discharging' => 'nullable',
             'discharging_type' => ['required_if:has_discharging,1'],
             'discharging_country' => ['required_unless:discharging_type,null'],
@@ -875,36 +966,107 @@ class FormController extends Controller
             'discharging_flexi_tank_thc_included' => 'nullable',
             'discharging_more_details' => 'nullable',
             //destination
-            'destination'=>'nullable',
-            'exclude_market'=>'nullable',
-            'target_market'=>'nullable',
-            //insoection
-            'quantity_quantity_inspection'=>'required',
-            'inspection_place'=>'required',
-            'inspection_more_detail'=>'nullable',
+            'destination' => 'nullable',
+            'exclude_market' => 'nullable',
+            'target_market' => 'nullable',
+            //inspection
+            'quality_quantity_inspection' => 'required',
+            'inspection_place' => 'required',
+            'inspection_more_detail' => 'nullable',
             //insurance
-            'cargo_insurance'=>'nullable',
-            'insurance_more_details'=>'nullable',
+            'cargo_insurance' => 'nullable',
+            'insurance_more_details' => 'nullable',
             //safety
-            'safety_product'=>'required',
-            'safety_product_file'=>['required_if:safety_product,Yes'],
+            'safety_product' => 'required',
+            //file
             //reach certificate
-            'reach_certificate'=>'required',
-            'reach_certificate_file'=>['required_if:reach_certificate,Yes'],
+            'reach_certificate' => 'required',
+            //file
             //documents
-            'documents_count'=>'required',
-            'documents_options'=>['required_if:documents_count,No'],
-            'document_more_detail'=>'nullable',
+            'documents_count' => 'required',
+            'documents_options' => ['required_if:documents_count,No'],
+            'document_more_detail' => 'nullable',
             //contact person
-            'contact_person_name'=>'required',
-            'contact_person_job_title'=>'required',
-            'contact_person_email'=>'required',
-            'contact_person_mobile_phone'=>'required',
+            'contact_person_name' => 'required',
+            'contact_person_job_title' => 'required',
+            'contact_person_email' => 'required',
+            'contact_person_mobile_phone' => 'required',
             //last part
-            'last_more_detail'=>'nullable',
-            'accept_terms'=>'required',
+            'last_more_detail' => 'nullable',
+            'accept_terms' => 'required',
+        ];
 
-        ]);
-        $has_loading = $request->has('has_loading') ? 1 : 0;
+        if ($item!=null) {
+            //is_update
+            $form=SalesOfferForm::where('id',$item)->first();
+            $specification_file=$form['specification_file'];
+            $quality_inspection_report_file=$form['quality_inspection_report_file'];
+            $picture_packing_file=$form['picture_packing_file'];
+            $safety_product_file=$form['safety_product_file'];
+            $reach_certificate_file=$form['reach_certificate_file'];
+            //
+            if ($specification_file==null){
+                $rules+=[
+                    'specification_file' => ['required_if:specification,null'],
+                ];
+            }else{
+                $rules+=[
+                    'specification_file' => 'nullable',
+                ];
+            }
+            //
+            if ($quality_inspection_report_file==null){
+                $rules+=[
+                    'quality_inspection_report_file' => 'required_if:quality_inspection_report,Yes',
+                ];
+            }else{
+                $rules+=[
+                    'quality_inspection_report_file' => 'nullable',
+                ];
+            }
+            //
+            if ($picture_packing_file==null){
+                $rules+=[
+                    'picture_packing_file' => ['required_if:picture_packing,Yes'],
+                ];
+            }else{
+                $rules+=[
+                    'picture_packing_file' => 'nullable',
+                ];
+            }
+            //
+            if ($safety_product_file==null){
+                $rules+=[
+                    'safety_product_file' => ['required_if:safety_product,Yes'],
+                ];
+            }else{
+                $rules+=[
+                    'safety_product_file' => 'nullable',
+                ];
+            }
+            //
+            if ($reach_certificate_file==null){
+                $rules+=[
+                    'reach_certificate_file' => ['required_if:reach_certificate,Yes'],
+                ];
+            }else{
+                $rules+=[
+                    'reach_certificate_file' => 'nullable',
+                ];
+            }
+
+
+        } else {
+            //is_create
+            $rules += [
+                'specification_file' => ['required_if:specification,null'],
+                'quality_inspection_report_file' => ['required_if:quality_inspection_report,Yes'],
+                'picture_packing_file' => ['required_if:picture_packing,Yes'],
+                'safety_product_file' => ['required_if:safety_product,Yes'],
+                'reach_certificate_file' => ['required_if:reach_certificate,Yes'],
+            ];
+
+        }
+        return $rules;
     }
 }

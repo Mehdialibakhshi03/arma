@@ -2,14 +2,34 @@
     <hr>
     <strong>Partial Shipment & incoterms</strong>
 </div>
-<div
-    class="col-12 col-md-6 mb-3 d-flex justify-content-between align-items-end">
+<div class="col-12 col-md-6 mb-3 d-flex justify-content-between align-items-end">
+    @php
+
+        $is_required=0;
+        $required_span='';
+        $required='';
+        $name='partial_shipment';
+        //common conditional
+        if ($is_required===1){
+            $required_span='<span class="text-danger">*</span>';
+            $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
+        }
+    @endphp
     <label for="quality_inspection_report" class="mb-2">Partial
         Shipment</label>
     <div>
         <div class="form-check form-check-inline mr-3">
             <input onchange="addShipmentNumber(this)"
-                   {{ old('partial_shipment')==='Yes' ? 'checked' : '' }} class="form-check-input"
+                   {{ $value==='Yes' ? 'checked' : '' }} class="form-check-input"
                    type="radio"
                    name="partial_shipment" id="partial_shipment"
                    value="Yes">
@@ -18,7 +38,7 @@
         </div>
         <div class="form-check form-check-inline">
             <input onchange="addShipmentNumber(this)"
-                   {{ old('partial_shipment')==='No' ? 'checked' : '' }} class="form-check-input"
+                   {{ $value==='No' ? 'checked' : '' }} class="form-check-input"
                    type="radio"
                    name="partial_shipment" id="partial_shipment"
                    value="No">
@@ -34,24 +54,34 @@
 </div>
 <div class="col-12 col-md-6 mb-3">
     @php
-        $name='More Details';
+        $label='More Details';
         $is_required=0;
         $required_span='';
         $required='';
+        $name='shipment_'.$label;
+        //common conditional
         if ($is_required===1){
             $required_span='<span class="text-danger">*</span>';
             $required='required';
         }
-        $text_area_name='shipment_'.$name;
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
+        }
     @endphp
     <label for="{{ filed_name($name) }}"
-           class="mb-2">{!! $name.' '.$required_span !!}</label>
+           class="mb-2">{!! $label.' '.$required_span !!}</label>
     <textarea rows="1"
-              {{ $required }} id="{{ filed_name($text_area_name) }}"
+              {{ $required }} id="{{ filed_name($name) }}"
               type="text"
-              name="{{ filed_name($text_area_name) }}"
-              class="form-control">{{ old(filed_name($text_area_name)) }}</textarea>
-    @error(filed_name($text_area_name))
+              name="{{ filed_name($name) }}"
+              class="form-control">{{ $value }}</textarea>
+    @error(filed_name($name))
     <p class="input-error-validate">
         {{ $message }}
     </p>
@@ -59,13 +89,23 @@
 </div>
 <div class="col-12 col-md-6 mb-3">
     @php
-        $name='Incoterms';
+        $name='incoterms';
         $is_required=1;
         $required_span='';
         $required='';
+        //common conditional
         if ($is_required===1){
             $required_span='<span class="text-danger">*</span>';
             $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
         }
     @endphp
     <label for="{{ filed_name($name) }}"
@@ -75,7 +115,7 @@
             name="{{ filed_name($name) }}" class="form-control ">
         @foreach($Incoterms as $item)
             <option
-                {{ old('incoterms')==$item->title ? ' selected="selected"' : '' }}
+                {{ $value==$item->title ? ' selected="selected"' : '' }}
                 value="{{ $item->title }}">{{ $item->title }}</option>
         @endforeach
     </select>
@@ -91,9 +131,19 @@
         $is_required=0;
         $required_span='';
         $required='';
+        //common conditional
         if ($is_required===1){
             $required_span='<span class="text-danger">*</span>';
             $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
         }
     @endphp
     <label for="{{ filed_name($name) }}"
@@ -103,7 +153,7 @@
             name="{{ filed_name($name) }}" class="form-control ">
         @foreach($incoterms_version as $item)
             <option
-                {{ old('incoterms_version')==$item->title ? ' selected="selected"' : '' }}
+                {{ $value==$item->title ? ' selected="selected"' : '' }}
                 value="{{ $item->title }}">{{ $item->title }}</option>
         @endforeach
     </select>
@@ -119,19 +169,28 @@
         $is_required=1;
         $required_span='';
         $required='';
+        //common conditional
         if ($is_required===1){
             $required_span='<span class="text-danger">*</span>';
             $required='required';
         }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
+        }
     @endphp
     <label for="{{ filed_name($name) }}"
            class="mb-2">{!! $name.' '.$required_span !!}</label>
-    <select onchange="hasOther(this)"
-            {{ $required }} id="{{ filed_name($name) }}" type="text"
+    <select {{ $required }} id="{{ filed_name($name) }}" type="text"
             name="{{ filed_name($name) }}" class="form-control ">
         @foreach($countries as $item)
             <option
-                {{ old('countries')==$item->title ? ' selected="selected"' : '' }}
+                {{ $value==$item->title ? ' selected="selected"' : '' }}
                 value="{{ $item->title }}">{{ $item->title }}</option>
         @endforeach
     </select>
@@ -147,16 +206,26 @@
         $is_required=1;
         $required_span='';
         $required='';
+        //common conditional
         if ($is_required===1){
             $required_span='<span class="text-danger">*</span>';
             $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
         }
     @endphp
     <label for="{{ filed_name($name) }}"
            class="mb-2">{!! $name.' '.$required_span !!}</label>
     <input {{ $required }} id="{{ filed_name($name) }}" type="text"
            name="{{ filed_name($name) }}" class="form-control"
-           value="{{ old(filed_name($name)) }}">
+           value="{{ $value }}">
     @error(filed_name($name))
     <p class="input-error-validate">
         {{ $message }}
@@ -165,24 +234,34 @@
 </div>
 <div class="col-12 col-md-6 mb-3">
     @php
-        $name='More Details';
+        $label='More Details';
         $is_required=0;
         $required_span='';
         $required='';
+        $name='incoterms_'.$label;
+        //common conditional
         if ($is_required===1){
             $required_span='<span class="text-danger">*</span>';
             $required='required';
         }
-        $text_area_name='incoterms_'.$name;
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
+        }
     @endphp
     <label for="{{ filed_name($name) }}"
-           class="mb-2">{!! $name.' '.$required_span !!}</label>
+           class="mb-2">{!! $label.' '.$required_span !!}</label>
     <textarea rows="2"
-              {{ $required }} id="{{ filed_name($text_area_name) }}"
+              {{ $required }} id="{{ filed_name($name) }}"
               type="text"
-              name="{{ filed_name($text_area_name) }}"
-              class="form-control">{{ old(filed_name($text_area_name)) }}</textarea>
-    @error(filed_name($text_area_name))
+              name="{{ filed_name($name) }}"
+              class="form-control">{{ $value }}</textarea>
+    @error(filed_name($name))
     <p class="input-error-validate">
         {{ $message }}
     </p>
@@ -195,9 +274,19 @@
         $is_required=1;
         $required_span='';
         $required='';
+        //common conditional
         if ($is_required===1){
             $required_span='<span class="text-danger">*</span>';
             $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
         }
     @endphp
     <label for="{{ filed_name($name) }}"
@@ -207,7 +296,7 @@
             name="{{ filed_name($name) }}" class="form-control">
         @foreach($priceTypes as $item)
             <option
-                {{ old('price_type')==$item->title ? ' selected="selected"' : '' }}
+                {{ $value==$item->title ? ' selected="selected"' : '' }}
                 value="{{ $item->title }}">{{ $item->title }}</option>
         @endforeach
     </select>

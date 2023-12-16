@@ -35,7 +35,7 @@
 <div class="col-12 col-md-6 mb-3">
     @php
         $name='Picture Packing';
-        $is_required=1;
+        $is_required=0;
         $required_span='';
         $required='';
         if ($is_required===1){
@@ -60,7 +60,7 @@
 <div class="col-12 col-md-6 mb-3">
     @php
         $name='Possible Buyers';
-        $is_required=1;
+        $is_required=0;
         $required_span='';
         $required='';
         if ($is_required===1){

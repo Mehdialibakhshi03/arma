@@ -9,6 +9,6 @@ class PriceType extends Model
 {
     use HasFactory;
 
-    protected $table = "priceTypes";
+    protected $table = "pricetypes";
     protected $guarded = [];
 }

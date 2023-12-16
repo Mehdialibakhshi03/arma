@@ -10,9 +10,19 @@
         $is_required=1;
         $required_span='';
         $required='';
+                //common conditional
         if ($is_required===1){
             $required_span='<span class="text-danger">*</span>';
             $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
         }
     @endphp
     <label for="{{ filed_name($name) }}"
@@ -21,8 +31,7 @@
             {{ $required }} id="{{ filed_name($name) }}" type="text"
             name="{{ filed_name($name) }}" class="form-control">
         @foreach($paymentTerms as $item)
-            <option
-                {{ old('payment_term')==$item->title ? ' selected="selected"' : '' }}
+            <option {{ $value==$item->title ? ' selected="selected"' : '' }}
                 value="{{ $item->title }}">{{ $item->title }}</option>
         @endforeach
     </select>
