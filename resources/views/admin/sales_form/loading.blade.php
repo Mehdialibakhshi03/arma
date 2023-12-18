@@ -5,10 +5,31 @@
     </strong>
 </div>
 <div id="loading_part" class="col-12 mt-3">
+    @php
+        $label='For EXW,FCA,FOB Delivery';
+        $name='has_loading';
+        $is_required=1;
+        $required_span='';
+        $required='';
+//common conditional
+        if ($is_required===1){
+            $required_span='<span class="text-danger">*</span>';
+            $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
+        }
+    @endphp
     <div class="form-check">
-        <input {{ old('has_loading')==1 ? 'checked' : '' }} onchange="has_loading_change(this)" class="form-check-input" type="checkbox" value="1" id="has_loading" name="has_loading">
+        <input {{ $value==1 ? 'checked' : '' }} onchange="has_loading_change(this)" class="form-check-input" type="checkbox" value="1" id="{{ $name }}" name="{{ $name }}">
         <label class="form-check-label" for="has_loading">
-            For EXW,FCA,FOB Delivery
+            {{ $label }}
         </label>
         @error('has_loading')
         <p class="input-error-validate">
@@ -21,12 +42,26 @@
     <div id="loading_options_inputs" class="col-12 col-md-6 mb-3 d-flex justify-content-between align-items-end">
         @php
             $name='Loading Type';
+            //common conditional
+        if ($is_required===1){
+            $required_span='<span class="text-danger">*</span>';
+            $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
+        }
         @endphp
         <label for="quality_inspection_report" class="mb-2">Loading Type <span class="text-danger">*</span></label>
         <div>
             <div class="form-check form-check-inline mr-3">
                 <input onchange="loadingOption(this)"
-                       {{ old(filed_name($name))==='Bulk' ? 'checked' : '' }} class="form-check-input"
+                       {{ $value==='Bulk' ? 'checked' : '' }} class="form-check-input"
                        type="radio"
                        name="{{ filed_name($name) }}" id="{{ filed_name($name).'1' }}"
                        value="Bulk">
@@ -35,7 +70,7 @@
             </div>
             <div class="form-check form-check-inline">
                 <input onchange="loadingOption(this)"
-                       {{ old(filed_name($name))==='Container' ? 'checked' : '' }} class="form-check-input"
+                       {{ $value==='Container' ? 'checked' : '' }} class="form-check-input"
                        type="radio"
                        name="{{ filed_name($name) }}" id="{{ filed_name($name).'2' }}"
                        value="Container">
@@ -44,7 +79,7 @@
             </div>
             <div class="form-check form-check-inline">
                 <input onchange="loadingOption(this)"
-                       {{ old(filed_name($name))==='Flexi Tank' ? 'checked' : '' }} class="form-check-input"
+                       {{ $value==='Flexi Tank' ? 'checked' : '' }} class="form-check-input"
                        type="radio"
                        name="{{ filed_name($name) }}" id="{{ filed_name($name).'3' }}"
                        value="Flexi Tank">
@@ -67,10 +102,20 @@
                 $is_required=1;
                 $required_span='';
                 $required='';
-                if ($is_required===1){
-                    $required_span='<span class="text-danger">*</span>';
-                    $required='required';
-                }
+            //common conditional
+        if ($is_required===1){
+            $required_span='<span class="text-danger">*</span>';
+            $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
+        }
         @endphp
         <label for="{{ filed_name($name) }}"
                class="mb-2">{!! $label.' '.$required_span !!}</label>
@@ -79,7 +124,7 @@
                 name="{{ filed_name($name) }}" class="form-control ">
             @foreach($countries as $item)
                 <option
-                    {{ old(filed_name($name))==$item->title ? ' selected="selected"' : '' }}
+                    {{ $value==$item->title ? ' selected="selected"' : '' }}
                     value="{{ $item->title }}">{{ $item->title }}</option>
             @endforeach
         </select>
@@ -96,16 +141,26 @@
             $is_required=1;
             $required_span='';
             $required='';
-            if ($is_required===1){
-                $required_span='<span class="text-danger">*</span>';
-                $required='required';
+            //common conditional
+        if ($is_required===1){
+            $required_span='<span class="text-danger">*</span>';
+            $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
             }
+        }
         @endphp
         <label for="{{ filed_name($name) }}"
                class="mb-2">{!! $label.' '.$required_span !!}</label>
         <input {{ $required }} id="{{ filed_name($name) }}" type="text"
                name="{{ filed_name($name) }}" class="form-control"
-               value="{{ old(filed_name($name)) }}">
+               value="{{ $value }}">
         @error(filed_name($name))
         <p class="input-error-validate">
             {{ $message }}
@@ -124,16 +179,26 @@
             $is_required=1;
             $required_span='';
             $required='';
-            if ($is_required===1){
-                $required_span='<span class="text-danger">*</span>';
-                $required='required';
+            //common conditional
+        if ($is_required===1){
+            $required_span='<span class="text-danger">*</span>';
+            $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
             }
+        }
         @endphp
         <label for="{{ filed_name($name) }}"
                class="mb-2">{!! $label.' '.$required_span !!}</label>
         <input {{ $required }} id="{{ filed_name($name) }}" type="date"
                name="{{ filed_name($name) }}" class="form-control"
-               value="{{ old(filed_name($name)) }}">
+               value="{{ $value }}">
         @error(filed_name($name))
         <p class="input-error-validate">
             {{ $message }}
@@ -147,16 +212,26 @@
             $is_required=1;
             $required_span='';
             $required='';
-            if ($is_required===1){
-                $required_span='<span class="text-danger">*</span>';
-                $required='required';
+            //common conditional
+        if ($is_required===1){
+            $required_span='<span class="text-danger">*</span>';
+            $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
             }
+        }
         @endphp
         <label for="{{ filed_name($name) }}"
                class="mb-2">{!! $label.' '.$required_span !!}</label>
         <input {{ $required }} id="{{ filed_name($name) }}" type="date"
                name="{{ filed_name($name) }}" class="form-control"
-               value="{{ old(filed_name($name)) }}">
+               value="{{ $value }}">
         @error(filed_name($name))
         <p class="input-error-validate">
             {{ $message }}
@@ -179,16 +254,26 @@
                 $is_required=0;
                 $required_span='';
                 $required='';
-                if ($is_required===1){
-                    $required_span='<span class="text-danger">*</span>';
-                    $required='required';
-                }
+            //common conditional
+        if ($is_required===1){
+            $required_span='<span class="text-danger">*</span>';
+            $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
+        }
             @endphp
             <label for="{{ filed_name($name) }}"
                    class="mb-2">{!! $label.' '.$required_span !!}</label>
             <input {{ $required }} id="{{ filed_name($name) }}" type="number"
                    name="{{ filed_name($name) }}" class="form-control"
-                   value="{{ old(filed_name($name)) }}">
+                   value="{{ $value }}">
             @error(filed_name($name))
             <p class="input-error-validate">
                 {{ $message }}
@@ -207,10 +292,20 @@
                     $is_required=0;
                     $required_span='';
                     $required='';
-                    if ($is_required===1){
-                        $required_span='<span class="text-danger">*</span>';
-                        $required='required';
-                    }
+            //common conditional
+        if ($is_required===1){
+            $required_span='<span class="text-danger">*</span>';
+            $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
+        }
             @endphp
             <label for="{{ filed_name($name) }}"
                    class="mb-2">{!! $label.' '.$required_span !!}</label>
@@ -219,7 +314,7 @@
                     name="{{ filed_name($name) }}" class="form-control ">
                         @foreach($shipping_terms as $item)
                             <option
-                                {{ old(filed_name($name))==$item->title ? ' selected="selected"' : '' }}
+                                {{ $value==$item->title ? ' selected="selected"' : '' }}
                                 value="{{ $item->title }}">{{ $item->title }}</option>
                         @endforeach
             </select>
@@ -236,16 +331,26 @@
                 $is_required=0;
                 $required_span='';
                 $required='';
-                if ($is_required===1){
-                    $required_span='<span class="text-danger">*</span>';
-                    $required='required';
-                }
+            //common conditional
+        if ($is_required===1){
+            $required_span='<span class="text-danger">*</span>';
+            $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
+        }
             @endphp
             <label for="{{ filed_name($name) }}"
                    class="mb-2">{!! $label.' '.$required_span !!}</label>
             <input {{ $required }} id="{{ filed_name($name) }}" type="text"
                    name="{{ filed_name($name) }}" class="form-control"
-                   value="{{ old(filed_name($name)) }}">
+                   value="{{ $value }}">
             @error(filed_name($name))
             <p class="input-error-validate">
                 {{ $message }}
@@ -261,21 +366,30 @@
                     $is_required=0;
                     $required_span='';
                     $required='';
-                    if ($is_required===1){
-                        $required_span='<span class="text-danger">*</span>';
-                        $required='required';
-                    }
+            //common conditional
+        if ($is_required===1){
+            $required_span='<span class="text-danger">*</span>';
+            $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
+        }
             @endphp
             <label for="{{ filed_name($name) }}"
                    class="mb-2">{!! $label.' '.$required_span !!}</label>
             <select onchange="hasOther(this)"
                     {{ $required }} id="{{ filed_name($name) }}" type="text"
-                    name="{{ filed_name($name) }}" class="form-control ">
-                {{--        @foreach($countries as $item)--}}
-                {{--            <option--}}
-                {{--                {{ old(filed_name($name))==$item->title ? ' selected="selected"' : '' }}--}}
-                {{--                value="{{ $item->title }}">{{ $item->title }}</option>--}}
-                {{--        @endforeach--}}
+                    name="{{ $value }}" class="form-control ">
+                        @foreach($container_types as $item)
+                            <option {{ $value==$item->title ? ' selected="selected"' : '' }}
+                                value="{{ $item->title }}">{{ $item->title }}</option>
+                        @endforeach
             </select>
             @error(filed_name($name))
             <p class="input-error-validate">
@@ -290,10 +404,20 @@
                     $is_required=0;
                     $required_span='';
                     $required='';
-                    if ($is_required===1){
-                        $required_span='<span class="text-danger">*</span>';
-                        $required='required';
-                    }
+            //common conditional
+        if ($is_required===1){
+            $required_span='<span class="text-danger">*</span>';
+            $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
+        }
             @endphp
             <label for="{{ filed_name($name) }}"
                    class="mb-2">{!! $label.' '.$required_span !!}</label>
@@ -302,7 +426,7 @@
                     name="{{ filed_name($name) }}" class="form-control ">
                         @foreach($thcincluded as $item)
                             <option
-                                {{ old(filed_name($name))==$item->title ? ' selected="selected"' : '' }}
+                                {{ $value==$item->title ? ' selected="selected"' : '' }}
                                 value="{{ $item->title }}">{{ $item->title }}</option>
                         @endforeach
             </select>
@@ -319,16 +443,26 @@
                 $is_required=0;
                 $required_span='';
                 $required='';
-                if ($is_required===1){
-                    $required_span='<span class="text-danger">*</span>';
-                    $required='required';
-                }
+            //common conditional
+        if ($is_required===1){
+            $required_span='<span class="text-danger">*</span>';
+            $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
+        }
             @endphp
             <label for="{{ filed_name($name) }}"
                    class="mb-2">{!! $label.' '.$required_span !!}</label>
             <input {{ $required }} id="{{ filed_name($name) }}" type="text"
                    name="{{ filed_name($name) }}" class="form-control"
-                   value="{{ old(filed_name($name)) }}">
+                   value="{{ $value }}">
             @error(filed_name($name))
             <p class="input-error-validate">
                 {{ $message }}
@@ -344,21 +478,31 @@
                     $is_required=1;
                     $required_span='';
                     $required='';
-                    if ($is_required===1){
-                        $required_span='<span class="text-danger">*</span>';
-                        $required='required';
-                    }
+            //common conditional
+        if ($is_required===1){
+            $required_span='<span class="text-danger">*</span>';
+            $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
+        }
             @endphp
             <label for="{{ filed_name($name) }}"
                    class="mb-2">{!! $label.' '.$required_span !!}</label>
             <select onchange="hasOther(this)"
                     {{ $required }} id="{{ filed_name($name) }}" type="text"
                     name="{{ filed_name($name) }}" class="form-control ">
-                {{--        @foreach($countries as $item)--}}
-                {{--            <option--}}
-                {{--                {{ old(filed_name($name))==$item->title ? ' selected="selected"' : '' }}--}}
-                {{--                value="{{ $item->title }}">{{ $item->title }}</option>--}}
-                {{--        @endforeach--}}
+                        @foreach($flexi_type_tank as $item)
+                            <option
+                                {{ $value==$item->title ? ' selected="selected"' : '' }}
+                                value="{{ $item->title }}">{{ $item->title }}</option>
+                        @endforeach
             </select>
             @error(filed_name($name))
             <p class="input-error-validate">
@@ -373,21 +517,31 @@
                     $is_required=0;
                     $required_span='';
                     $required='';
-                    if ($is_required===1){
-                        $required_span='<span class="text-danger">*</span>';
-                        $required='required';
-                    }
+            //common conditional
+        if ($is_required===1){
+            $required_span='<span class="text-danger">*</span>';
+            $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
+        }
             @endphp
             <label for="{{ filed_name($name) }}"
                    class="mb-2">{!! $label.' '.$required_span !!}</label>
             <select onchange="hasOther(this)"
                     {{ $required }} id="{{ filed_name($name) }}" type="text"
                     name="{{ filed_name($name) }}" class="form-control ">
-                {{--        @foreach($countries as $item)--}}
-                {{--            <option--}}
-                {{--                {{ old(filed_name($name))==$item->title ? ' selected="selected"' : '' }}--}}
-                {{--                value="{{ $item->title }}">{{ $item->title }}</option>--}}
-                {{--        @endforeach--}}
+                        @foreach($thcincluded as $item)
+                            <option
+                                {{ $value==$item->title ? ' selected="selected"' : '' }}
+                                value="{{ $item->title }}">{{ $item->title }}</option>
+                        @endforeach
             </select>
             @error(filed_name($name))
             <p class="input-error-validate">
@@ -402,16 +556,26 @@
                 $is_required=0;
                 $required_span='';
                 $required='';
-                if ($is_required===1){
-                    $required_span='<span class="text-danger">*</span>';
-                    $required='required';
-                }
+            //common conditional
+        if ($is_required===1){
+            $required_span='<span class="text-danger">*</span>';
+            $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
+        }
             @endphp
             <label for="{{ filed_name($name) }}"
                    class="mb-2">{!! $label.' '.$required_span !!}</label>
             <input {{ $required }} id="{{ filed_name($name) }}" type="text"
                    name="{{ filed_name($name) }}" class="form-control"
-                   value="{{ old(filed_name($name)) }}">
+                   value="{{ $value }}">
             @error(filed_name($name))
             <p class="input-error-validate">
                 {{ $message }}

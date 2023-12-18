@@ -5,14 +5,24 @@
             $is_required=0;
             $required_span='';
             $required='';
-            if ($is_required===1){
-                $required_span='<span class="text-danger">*</span>';
-                $required='required';
+                                //common conditional
+        if ($is_required===1){
+            $required_span='<span class="text-danger">*</span>';
+            $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
             }
+        }
     @endphp
     <label for="{{ filed_name($name) }}"
            class="mb-2">{!! $label.' '.$required_span !!}</label>
-    <textarea name="{{ filed_name($name) }}" class="form-control form-control-sm">{{ old(filed_name($name)) }}</textarea>
+    <textarea name="{{ filed_name($name) }}" class="form-control form-control-sm">{{ $value }}</textarea>
     @error(filed_name($name))
     <p class="input-error-validate">
         {{ $message }}
@@ -23,9 +33,23 @@
     @php
         $label='I accept all above mentioned terms and conditions are valid for 5 working days';
         $name='accept terms';
+                                        //common conditional
+        if ($is_required===1){
+            $required_span='<span class="text-danger">*</span>';
+            $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
+        }
     @endphp
     <div class="form-check">
-        <input {{ old(filed_name($name))==filed_name($name)?'checked':'' }} name="{{ filed_name($name) }}" class="form-check-input" type="checkbox" value="{{ filed_name($name) }}" id="{{ filed_name($name) }}">
+        <input {{ $value==1?'checked':'' }} name="{{ filed_name($name) }}" class="form-check-input" type="checkbox" value="1" id="{{ filed_name($name) }}">
         <label class="form-check-label" for="{{ filed_name($name) }}">
             {{ $label }}
         </label>

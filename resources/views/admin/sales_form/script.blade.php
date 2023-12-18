@@ -41,19 +41,7 @@
             let error_message = `<p class="input-error-validate">${price}</p>`;
             $(error_message).insertAfter($('#payment_term_description'));
         }
-        let packing_other = "{{ $errors->has('packing_other') }}";
-        if (packing_other) {
-            let packing_other_error = "{{ $errors->first('packing_other') }}";
-            let error_message = `<p class="input-error-validate">${packing_other_error}</p>`;
-            $(error_message).insertAfter($('#packing_other'));
-        }
-        let picture_packing_file = "{{ $errors->has('picture_packing_file') }}";
-        if (picture_packing_file) {
-            let picture_packing_file = "{{ $errors->first('picture_packing_file') }}";
-            let error_message = `<p class="input-error-validate">${picture_packing_file}</p>`;
 
-            $(error_message).insertAfter($('#picture_packing_file'));
-        }
         let cost_per_unit = "{{ $errors->has('cost_per_unit') }}";
         if (cost_per_unit) {
             let cost_per_unit = "{{ $errors->first('cost_per_unit') }}";
@@ -67,18 +55,6 @@
         let discharging_type = "{{ $errors->has('discharging_type') }}";
         if (discharging_type) {
             $('#discharging_common_section').addClass('d-none');
-        }
-        let safety_product_file = "{{ $errors->has('safety_product_file') }}";
-        if (safety_product_file) {
-            let safety_product_file = "{{ $errors->first('safety_product_file') }}";
-            let error_message = `<p class="input-error-validate">${safety_product_file}</p>`;
-            $(error_message).insertAfter($('#safety_product_file'));
-        }
-        let reach_certificate_file = "{{ $errors->has('reach_certificate_file') }}";
-        if (reach_certificate_file) {
-            let reach_certificate_file = "{{ $errors->first('reach_certificate_file') }}";
-            let error_message = `<p class="input-error-validate">${reach_certificate_file}</p>`;
-            $(error_message).insertAfter($('#reach_certificate_file'));
         }
     }
 
@@ -167,6 +143,9 @@
         }
         let quality_inspection_report = value === 'Yes' ? true : false;
         if (quality_inspection_report) {
+            if (other_value == '' || other_value == null) {
+                src = null;
+            }
             addAttachmentFile($('#quality_inspection_report'), 0, other_value, src);
         }
         let quality_inspection_report_file_error = "{{ $errors->has('quality_inspection_report_file') }}";
@@ -176,6 +155,7 @@
             $(error_message).insertAfter($('#quality_inspection_report_file'));
         }
     }
+
     function check_partial_shipment() {
         let old_value = "{{ old('partial_shipment') }}";
         let value;
@@ -190,7 +170,7 @@
                 other_value = "{{ isset($form['partial_shipment_number'])?$form['partial_shipment_number']:'' }}";
             }
         }
-        let partial_shipment = value==='Yes'?1:0 ;
+        let partial_shipment = value === 'Yes' ? 1 : 0;
         if (partial_shipment === 1) {
             addShipmentNumber($('#partial_shipment'));
             $('#partial_shipment_number').val(other_value);
@@ -216,7 +196,7 @@
 
             }
         }
-        let has_incoterms_other =value==='other' ? 1 : 0;
+        let has_incoterms_other = value === 'other' ? 1 : 0;
         if (has_incoterms_other) {
             let has_old = "{{ old('currency_other') }}";
             if (has_old !== '') {
@@ -236,20 +216,59 @@
     }
 
     function check_possible_buyers() {
-        let has_other = {{ old('possible_buyers')==='Yes' ? 1 : 0 }};
+        let old_value = "{{ old('possible_buyers') }}";
+        let value;
+        let other_value;
+        let sale_form_exist = {{ $sale_form_exist }};
+        if (old_value !== '') {
+            value = old_value;
+        } else {
+            if (sale_form_exist === 1) {
+                value = "{{ isset($form['possible_buyers'])?$form['possible_buyers']:'' }}";
+
+            }
+        }
+        let has_other = value === 'Yes' ? 1 : 0;
         if (has_other) {
-            let old_value = "{{ old('cost_per_unit') }}"
+            let has_old = "{{ old('cost_per_unit') }}";
+            if (has_old !== '') {
+                other_value = "{{ old('cost_per_unit') }}";
+            } else {
+                other_value = "{{ isset($form['cost_per_unit'])?$form['cost_per_unit']:'' }}"
+            }
             hasOther($('#possible_buyers'), 1);
-            $('#cost_per_unit').val(old_value);
+            $('#cost_per_unit').val(other_value);
         }
     }
 
     function check_packing() {
-        let has_packing_other = {{ old('packing')==='other' ? 1 : 0 }};
-        if (has_packing_other) {
-            let old_value = "{{ old('packing_other') }}"
+        let old_value = "{{ old('packing') }}";
+        let value;
+        let other_value;
+        let sale_form_exist = {{ $sale_form_exist }};
+        if (old_value !== '') {
+            value = old_value;
+        } else {
+            if (sale_form_exist === 1) {
+                value = "{{ isset($form['packing'])?$form['packing']:'' }}";
+            }
+        }
+        let has_other = value === 'other' ? 1 : 0;
+        if (has_other) {
+            let has_old = "{{ old('packing_other') }}";
+            if (has_old !== '') {
+                other_value = "{{ old('packing_other') }}";
+            } else {
+                other_value = "{{ isset($form['packing_other'])?$form['packing_other']:'' }}"
+            }
             hasOther($('#packing'));
-            $('#packing_other').val(old_value);
+            $('#packing_other').val(other_value);
+        }
+        let packing_other = "{{ $errors->has('packing_other') }}";
+        if (packing_other) {
+            let packing_other_error = "{{ $errors->first('packing_other') }}";
+            let error_message = `<p class="input-error-validate">${packing_other_error}</p>`;
+            $(error_message).insertAfter($('#packing_other'));
         }
     }
 
@@ -295,21 +314,82 @@
 
 
     function check_safety_file() {
-        let quality_inspection_report = "{{ old('safety_product')==='Yes' ? true : false }}";
-        if (quality_inspection_report) {
-            addAttachmentFile($('input[name="safety_product"]'));
+        let old_value = "{{ old('safety_product') }}";
+        let value;
+        let other_value;
+        let sale_form_exist = {{ $sale_form_exist }};
+        let src = null;
+        if (old_value !== '') {
+            value = old_value;
+        } else {
+            if (sale_form_exist === 1) {
+                value = "{{ isset($form['safety_product'])?$form['safety_product']:'' }}";
+                other_value = "{{ isset($form['safety_product_file'])?$form['safety_product_file']:'' }}";
+                src = "{{ imageExist(env('SALE_OFFER_FORM'),isset($form['safety_product_file'])?$form['safety_product_file']:'') }}"
+            }
+        }
+        let safety_product = value === 'Yes' ? true : false;
+        if (safety_product) {
+            if (other_value === '' || other_value == null) {
+                src = null;
+            }
+            addAttachmentFile($('input[name="safety_product"]'), 0, other_value, src);
+        }
+        //errors
+        let safety_product_file = "{{ $errors->has('safety_product_file') }}";
+        if (safety_product_file) {
+            let safety_product_file = "{{ $errors->first('safety_product_file') }}";
+            let error_message = `<p class="input-error-validate">${safety_product_file}</p>`;
+            $(error_message).insertAfter($('#safety_product_file'));
         }
     }
 
     function check_reach_certificate_file() {
-        let quality_inspection_report = "{{ old('reach_certificate')==='Yes' ? true : false }}";
-        if (quality_inspection_report) {
-            addAttachmentFile($('input[name="reach_certificate"]'));
+        let old_value = "{{ old('reach_certificate') }}";
+        let value;
+        let other_value;
+        let sale_form_exist = {{ $sale_form_exist }};
+        let src = null;
+        if (old_value !== '') {
+            value = old_value;
+        } else {
+            if (sale_form_exist === 1) {
+                value = "{{ isset($form['reach_certificate'])?$form['reach_certificate']:'' }}";
+                other_value = "{{ isset($form['reach_certificate_file'])?$form['reach_certificate_file']:'' }}";
+                src = "{{ imageExist(env('SALE_OFFER_FORM'),isset($form['reach_certificate_file'])?$form['reach_certificate_file']:'') }}"
+            }
+        }
+        let reach_certificate = value === 'Yes' ? true : false;
+        if (reach_certificate) {
+            if (other_value === '' || other_value == null) {
+                src = null;
+            }
+            addAttachmentFile($('input[name="reach_certificate"]'), 0, other_value, src);
+        }
+        //errors
+        let reach_certificate_file = "{{ $errors->has('reach_certificate_file') }}";
+        if (reach_certificate_file) {
+            let reach_certificate_file = "{{ $errors->first('reach_certificate_file') }}";
+            let error_message = `<p class="input-error-validate">${reach_certificate_file}</p>`;
+            $(error_message).insertAfter($('#reach_certificate_file'));
         }
     }
 
+
     function check_documents() {
-        let documents_options = "{{ old('documents_options') }}";
+        let old_value = "{{ old('documents_options') }}";
+        let value;
+        let other_value;
+        let sale_form_exist = {{ $sale_form_exist }};
+        let src = null;
+        if (old_value !== '') {
+            value = old_value;
+        } else {
+            if (sale_form_exist === 1) {
+                value = "{{ isset($form['documents_options'])?$form['documents_options']:'' }}";
+            }
+        }
+        let documents_options = value;
         documents_options = documents_options.split(",");
         let documents_options_length = documents_options.length;
         $('#documents_options').val(documents_options);
@@ -320,9 +400,34 @@
     }
 
     function check_quality_packing_file() {
-        let picture_packing_file = "{{ old('picture_packing')==='Yes' ? true : false }}";
+        let old_value = "{{ old('picture_packing') }}";
+        let value;
+        let other_value;
+        let sale_form_exist = {{ $sale_form_exist }};
+        let src = null;
+        if (old_value !== '') {
+            value = old_value;
+        } else {
+            if (sale_form_exist === 1) {
+                value = "{{ isset($form['picture_packing'])?$form['picture_packing']:'' }}";
+                other_value = "{{ isset($form['picture_packing_file'])?$form['picture_packing_file']:'' }}";
+                src = "{{ imageExist(env('SALE_OFFER_FORM'),isset($form['picture_packing_file'])?$form['picture_packing_file']:'') }}"
+            }
+        }
+        let has_file = value === 'Yes' ? true : false;
+
+        if (has_file) {
+            if (other_value === '' || other_value == null) {
+                src = null;
+            }
+            addAttachmentFile($('#picture_packing'), 1, other_value, src);
+        }
+        let picture_packing_file = "{{ $errors->has('picture_packing_file') }}";
         if (picture_packing_file) {
-            addAttachmentFile($('#picture_packing'), 1);
+            let picture_packing_file = "{{ $errors->first('picture_packing_file') }}";
+            let error_message = `<p class="input-error-validate">${picture_packing_file}</p>`;
+
+            $(error_message).insertAfter($('#picture_packing_file'));
         }
     }
 
@@ -333,14 +438,14 @@
         let sale_form_exist = {{ $sale_form_exist }};
         if (old_value !== '') {
             value = old_value;
-            other_value="{{ old('payment_term_description') }}";
+            other_value = "{{ old('payment_term_description') }}";
         } else {
             if (sale_form_exist === 1) {
                 value = "{{ isset($form['payment_term'])?$form['payment_term']:'' }}";
                 other_value = "{{ isset($form['payment_term_description'])?$form['payment_term_description']:'' }}";
             }
         }
-        let has_payment_term =value;
+        let has_payment_term = value;
         if (has_payment_term.length !== 0) {
             PaymentTerm($('#payment_term'));
             $('#payment_term_description').val(other_value);
@@ -397,7 +502,6 @@
     function PaymentTerm(tag) {
         let name = $(tag).attr('name');
         let value = $(tag).val()
-        console.log(value);
         let id = 'payment_term_description';
         let field_label = `${value} Type,${value} Draft,Term and Condition`;
         let field_name = 'payment_term_description';
@@ -447,12 +551,12 @@
 
     function createAttachmentElement(name, src = null) {
         let field_name = name + '_file';
-        let href='';
+        let href = '';
         let star = '<span class="text-danger">*</span>';
         if (src != null) {
             href = `<a target="_blank" href="${src}">` +
                 ' <i class="fa fa-paperclip ml-3 text-info"></i></a>';
-            star='';
+            star = '';
         }
         return `<div class="col-12 col-md-6 mb-3">
                     <label class="mb-2">Attach ${href}${star}</label>
@@ -499,10 +603,11 @@
 
     function loadingOption(tag) {
         let value = $(tag).val();
+        console.log(value);
         if (value === 'Flexi Tank') {
             value = 'Flexi_Tank';
         }
-        console.log(value);
+
         $('#loading_options_sections').removeClass('d-none');
         $('#loading_common_section').removeClass('d-none');
         $('.loading_part').addClass('d-none');
@@ -520,12 +625,61 @@
     }
 
     function check_loading_part() {
-        let has_loading = {{ old('has_loading')==1 ? 1 : 0 }};
+        let old_value = "{{ old('has_loading') }}";
+        let value;
+        let other_value;
+        let sale_form_exist = {{ $sale_form_exist }};
+        let pre_value;
+        if (old_value !== '') {
+            value = old_value;
+        } else {
+            if (sale_form_exist === 1) {
+                value = "{{ isset($form['has_loading'])?$form['has_loading']:'' }}";
+            }
+        }
+        let has_loading = value == 1 ? 1 : 0;
         if (has_loading) {
+            pre_value = "{{ old('loading_type') }}";
+            if (old_value !== '') {
+                other_value = pre_value;
+            } else {
+                if (sale_form_exist === 1) {
+                    other_value = "{{ isset($form['loading_type'])?$form['loading_type']:'' }}";
+                }
+            }
             has_loading_change($('#has_loading'));
-            let pre_value = "{{ old('loading_type') }}";
-            let input = $('#loading_options input[value="' + pre_value + '"]');
+            let input = $('#loading_options input[value="' + other_value + '"]');
             loadingOption(input);
+        }
+    }
+
+
+    function check_discharging_part() {
+        let old_value = "{{ old('has_discharging') }}";
+        let value;
+        let other_value;
+        let sale_form_exist = {{ $sale_form_exist }};
+        let pre_value;
+        if (old_value !== '') {
+            value = old_value;
+        } else {
+            if (sale_form_exist === 1) {
+                value = "{{ isset($form['has_discharging'])?$form['has_discharging']:'' }}";
+            }
+        }
+        let has_discharging = value == 1 ? 1 : 0;
+        if (has_discharging) {
+            pre_value = "{{ old('discharging_type') }}";
+            if (old_value !== '') {
+                other_value = pre_value;
+            } else {
+                if (sale_form_exist === 1) {
+                    other_value = "{{ isset($form['discharging_type'])?$form['discharging_type']:'' }}";
+                }
+            }
+            has_discharging_change($('#has_discharging'));
+            let input = $('#discharging_options input[value="' + other_value + '"]');
+            dischargingOption(input);
         }
     }
 
@@ -573,16 +727,6 @@
         $('#discharging_options').remove();
     }
 
-    function check_discharging_part() {
-        let has_discharging = {{ old('has_discharging')==1 ? 1 : 0 }};
-        if (has_discharging) {
-            has_discharging_change($('#has_discharging'));
-            let pre_value = "{{ old('discharging_type') }}"
-            let input = $('#discharging_options input[value="' + pre_value + '"]');
-            console.log(input);
-            dischargingOption(input);
-        }
-    }
 
     //end
 

@@ -6,24 +6,35 @@
 </div>
 <div class="col-12 col-md-6 mb-3">
     @php
-        $name='More Details';
+        $label='More Details';
+        $name='marking_'.$label;
         $is_required=0;
         $required_span='';
         $required='';
+//common conditional
         if ($is_required===1){
             $required_span='<span class="text-danger">*</span>';
             $required='required';
         }
-        $text_area_name='marking_'.$name;
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
+        }
+
     @endphp
     <label for="{{ filed_name($name) }}"
-           class="mb-2">{!! $name.'(Packing Material,Marking) '.$required_span !!}</label>
+           class="mb-2">{!! $label.'(Packing Material,Marking) '.$required_span !!}</label>
     <textarea rows="1"
-              {{ $required }} id="{{ filed_name($text_area_name) }}"
+              {{ $required }} id="{{ filed_name($name) }}"
               type="text"
-              name="{{ filed_name($text_area_name) }}"
-              class="form-control">{{ old(filed_name($text_area_name)) }}</textarea>
-    @error(filed_name($text_area_name))
+              name="{{ filed_name($name) }}"
+              class="form-control">{{ $value }}</textarea>
+    @error(filed_name($name))
     <p class="input-error-validate">
         {{ $message }}
     </p>
@@ -38,9 +49,19 @@
         $is_required=0;
         $required_span='';
         $required='';
+//common conditional
         if ($is_required===1){
             $required_span='<span class="text-danger">*</span>';
             $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
         }
     @endphp
     <label for="{{ filed_name($name) }}"
@@ -48,8 +69,8 @@
     <select onchange="addAttachmentFile(this,1)"
             {{ $required }} id="{{ filed_name($name) }}" type="text"
             name="{{ filed_name($name) }}" class="form-control ">
-        <option {{ old(filed_name($name))=='Yes' ? ' selected="selected"' : '' }} value="Yes">Yes</option>
-        <option {{ old(filed_name($name))=='No' ? ' selected="selected"' : '' }} value="No">No</option>
+        <option {{ $value=='Yes' ? ' selected="selected"' : '' }} value="Yes">Yes</option>
+        <option {{ $value=='No' ? ' selected="selected"' : '' }} value="No">No</option>
     </select>
     @error(filed_name($name))
     <p class="input-error-validate">
@@ -63,9 +84,19 @@
         $is_required=0;
         $required_span='';
         $required='';
+//common conditional
         if ($is_required===1){
             $required_span='<span class="text-danger">*</span>';
             $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
         }
     @endphp
     <label for="{{ filed_name($name) }}"
@@ -73,8 +104,8 @@
     <select onchange="hasOther(this,1)"
             {{ $required }} id="{{ filed_name($name) }}" type="text"
             name="{{ filed_name($name) }}" class="form-control ">
-        <option {{ old(filed_name($name))=='Yes' ? ' selected="selected"' : '' }} value="Yes">Yes</option>
-        <option {{ old(filed_name($name))=='No' ? ' selected="selected"' : '' }} value="No">No</option>
+        <option {{ $value=='Yes' ? ' selected="selected"' : '' }} value="Yes">Yes</option>
+        <option {{ $value=='No' ? ' selected="selected"' : '' }} value="No">No</option>
     </select>
     @error(filed_name($name))
     <p class="input-error-validate">

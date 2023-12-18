@@ -14,9 +14,11 @@ use App\Models\AssignFormsUsers;
 use App\Models\AssignFormUser;
 use App\Models\CargoInsurance;
 use App\Models\CompanyType;
+use App\Models\ContainerType;
 use App\Models\Country;
 use App\Models\Currency;
 use App\Models\Destination;
+use App\Models\FlexiTankType;
 use App\Models\Form;
 use App\Models\FormComments;
 use App\Models\FormCommentsReply;
@@ -771,11 +773,11 @@ class FormController extends Controller
         $form = [];
         if ($page_type === 'Create') {
             $route = route('admin.sale_form.update_or_store');
-//            $form_exist = SalesOfferForm::where('user_id', \auth()->id())->exists();
-//            if ($form_exist) {
-//                $sale_form_exist=1;
-//                $form = SalesOfferForm::where('user_id', \auth()->id())->first();
-//            }
+            $form_exist = SalesOfferForm::where('user_id', \auth()->id())->exists();
+            if ($form_exist) {
+                $sale_form_exist=1;
+                $form = SalesOfferForm::where('user_id', \auth()->id())->latest()->first();
+            }
         }
         if ($page_type === 'Edit') {
             $sale_form_exist = 1;
@@ -793,7 +795,9 @@ class FormController extends Controller
         $paymentTerms = PaymentTerm::all();
         $packing = Packing::all();
         $shipping_terms = ShippingTerm::all();
+        $container_types = ContainerType::all();
         $thcincluded = THCIncluded::all();
+        $flexi_type_tank = FlexiTankType::all();
         $destination = Destination::all();
         $targetMarket = TargetMarket::all();
         $qualityQuantityInspector = QualityQuantityInspector::all();
@@ -813,8 +817,10 @@ class FormController extends Controller
             'priceTypes',
             'paymentTerms',
             'packing',
+            'container_types',
             'shipping_terms',
             'thcincluded',
+            'flexi_type_tank',
             'destination',
             'targetMarket',
             'qualityQuantityInspector',
@@ -825,8 +831,12 @@ class FormController extends Controller
 
     public function sales_form_update_or_store(Request $request,$item=null)
     {
+        $is_complete=0;
         $rules = $this->rules($item);
         $validator = Validator::make($request->all(), $rules);
+        if ($validator->passes()){
+            $is_complete=1;
+        }
         $validate_items = $validator->valid();
         $validate_items = collect($validate_items);
         $env = env('SALE_OFFER_FORM');
@@ -851,9 +861,12 @@ class FormController extends Controller
             $validate_items[$file] = $file_name;
         }
         $has_loading = $validate_items->has('has_loading') ? 1 : 0;
+        $accept_terms = $validate_items->has('accept_terms') ? 1 : 0;
         $user_id = \auth()->id();
         $validate_items['user_id'] = $user_id;
         $validate_items['has_loading'] = $has_loading;
+        $validate_items['accept_terms'] = $accept_terms;
+        $validate_items['is_complete'] = $is_complete;
         if ($item!=null) {
             $form = SalesOfferForm::where('id', $item)->first();
             $form->update($validate_items->except('_token')->all());
@@ -886,7 +899,7 @@ class FormController extends Controller
         }
         $items = SalesOfferForm::when($user_id != null, function ($query, $user_id) {
             $query->where('user_id', $user_id);
-        })->where('status', $status)->paginate(100);
+        })->where('status', $status)->where('is_complete',1)->paginate(100);
         return view('admin.sales_form.list', compact('items'));
     }
 

@@ -52,16 +52,19 @@ return new class extends Migration
             $table->text('price_type')->nullable();
             $table->text('formulla')->nullable();
             $table->text('price')->nullable();
+            //payment term
             $table->text('payment_term')->nullable();
             $table->text('payment_term_description')->nullable();
             $table->text('packing')->nullable();
             $table->text('packing_more_details')->nullable();
             $table->text('packing_other')->nullable();
+            //marking
             $table->text('marking_more_details')->nullable();
             $table->text('picture_packing')->nullable();
             $table->text('picture_packing_file')->nullable();
             $table->text('possible_buyers')->nullable();
             $table->text('cost_per_unit')->nullable();
+            //origin
             $table->text('origin_country')->nullable();
             $table->text('origin_port_city')->nullable();
             $table->text('origin_more_details')->nullable();
