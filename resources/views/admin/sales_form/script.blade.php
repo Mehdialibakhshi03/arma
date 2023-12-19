@@ -4,6 +4,9 @@
 <!-- MDB -->
 <script>
     $(document).ready(function () {
+        @if(session()->exists('need_submit'))
+        show_modal();
+        @endif
         check_unit();
         check_currency();
         check_quality_inspection_report_file();
@@ -21,6 +24,11 @@
         check_documents();
         show_errors();
     });
+
+    function show_modal() {
+        let NeedToSubmitModal = $('#NeedToSubmitModal');
+        NeedToSubmitModal.modal('show');
+    }
 
     function show_errors() {
         let formulla_error = "{{ $errors->has('formulla') }}";

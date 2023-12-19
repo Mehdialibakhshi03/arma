@@ -25,29 +25,38 @@
                                             <th>#</th>
                                             <th>Commodity</th>
                                             <th>User</th>
+                                            <th>Status</th>
+                                            <th>Change Status</th>
                                             <th>Actions</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        @foreach($items as $key=>$item)
+                                        @foreach($items as $key=>$form)
                                             <tr>
                                                 <td>
                                                     {{ $items->firstItem()+$key }}
                                                 </td>
                                                 <td>
-                                                    {{ $item->commodity }}
+                                                    {{ $form->commodity }}
                                                 </td>
                                                 <td>
-                                                    {{ $item->user_id }}
+                                                    {{ $form->user_id }}
                                                 </td>
                                                 <td>
-                                                    <a onclick="removeModal({{ $item->id }},event)"
+                                                    {{ $form->Status->title }}
+                                                </td>
+                                                <td>
+                                                    @include('admin.sales_form.change_status')
+                                                </td>
+                                                <td>
+                                                    <a onclick="removeModal({{ $form->id }},event)"
                                                        class="btn btn-sm btn-danger text-white mr-1">
                                                         <i class="fa fa-trash"></i>
                                                     </a>
-                                                    <a href="{{ route('admin.sale_form',['page_type'=>'Edit','item'=>$item->id]) }}" class="btn btn-sm btn-info text-white mr-1">
+                                                    <a href="{{ route('admin.sale_form',['page_type'=>'Edit','item'=>$form->id]) }}" class="btn btn-sm btn-info text-white mr-1">
                                                         <i class="fa fa-pen"></i>
                                                     </a>
+
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -83,7 +92,7 @@
         function Remove() {
             let id = $('#id').val();
             $.ajax({
-                url: "{{ route('admin.user.remove') }}",
+                url: "{{ route('admin.sales_form.remove') }}",
                 data: {
                     _token: "{{ csrf_token() }}",
                     id: id,

@@ -332,6 +332,24 @@
     $('#profile-toggle').click(function () {
         $('#profile-dropdown').slideToggle();
     })
+
+    function changeFormStatus(new_status, form_id) {
+        $.ajax({
+            url: '{{ route('admin.sale_form.change_status') }}',
+            data: {
+                _token: "{{ csrf_token() }}",
+                new_status: new_status,
+                form_id: form_id,
+            },
+            method: "post",
+            dataType: "json",
+            success: function (msg) {
+                if (msg[0] == 1) {
+                    window.location.reload();
+                }
+            }
+        });
+    }
 </script>
 
 @include('admin.layouts.includes.alerts')

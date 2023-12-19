@@ -11,7 +11,8 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div>
-                                        <a href="{{ route('admin.markets.index',['status'=>$status]) }}" class="btn btn-secondary btn-sm mb-2">
+                                        <a href="{{ route('admin.markets.index') }}"
+                                           class="btn btn-secondary btn-sm mb-2">
                                             <i class="icon ion-md-arrow-back mr-1"></i>
                                             <span>
                                                 Back
@@ -19,40 +20,12 @@
                                         </a>
                                     </div>
                                     <div class="settings-profile">
-                                        <form method="POST" action="{{ route('admin.market.store',['status'=>$status]) }}">
+                                        <form method="POST"
+                                              action="{{ route('admin.market.store') }}">
                                             @csrf
                                             <div class="row mt-4">
-                                                <div class="col-12 col-md-9 mb-3">
-                                                    <label for="title">Title</label>
-                                                    <input id="title" type="text" name="title" class="form-control"
-                                                           placeholder="title" value="{{ old('title') }}">
-                                                    @error('title')
-                                                    <p class="input-error-validate">
-                                                        {{ $message }}
-                                                    </p>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-md-3 mb-3">
-                                                    <label for="priority">Priority</label>
-                                                    <input id="priority" type="text" name="priority" class="form-control"
-                                                           placeholder="priority" value="{{ old('priority') }}">
-                                                    @error('priority')
-                                                    <p class="input-error-validate">
-                                                        {{ $message }}
-                                                    </p>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-12 mb-3">
-                                                    <label for="description">Description</label>
-                                                    <textarea name="description" id="description" class="form-control"></textarea>
-                                                    @error('description')
-                                                    <p class="input-error-validate">
-                                                        {{ $message }}
-                                                    </p>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label for="start">Open Market At</label>
+                                                <div class="col-12 col-md-4 mb-3">
+                                                    <label for="start">start</label>
                                                     <input id="start" type="datetime-local" name="start" class="form-control"
                                                            value="{{ old('start') }}">
                                                     @error('start')
@@ -61,19 +34,34 @@
                                                     </p>
                                                     @enderror
                                                 </div>
-                                                <div class="col-12">
-                                                    <label>Commodity</label>
-                                                    <select  id="FormValues" name="form_id[]" class="form-control my-select" data-live-search="true"
-                                                            multiple>
-                                                        @foreach ($form_values as $form_value)
-                                                            <option value="{{ $form_value->id }}">
-                                                                {{ $form_value->getFormArray()[0][0]->value.'/'.$form_value->User->name }}
-                                                            </option>
+                                                <div class="col-12 col-md-4 mb-3">
+                                                    <label for="min_wallet">min wallet for bidding ($)</label>
+                                                    <input id="min_wallet" type="number" name="min_wallet" class="form-control"
+                                                           value="{{ old('min_wallet') }}">
+                                                    @error('min_wallet')
+                                                    <p class="input-error-validate">
+                                                        {{ $message }}
+                                                    </p>
+                                                    @enderror
+                                                </div>
+                                                <div class="col-12 col-md-4 mb-3">
+                                                    <label for="min_wallet">Commodity</label>
+                                                    <select class="form-control" name="commodity_id">
+                                                        <option value="">select</option>
+                                                        @foreach($sales_offer_form_copy as $item)
+                                                            <option value="{{ $item->id }}">Commodity:{{ $item->commodity }}/User:{{ $item->User->name }}</option>
                                                         @endforeach
                                                     </select>
+                                                    @error('commodity_id')
+                                                    <p class="input-error-validate">
+                                                        {{ $message }}
+                                                    </p>
+                                                    @enderror
                                                 </div>
                                                 <div class="col-md-12 mt-3">
-                                                    <input type="submit" value="Create">
+                                                    <button type="submit" class="btn btn-primary btn-block btn-sm">
+                                                        Create
+                                                    </button>
                                                 </div>
                                             </div>
                                         </form>
@@ -89,17 +77,9 @@
 @endsection
 
 @push('style')
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css" integrity="sha512-ARJR74swou2y0Q2V9k0GbzQ/5vJ2RBSoCWokg4zkfM29Fb3vZEQyv0iWBMW/yvKgyHSR/7D64pFMmU8nYmbRkg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-@endpush
 
+@endpush
 @push('script')
-    <!-- MDB -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/js/bootstrap-select.min.js" integrity="sha512-yDlE7vpGDP7o2eftkCiPZ+yuUyEcaBwoJoIhdXv71KZWugFqEphIS3PU60lEkFaz8RxaVsMpSvQxMBaKVwA5xg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script>
-        $('#FormValues').selectpicker({
-            'title':'Select Commodity'
-        });
-    </script>
+
 @endpush
 

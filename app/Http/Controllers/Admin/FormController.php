@@ -31,6 +31,7 @@ use App\Models\PaymentTerm;
 use App\Models\PriceType;
 use App\Models\QualityQuantityInspector;
 use App\Models\SalesOfferForm;
+use App\Models\SalesOfferFormCopy;
 use App\Models\ShippingTerm;
 use App\Models\TargetMarket;
 use App\Models\THCIncluded;
@@ -775,7 +776,7 @@ class FormController extends Controller
             $route = route('admin.sale_form.update_or_store');
             $form_exist = SalesOfferForm::where('user_id', \auth()->id())->exists();
             if ($form_exist) {
-                $sale_form_exist=1;
+                $sale_form_exist = 1;
                 $form = SalesOfferForm::where('user_id', \auth()->id())->latest()->first();
             }
         }
@@ -829,13 +830,13 @@ class FormController extends Controller
         ));
     }
 
-    public function sales_form_update_or_store(Request $request,$item=null)
+    public function sales_form_update_or_store(Request $request, $item = null)
     {
-        $is_complete=0;
+        $is_complete = 0;
         $rules = $this->rules($item);
         $validator = Validator::make($request->all(), $rules);
-        if ($validator->passes()){
-            $is_complete=1;
+        if ($validator->passes()) {
+            $is_complete = 1;
         }
         $validate_items = $validator->valid();
         $validate_items = collect($validate_items);
@@ -849,11 +850,11 @@ class FormController extends Controller
                 }
                 $file_name = $this->Upload_files($env, $validate_items[$file]);
             } else {
-                if ($item!=null) {
+                if ($item != null) {
                     //is_update
-                    $form=SalesOfferForm::where('id',$item)->first();
-                    $file_name=$form[$file];
-                    }else{
+                    $form = SalesOfferForm::where('id', $item)->first();
+                    $file_name = $form[$file];
+                } else {
                     $file_name = '';
                 }
 
@@ -867,15 +868,28 @@ class FormController extends Controller
         $validate_items['has_loading'] = $has_loading;
         $validate_items['accept_terms'] = $accept_terms;
         $validate_items['is_complete'] = $is_complete;
-        if ($item!=null) {
-            $form = SalesOfferForm::where('id', $item)->first();
-            $form->update($validate_items->except('_token')->all());
+        if ($item != null) {
+            $sale_form = SalesOfferForm::where('id', $item)->first();
+            if ($sale_form->unique_number == null) {
+                $unique_number = 'Arma-' . $sale_form->id;
+                $validate_items['unique_number'] = $unique_number;
+            }
+            $sale_form->update($validate_items->except('_token')->all());
+            if ($is_complete == 1 and $sale_form->status == 0) {
+                session()->flash('need_submit', 1);
+            }
             if ($validator->fails()) {
-                return redirect()->route('admin.sale_form', ['page_type' => 'Edit', 'item' => $form->id])->withErrors($validator->errors());
+                return redirect()->route('admin.sale_form', ['page_type' => 'Edit', 'item' => $sale_form->id])->withErrors($validator->errors());
             }
             return redirect()->back()->with('success', 'updated successfully');
         } else {
             $sale_form = SalesOfferForm::create($validate_items->except('_token')->all());
+            $sale_form_id = $sale_form->id;
+            $unique_number = 'Arma-' . $sale_form_id;
+            $sale_form->update(['unique_number', $unique_number]);
+            if ($is_complete == 1 and $sale_form->status) {
+                session()->flash('need_submit', 1);
+            }
             if ($validator->fails()) {
                 return redirect()->route('admin.sale_form', ['page_type' => 'Edit', 'item' => $sale_form->id])->withErrors($validator->errors());
             }
@@ -899,8 +913,37 @@ class FormController extends Controller
         }
         $items = SalesOfferForm::when($user_id != null, function ($query, $user_id) {
             $query->where('user_id', $user_id);
-        })->where('status', $status)->where('is_complete',1)->paginate(100);
+        })->where('status', $status)->where('is_complete', 1)->paginate(100);
         return view('admin.sales_form.list', compact('items'));
+    }
+
+    public function sales_form_remove(Request $request)
+    {
+        $id = $request->id;
+        $sales_form = SalesOfferForm::where('id', $id)->first();
+        $sales_form->delete();
+        $sales_form_copy = SalesOfferFormCopy::where('id', $id)->first();
+        if ($sales_form_copy){
+            $sales_form_copy->delete();
+        }
+
+        session()->flash('success', 'Your Item Deleted Successfully');
+        return response()->json([1]);
+    }
+
+    public function change_status(Request $request)
+    {
+        $form_id = $request->form_id;
+        $new_status = $request->new_status;
+        $sale_form = SalesOfferForm::where('id', $form_id)->first();
+        $sale_form->update([
+            'status' => $new_status
+        ]);
+        if ($new_status==4){
+            SalesOfferFormCopy::create($sale_form->toArray());
+        }
+        session()->flash('success', 'Status was Changed Successfully');
+        return response()->json([1]);
     }
 
     public function rules($item)
@@ -1009,61 +1052,61 @@ class FormController extends Controller
             'accept_terms' => 'required',
         ];
 
-        if ($item!=null) {
+        if ($item != null) {
             //is_update
-            $form=SalesOfferForm::where('id',$item)->first();
-            $specification_file=$form['specification_file'];
-            $quality_inspection_report_file=$form['quality_inspection_report_file'];
-            $picture_packing_file=$form['picture_packing_file'];
-            $safety_product_file=$form['safety_product_file'];
-            $reach_certificate_file=$form['reach_certificate_file'];
+            $form = SalesOfferForm::where('id', $item)->first();
+            $specification_file = $form['specification_file'];
+            $quality_inspection_report_file = $form['quality_inspection_report_file'];
+            $picture_packing_file = $form['picture_packing_file'];
+            $safety_product_file = $form['safety_product_file'];
+            $reach_certificate_file = $form['reach_certificate_file'];
             //
-            if ($specification_file==null){
-                $rules+=[
+            if ($specification_file == null) {
+                $rules += [
                     'specification_file' => ['required_if:specification,null'],
                 ];
-            }else{
-                $rules+=[
+            } else {
+                $rules += [
                     'specification_file' => 'nullable',
                 ];
             }
             //
-            if ($quality_inspection_report_file==null){
-                $rules+=[
+            if ($quality_inspection_report_file == null) {
+                $rules += [
                     'quality_inspection_report_file' => 'required_if:quality_inspection_report,Yes',
                 ];
-            }else{
-                $rules+=[
+            } else {
+                $rules += [
                     'quality_inspection_report_file' => 'nullable',
                 ];
             }
             //
-            if ($picture_packing_file==null){
-                $rules+=[
+            if ($picture_packing_file == null) {
+                $rules += [
                     'picture_packing_file' => ['required_if:picture_packing,Yes'],
                 ];
-            }else{
-                $rules+=[
+            } else {
+                $rules += [
                     'picture_packing_file' => 'nullable',
                 ];
             }
             //
-            if ($safety_product_file==null){
-                $rules+=[
+            if ($safety_product_file == null) {
+                $rules += [
                     'safety_product_file' => ['required_if:safety_product,Yes'],
                 ];
-            }else{
-                $rules+=[
+            } else {
+                $rules += [
                     'safety_product_file' => 'nullable',
                 ];
             }
             //
-            if ($reach_certificate_file==null){
-                $rules+=[
+            if ($reach_certificate_file == null) {
+                $rules += [
                     'reach_certificate_file' => ['required_if:reach_certificate,Yes'],
                 ];
-            }else{
-                $rules+=[
+            } else {
+                $rules += [
                     'reach_certificate_file' => 'nullable',
                 ];
             }

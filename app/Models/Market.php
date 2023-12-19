@@ -12,9 +12,9 @@ class Market extends Model
     protected $table = "markets";
     protected $guarded = [];
 
-    public function FormValue()
+    public function SalesForm()
     {
-        return $this->belongsTo(FormValue::class, 'form_value_id', 'id');
+        return $this->belongsTo(SalesOfferFormCopy::class, 'commodity_id', 'id');
     }
 
     public function Status()

@@ -1,6 +1,7 @@
 @extends('admin.layouts.main')
 
 @section('content')
+    @include('admin.sales_form.modal')
     <div class="settings mtb15">
         <div class="container-fluid">
             <div class="row">
@@ -10,13 +11,23 @@
                              aria-labelledby="settings-profile-tab">
                             <div class="card">
                                 <div class="card-body">
-                                    <div>
-                                        <a href="#" class="btn btn-secondary btn-sm mb-2">
-                                            <i class="icon ion-md-arrow-back mr-1"></i>
-                                            <span>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <a href="#" class="btn btn-secondary btn-sm mb-2">
+                                                <i class="icon ion-md-arrow-back mr-1"></i>
+                                                <span>
                                                 Back
                                             </span>
-                                        </a>
+                                            </a>
+                                        </div>
+                                        @if ($sale_form_exist==1)
+                                            <div>
+                                                <p>No: {{ $form->unique_number }}</p>
+                                                <p>Date: {{ $form->created_at->format('Y-M-d') }}</p>
+                                                <p>
+                                                    Status: {{ $form->is_complete===1?$form->Status->title:'The form is not complete' }}</p>
+                                            </div>
+                                        @endif
                                     </div>
                                     <div class="settings-profile">
                                         <form id="sales_form" method="POST" action="{{ $route }}"
@@ -60,9 +71,11 @@
                                                 @include('admin.sales_form.last_section')
 
                                                 <div class="col-md-12 mt-3">
-                                                    <button type="button" onclick="submitForm()"
-                                                            class="btn btn-success">Create
+                                                    <button title="Edit" type="button" onclick="submitForm()"
+                                                            class="btn btn-sm btn-success">
+                                                        <i class="fa fa-pen"></i>
                                                     </button>
+                                                    @include('admin.sales_form.change_status')
                                                 </div>
                                             </div>
                                         </form>

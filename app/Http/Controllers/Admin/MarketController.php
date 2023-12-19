@@ -7,16 +7,38 @@ use App\Facades\UtilityFacades;
 use App\Http\Controllers\Controller;
 use App\Mail\FormSubmitEmail;
 use App\Mail\Thanksmail;
+use App\Models\CargoInsurance;
+use App\Models\CompanyType;
+use App\Models\ContainerType;
+use App\Models\Country;
+use App\Models\Currency;
+use App\Models\Destination;
+use App\Models\FlexiTankType;
 use App\Models\Form;
 use App\Models\FormValue;
+use App\Models\Incoterms;
+use App\Models\IncotermsVersion;
+use App\Models\InspectionPlace;
 use App\Models\Market;
 use App\Models\MarketSetting;
+use App\Models\Packing;
+use App\Models\PaymentTerm;
+use App\Models\PriceType;
+use App\Models\QualityQuantityInspector;
+use App\Models\SalesOfferForm;
+use App\Models\SalesOfferFormCopy;
+use App\Models\ShippingTerm;
+use App\Models\TargetMarket;
+use App\Models\THCIncluded;
+use App\Models\ToleranceWeightBy;
+use App\Models\Units;
 use App\Models\User;
 use App\Models\UserStatus;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class MarketController extends Controller
 {
@@ -26,24 +48,36 @@ class MarketController extends Controller
         return view('admin.markets.index', compact('markets'));
     }
 
-    public function edit(Market $market)
+    public function create()
     {
-        return view('admin.markets.edit', compact('market'));
+        $sales_offer_form_copy = SalesOfferFormCopy::where('status', 4)->get();
+        return view('admin.markets.create', compact('sales_offer_form_copy'));
     }
 
-    public function bids(Market $market)
+    public function store(Request $request)
     {
-        $bids = $market->Bids;
-        return view('admin.markets.bids', compact('market', 'bids'));
+        $request->validate([
+            'start' => 'required|date',
+            'min_wallet' => 'required|numeric',
+            'commodity_id' => 'required'
+        ]);
+        Market::create($request->all());
+        session()->flash('success', 'New Market Created Successfully');
+        return redirect()->route('admin.markets.index');
+    }
+
+    public function edit(Market $market)
+    {
+        $sales_offer_form_copy = SalesOfferFormCopy::where('status', 4)->get();
+        return view('admin.markets.edit', compact('market','sales_offer_form_copy'));
     }
 
     public function update(Market $market, Request $request)
     {
         $request->validate([
             'start' => 'required|date',
-            'min_price' => 'required|numeric',
             'min_wallet' => 'required|numeric',
-            'min_quantity' => 'required|numeric',
+            'commodity_id' => 'required'
         ]);
         $request['status'] = 7;
         if (Carbon::now() < $request->start) {
@@ -52,272 +86,317 @@ class MarketController extends Controller
         $market->update($request->all());
         return redirect()->route('admin.markets.index')->with('success', 'Market updated successfully');
     }
-
-    public function setting_index()
+    public function sales_form($page_type = 'Create', $item = 'null')
     {
-        $ready_to_duration = MarketSetting::where('key', 'ready_to_duration')->first()->value;
-        $open_duration = MarketSetting::where('key', 'open_duration')->first()->value;
-        $q_1 = MarketSetting::where('key', 'q_1')->first()->value;
-        $q_2 = MarketSetting::where('key', 'q_2')->first()->value;
-        $q_3 = MarketSetting::where('key', 'q_3')->first()->value;
-        return view('admin.markets.settings', compact('ready_to_duration', 'open_duration', 'q_1', 'q_2', 'q_3'));
-    }
-
-    public function setting_update(Request $request)
-    {
-        $request->validate([
-            'ready_to_duration' => 'required',
-            'open_duration' => 'required',
-            'q_1' => 'required',
-            'q_2' => 'required',
-            'q_3' => 'required',
-        ]);
-        $array = [
-            'ready_to_duration' => $request->ready_to_duration,
-            'open_duration' => $request->open_duration,
-            'q_1' => $request->q_1,
-            'q_2' => $request->q_2,
-            'q_3' => $request->q_3,
-        ];
-        foreach ($array as $key => $value) {
-            MarketSetting::where('key', $key)->update(['value' => $value]);
-        }
-        return redirect()->route('admin.market.setting.index')->with('success', 'Settings updated successfully');
-    }
-
-    public function form_edit(Market $market)
-    {
-        $form_value = FormValue::find($market->form_value_id);
-        $form = $form_value->Form;
-        $array = json_decode($market->json);
-        return view('admin.markets.fill', compact('array', 'form', 'form_value', 'market'));
-    }
-
-    public function form_update(Request $request, Market $market)
-    {
-        $form_value_id = $market->form_value_id;
-        $form_value = FormValue::where('id', $form_value_id)->first();
-        $form = $form_value->Form;
-        $array = json_decode($market->json);
-        foreach ($array as &$rows) {
-            foreach ($rows as &$row) {
-                // dd($row->type);
-                if ($row->type == 'checkbox-group') {
-                    foreach ($row->values as &$value) {
-                        if (is_array($request->{$row->name}) && in_array($value->value, $request->{$row->name})) {
-                            $value->selected = 1;
-                        } else {
-                            if (isset($value->selected)) {
-                                unset($value->selected);
-                            }
-                        }
-                    }
-                } elseif ($row->type == 'file') {
-                    if ($row->subtype == "fineuploader") {
-                        $file_size = number_format($row->max_file_size_mb / 1073742848, 2);
-                        $file_limit = $row->max_file_size_mb / 1024;
-                        if ($file_size < $file_limit) {
-                            $values = [];
-                            $value = explode(',', $request->input($row->name));
-                            foreach ($value as $file) {
-                                $values[] = $file;
-                            }
-                            $row->value = $values;
-                        } else {
-                            return response()->json(['is_success' => false, 'message' => __("Please upload maximum $row->max_file_size_mb MB file size.")], 200);
-                        }
-                    } else {
-                        if ($row->file_extention == 'pdf') {
-                            $allowedfileExtension = ['pdf'];
-                        } elseif ($row->file_extention == 'excel') {
-                            $allowedfileExtension = ['csv', 'xlsx'];
-                        } else {
-                            $allowedfileExtension = ['jpg', 'jpeg', 'png'];
-                        }
-                        $requiredextention = implode(',', $allowedfileExtension);
-                        $file_size = number_format($row->max_file_size_mb / 1073742848, 2);
-                        $file_limit = $row->max_file_size_mb / 1024;
-                        if ($file_size < $file_limit) {
-                            if ($row->multiple) {
-                                if ($request->hasFile($row->name)) {
-                                    $values = [];
-                                    $files = $request->file($row->name);
-                                    foreach ($files as $file) {
-                                        $extension = $file->getClientOriginalExtension();
-                                        $check = in_array($extension, $allowedfileExtension);
-                                        if ($check) {
-                                            if ($extension == 'csv') {
-                                                $name = \Str::random(40) . '.' . $extension;
-                                                $file->move(storage_path() . '/app/form_values/' . $form->id, $name);
-                                                $values[] = 'form_values/' . $form->id . '/' . $name;
-                                            } else {
-                                                // $filename = $file->store('form_values/' . $form->id);
-                                                // $values[] = $filename;
-                                                // $filename = $file->store('form_values/' . $form->id);
-                                                $path = Storage::path("form_values/$form->id");
-                                                $filename = $file->store('form_values/' . $form->id);
-                                                $newpath = Storage::path($filename);
-                                                chmod("$path", 0777);
-                                                chmod("$newpath", 0777);
-                                                $values[] = $filename;
-                                            }
-                                        } else {
-                                            if (isset($request->ajax)) {
-                                                return response()->json(['is_success' => false, 'message' => __("Invalid file type, Please upload $requiredextention files")], 200);
-                                            } else {
-                                                return redirect()->back()->with('failed', __("Invalid file type, please upload $requiredextention files."));
-                                            }
-                                        }
-                                    }
-                                    $row->value = $values;
-                                }
-                            } else {
-                                if ($request->hasFile($row->name)) {
-                                    $values = '';
-                                    $file = $request->file($row->name);
-                                    $extension = $file->getClientOriginalExtension();
-                                    $check = in_array($extension, $allowedfileExtension);
-                                    if ($check) {
-                                        if ($extension == 'csv') {
-                                            $name = \Str::random(40) . '.' . $extension;
-                                            $file->move(storage_path() . '/app/form_values/' . $form->id, $name);
-                                            $values = 'form_values/' . $form->id . '/' . $name;
-                                            chmod("$values", 0777);
-                                        } else {
-                                            // $filename = $file->store('form_values/' . $form->id);
-                                            // $values = $filename;
-                                            // $filename = $file->store('form_values/' . $form->id);
-                                            $path = Storage::path("form_values/$form->id");
-                                            $filename = $file->store('form_values/' . $form->id);
-                                            $newpath = Storage::path($filename);
-                                            chmod("$path", 0777);
-                                            chmod("$newpath", 0777);
-                                            $values = $filename;
-                                        }
-                                    } else {
-                                        if (isset($request->ajax)) {
-                                            return response()->json(['is_success' => false, 'message' => __("Invalid file type, Please upload $requiredextention files")], 200);
-                                        } else {
-                                            return redirect()->back()->with('failed', __("Invalid file type, please upload $requiredextention files."));
-                                        }
-                                    }
-                                    $row->value = $values;
-                                }
-                            }
-                        } else {
-                            return response()->json(['is_success' => false, 'message' => __("Please upload maximum $row->max_file_size_mb MB file size.")], 200);
-                        }
-                    }
-                } elseif ($row->type == 'radio-group') {
-                    foreach ($row->values as &$value) {
-                        if ($value->value == $request->{$row->name}) {
-                            $value->selected = 1;
-                        } else {
-                            if (isset($value->selected)) {
-                                unset($value->selected);
-                            }
-                        }
-                    }
-                } elseif ($row->type == 'autocomplete') {
-                    if (isset($row->multiple)) {
-                        foreach ($row->values as &$value) {
-                            if (is_array($request->{$row->name}) && in_array($value->value, $request->{$row->name})) {
-                                $value->selected = 1;
-                            } else {
-                                if (isset($value->selected)) {
-                                    unset($value->selected);
-                                }
-                            }
-                        }
-                    } else {
-                        foreach ($row->values as &$value) {
-                            if ($value->value == $request->{$row->name}) {
-                                $value->selected = 1;
-                            } else {
-                                if (isset($value->selected)) {
-                                    unset($value->selected);
-                                }
-                            }
-                        }
-                    }
-                } elseif ($row->type == 'select') {
-                    if (isset($row->multiple) & !empty($row->multiple)) {
-                        foreach ($row->values as &$value) {
-                            if (is_array($request->{$row->name}) && in_array($value->value, $request->{$row->name})) {
-                                $value->selected = 1;
-                            } else {
-                                if (isset($value->selected)) {
-                                    unset($value->selected);
-                                }
-                            }
-                        }
-                    } else {
-                        foreach ($row->values as &$value) {
-                            if ($value->value == $request->{$row->name}) {
-                                $value->selected = 1;
-                            } else {
-                                if (isset($value->selected)) {
-                                    unset($value->selected);
-                                }
-                            }
-                        }
-                    }
-                } elseif ($row->type == 'date') {
-                    $row->value = $request->{$row->name};
-                } elseif ($row->type == 'number') {
-                    $row->value = $request->{$row->name};
-                } elseif ($row->type == 'textarea') {
-                    $row->value = $request->{$row->name};
-                } elseif ($row->type == 'text') {
-                    $client_email = '';
-                    if ($row->subtype == 'email') {
-                        if (isset($row->is_client_email) && $row->is_client_email) {
-
-                            $client_emails[] = $request->{$row->name};
-                        }
-                    }
-                    $row->value = $request->{$row->name};
-                } elseif ($row->type == 'starRating') {
-                    $row->value = $request->{$row->name};
-                } elseif ($row->type == 'SignaturePad') {
-                    if (property_exists($row, 'value')) {
-                        $filepath = $row->value;
-                        if ($request->{$row->name} == '') {
-                            $url = $row->value;
-                        } else {
-                            $url = $request->{$row->name};
-                            $imageContent = file_get_contents($url);
-                            $filePath = Storage::path($filepath);
-                            $file = file_put_contents($filePath, $imageContent);
-                        }
-
-                        $row->value = $filepath;
-                    } else {
-                        if (!file_exists(Storage::path("form_values/$form->id"))) {
-                            mkdir(Storage::path("form_values/$form->id"), 0777, true);
-                            chmod(Storage::path("form_values/$form->id"), 0777);
-                        }
-                        $filepath = "form_values/$form->id/" . rand(1, 1000) . '.png';
-                        $url = $request->{$row->name};
-                        $imageContent = file_get_contents($url);
-                        $filePath = Storage::path($filepath);
-                        $file = file_put_contents($filePath, $imageContent);
-                        $row->value = $filepath;
-                    }
-                } elseif ($row->type == 'location') {
-                    foreach ($request->{$row->name} as $value) {
-                        $row->value = [
-                            'lat' => $value['latitude'],
-                            'lng' => $value['longitude'],
-                        ];
-                    }
-                }
+        $sale_form_exist = 0;
+        $route = null;
+        $form = [];
+        if ($page_type === 'Create') {
+            $route = route('admin.market.sale_form.update_or_store');
+            $form_exist = SalesOfferForm::where('user_id', \auth()->id())->exists();
+            if ($form_exist) {
+                $sale_form_exist = 1;
+                $form = SalesOfferForm::where('user_id', \auth()->id())->latest()->first();
             }
         }
-        $market->json = json_encode($array);
-        $market->save();
-        $route = route('admin.markets.index');
-        $success_msg = 'updated successfully';
-        return response()->json(['is_success' => true, 'message' => __($success_msg), 'redirect' => $route], 200);
+        if ($page_type === 'Edit') {
+            $sale_form_exist = 1;
+            $route = route('admin.market.sale_form.update_or_store', ['item' => $item]);
+            $form = SalesOfferForm::where('id', $item)->first();
+        }
+        $company_types = CompanyType::all();
+        $unites = Units::all();
+        $currencies = Currency::all();
+        $tolerance_weight_by = ToleranceWeightBy::all();
+        $Incoterms = Incoterms::all();
+        $incoterms_version = IncotermsVersion::all();
+        $countries = Country::all();
+        $priceTypes = PriceType::all();
+        $paymentTerms = PaymentTerm::all();
+        $packing = Packing::all();
+        $shipping_terms = ShippingTerm::all();
+        $container_types = ContainerType::all();
+        $thcincluded = THCIncluded::all();
+        $flexi_type_tank = FlexiTankType::all();
+        $destination = Destination::all();
+        $targetMarket = TargetMarket::all();
+        $qualityQuantityInspector = QualityQuantityInspector::all();
+        $InspectionPlace = InspectionPlace::all();
+        $cargoInsurance = CargoInsurance::all();
+        return view('admin.markets.sales_form', compact(
+            'sale_form_exist',
+            'form',
+            'route',
+            'company_types',
+            'unites',
+            'currencies',
+            'tolerance_weight_by',
+            'Incoterms',
+            'incoterms_version',
+            'countries',
+            'priceTypes',
+            'paymentTerms',
+            'packing',
+            'container_types',
+            'shipping_terms',
+            'thcincluded',
+            'flexi_type_tank',
+            'destination',
+            'targetMarket',
+            'qualityQuantityInspector',
+            'InspectionPlace',
+            'cargoInsurance',
+        ));
+    }
+
+    public function sales_form_update_or_store(Request $request, $item = null)
+    {
+        $is_complete = 0;
+        $rules = $this->rules($item);
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->passes()) {
+            $is_complete = 1;
+        }
+        $validate_items = $validator->valid();
+        $validate_items = collect($validate_items);
+        $env = env('SALE_OFFER_FORM');
+        $files = ['specification_file', 'picture_packing_file', 'quality_inspection_report_file', 'safety_product_file', 'reach_certificate_file'];
+        foreach ($files as $file) {
+            if ($validate_items->has($file)) {
+                if ($validate_items->has('form_id')) {
+                    $path = public_path($env, $file);
+                    unlink($path);
+                }
+                $file_name = $this->Upload_files($env, $validate_items[$file]);
+            } else {
+                if ($item != null) {
+                    //is_update
+                    $form = SalesOfferForm::where('id', $item)->first();
+                    $file_name = $form[$file];
+                } else {
+                    $file_name = '';
+                }
+
+            }
+            $validate_items[$file] = $file_name;
+        }
+        $has_loading = $validate_items->has('has_loading') ? 1 : 0;
+        $accept_terms = $validate_items->has('accept_terms') ? 1 : 0;
+        $user_id = \auth()->id();
+        $validate_items['user_id'] = $user_id;
+        $validate_items['has_loading'] = $has_loading;
+        $validate_items['accept_terms'] = $accept_terms;
+        $validate_items['is_complete'] = $is_complete;
+        if ($item != null) {
+            $sale_form = SalesOfferForm::where('id', $item)->first();
+            if ($sale_form->unique_number == null) {
+                $unique_number = 'Arma-' . $sale_form->id;
+                $validate_items['unique_number'] = $unique_number;
+            }
+            $sale_form->update($validate_items->except('_token')->all());
+            if ($is_complete == 1 and $sale_form->status == 0) {
+                session()->flash('need_submit', 1);
+            }
+            if ($validator->fails()) {
+                return redirect()->route('admin.sale_form', ['page_type' => 'Edit', 'item' => $sale_form->id])->withErrors($validator->errors());
+            }
+            return redirect()->back()->with('success', 'updated successfully');
+        } else {
+            $sale_form = SalesOfferForm::create($validate_items->except('_token')->all());
+            $sale_form_id = $sale_form->id;
+            $unique_number = 'Arma-' . $sale_form_id;
+            $sale_form->update(['unique_number', $unique_number]);
+            if ($is_complete == 1 and $sale_form->status) {
+                session()->flash('need_submit', 1);
+            }
+            if ($validator->fails()) {
+                return redirect()->route('admin.sale_form', ['page_type' => 'Edit', 'item' => $sale_form->id])->withErrors($validator->errors());
+            }
+        }
+    }
+    public function Upload_files($env, $file)
+    {
+        $fileNamePrimaryImage = generateFileName($file->getClientOriginalName());
+        $file->move(\public_path($env), $fileNamePrimaryImage);
+        return $fileNamePrimaryImage;
+    }
+    public function rules($item)
+    {
+        $rules = [
+            'company_name' => 'required',
+            'company_type' => 'required',
+            'unit' => 'required',
+            'unit_other' => ['required_if:unit,other'],
+            'currency' => 'required',
+            'currency_other' => ['required_if:currency,other'],
+            'commodity' => 'required',
+            'type_grade' => 'required',
+            'hs_code' => 'nullable',
+            'cas_no' => 'nullable',
+            'product_more_details' => 'nullable',
+            'specification' => 'nullable',
+            //file
+            'quality_inspection_report' => 'required',
+            //file
+            'max_quantity' => 'required',
+            'min_order' => 'required',
+            'tolerance_weight' => 'nullable',
+            'tolerance_weight_by' => 'nullable',
+            'partial_shipment' => 'nullable',
+            'partial_shipment_number' => ['required_if:partial_shipment,Yes'],
+            'shipment_more_detail' => 'nullable',
+            'incoterms' => 'required',
+            'incoterms_other' => ['required_if:incoterms,other'],
+            'incoterms_version' => 'nullable',
+            'country' => 'required',
+            'port_city' => 'required',
+            'incoterms_more_detail' => 'nullable',
+            'price_type' => 'required',
+            'formulla' => ['required_if:price_type,Formulla'],
+            'price' => ['required_if:price_type,Fix'],
+            'payment_term' => 'required',
+            'payment_term_description' => 'required',
+            'packing' => 'required',
+            'packing_more_details' => 'nullable',
+            'packing_other' => ['required_unless:packing,other'],
+            'marking_more_details' => 'nullable',
+            'picture_packing' => 'nullable',
+            //file
+            'possible_buyers' => 'nullable',
+            'cost_per_unit' => ['required_if:possible_buyers,Yes'],
+            'origin_country' => 'required',
+            'origin_port_city' => 'required',
+            'origin_more_details' => 'nullable',
+            //loading
+            'has_loading' => 'nullable',
+            'loading_type' => ['required_if:has_loading,1'],
+            'loading_country' => ['required_unless:loading_type,null'],
+            'loading_port_city' => ['required_unless:loading_type,null'],
+            'loading_from' => ['required_unless:loading_type,null'],
+            'loading_to' => ['required_unless:loading_type,null'],
+            'bulk_loading_rate' => 'nullable|number|integer',
+            'loading_bulk_shipping_term' => 'nullable',
+            'loading_container_type' => 'nullable',
+            'loading_container_thc_included' => 'nullable',
+            'loading_flexi_tank_type' => ['required_if:loading_type,Flexi Tank'],
+            'loading_flexi_tank_thc_included' => 'nullable',
+            'loading_more_details' => 'nullable',
+            //discharging
+            'has_discharging' => 'nullable',
+            'discharging_type' => ['required_if:has_discharging,1'],
+            'discharging_country' => ['required_unless:discharging_type,null'],
+            'discharging_port_city' => ['required_unless:discharging_type,null'],
+            'discharging_from' => ['required_unless:discharging_type,null'],
+            'discharging_to' => ['required_unless:discharging_type,null'],
+            'bulk_discharging_rate' => 'nullable|number|integer',
+            'discharging_bulk_shipping_term' => 'nullable',
+            'discharging_container_type' => 'nullable',
+            'discharging_container_thc_included' => 'nullable',
+            'discharging_flexi_tank_type' => ['required_if:discharging_type,Flexi Tank'],
+            'discharging_flexi_tank_thc_included' => 'nullable',
+            'discharging_more_details' => 'nullable',
+            //destination
+            'destination' => 'nullable',
+            'exclude_market' => 'nullable',
+            'target_market' => 'nullable',
+            //inspection
+            'quality_quantity_inspection' => 'required',
+            'inspection_place' => 'required',
+            'inspection_more_detail' => 'nullable',
+            //insurance
+            'cargo_insurance' => 'nullable',
+            'insurance_more_details' => 'nullable',
+            //safety
+            'safety_product' => 'required',
+            //file
+            //reach certificate
+            'reach_certificate' => 'required',
+            //file
+            //documents
+            'documents_count' => 'required',
+            'documents_options' => ['required_if:documents_count,No'],
+            'document_more_detail' => 'nullable',
+            //contact person
+            'contact_person_name' => 'required',
+            'contact_person_job_title' => 'required',
+            'contact_person_email' => 'required',
+            'contact_person_mobile_phone' => 'required',
+            //last part
+            'last_more_detail' => 'nullable',
+            'accept_terms' => 'required',
+        ];
+
+        if ($item != null) {
+            //is_update
+            $form = SalesOfferForm::where('id', $item)->first();
+            $specification_file = $form['specification_file'];
+            $quality_inspection_report_file = $form['quality_inspection_report_file'];
+            $picture_packing_file = $form['picture_packing_file'];
+            $safety_product_file = $form['safety_product_file'];
+            $reach_certificate_file = $form['reach_certificate_file'];
+            //
+            if ($specification_file == null) {
+                $rules += [
+                    'specification_file' => ['required_if:specification,null'],
+                ];
+            } else {
+                $rules += [
+                    'specification_file' => 'nullable',
+                ];
+            }
+            //
+            if ($quality_inspection_report_file == null) {
+                $rules += [
+                    'quality_inspection_report_file' => 'required_if:quality_inspection_report,Yes',
+                ];
+            } else {
+                $rules += [
+                    'quality_inspection_report_file' => 'nullable',
+                ];
+            }
+            //
+            if ($picture_packing_file == null) {
+                $rules += [
+                    'picture_packing_file' => ['required_if:picture_packing,Yes'],
+                ];
+            } else {
+                $rules += [
+                    'picture_packing_file' => 'nullable',
+                ];
+            }
+            //
+            if ($safety_product_file == null) {
+                $rules += [
+                    'safety_product_file' => ['required_if:safety_product,Yes'],
+                ];
+            } else {
+                $rules += [
+                    'safety_product_file' => 'nullable',
+                ];
+            }
+            //
+            if ($reach_certificate_file == null) {
+                $rules += [
+                    'reach_certificate_file' => ['required_if:reach_certificate,Yes'],
+                ];
+            } else {
+                $rules += [
+                    'reach_certificate_file' => 'nullable',
+                ];
+            }
+
+
+        } else {
+            //is_create
+            $rules += [
+                'specification_file' => ['required_if:specification,null'],
+                'quality_inspection_report_file' => ['required_if:quality_inspection_report,Yes'],
+                'picture_packing_file' => ['required_if:picture_packing,Yes'],
+                'safety_product_file' => ['required_if:safety_product,Yes'],
+                'reach_certificate_file' => ['required_if:reach_certificate,Yes'],
+            ];
+
+        }
+        return $rules;
     }
 }

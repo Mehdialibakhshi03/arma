@@ -229,10 +229,6 @@
                                 <a class="dash-link"
                                    href="{{ route('admin.markets.index') }}">{{ __('Markets') }}</a>
                             </li>
-                            <li class="dash-item {{ request()->is('admin-panel/management/messages/markets*') ? 'active' : '' }}">
-                                <a class="dash-link"
-                                   href="{{ route('admin.market.setting.index') }}">{{ __('Market Setting') }}</a>
-                            </li>
                         </ul>
                     </li>
                 @endcan

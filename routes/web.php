@@ -140,19 +140,21 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
     //Markets
     Route::middleware('permission:markets')->group(function () {
         Route::get('markets', [MarketController::class, 'index'])->name('markets.index');
+        Route::get('market/create', [MarketController::class, 'create'])->name('market.create');
+        Route::post('market/store', [MarketController::class, 'store'])->name('market.store');
         Route::get('market/{market}/edit', [MarketController::class, 'edit'])->name('market.edit');
-        Route::get('market/{market}/bids', [MarketController::class, 'bids'])->name('market.bids');
         Route::post('market/remove', [MarketController::class, 'remove'])->name('market.remove');
         Route::put('market/{market}/update', [MarketController::class, 'update'])->name('market.update');
-        Route::get('market/setting/index_setting', [MarketController::class, 'setting_index'])->name('market.setting.index');
-        Route::put('market/setting/update_setting', [MarketController::class, 'setting_update'])->name('market.setting.update_setting');
-        Route::get('market/form_edit/{market}', [MarketController::class, 'form_edit'])->name('market.form_edit');
         Route::put('market/form_update/{market}', [MarketController::class, 'form_update'])->name('market.form.update');
+        Route::get('market/sale_form/{page_type?}/{item?}',[MarketController::class,'sales_form'])->name('market.sale_form');
+        Route::post('market/sales_form/update_or_store/{item?}',[MarketController::class,'sales_form_update_or_store'])->name('market.sale_form.update_or_store');
     });
     //SaleForm
     Route::get('/sale_form/{page_type?}/{item?}',[FormController::class,'sales_form'])->name('sale_form');
     Route::post('/sales_form/update_or_store/{item?}',[FormController::class,'sales_form_update_or_store'])->name('sale_form.update_or_store');
+    Route::post('/sales_form/status/change',[FormController::class,'change_status'])->name('sale_form.change_status');
     Route::get('/sales_form/index/{status}',[FormController::class,'sales_form_index'])->name('sales_form.index');
+    Route::post('/sales_form/remove',[FormController::class,'sales_form_remove'])->name('sales_form.remove');
 });
 Route::name('profile.')->prefix('/profile/')->group(function () {
     Route::get('index', [ProfileController::class, 'index'])->name('index');
