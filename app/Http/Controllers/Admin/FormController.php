@@ -769,16 +769,32 @@ class FormController extends Controller
 
     public function sales_form($page_type = 'Create', $item = 'null')
     {
+        session()->forget('form_id_exists');
         $sale_form_exist = 0;
-        $route = null;
+        $route = route('admin.sale_form.update_or_store');
         $form = [];
         if ($page_type === 'Create') {
-            $route = route('admin.sale_form.update_or_store');
-            $form_exist = SalesOfferForm::where('user_id', \auth()->id())->exists();
-            if ($form_exist) {
+            if (isset($_GET['previous_form'])){
                 $sale_form_exist = 1;
-                $form = SalesOfferForm::where('user_id', \auth()->id())->latest()->first();
+                $form = SalesOfferForm::where('id', $_GET['previous_form'])->first();
+            }else{
+                $form_exist = SalesOfferForm::where('user_id', \auth()->id())->where('is_complete', 0)->where('is_save', 1)->exists();
+                if ($form_exist) {
+                    $sale_form_exist = 1;
+                    $form = SalesOfferForm::where('user_id', \auth()->id())->where('is_complete', 0)->where('is_save', 1)->latest()->first();
+                } else {
+                    $form_exist = SalesOfferForm::where('user_id', \auth()->id())->where('is_complete', 1)->first();
+                    if ($form_exist) {
+                        $sale_form_exist = 0;
+                        $form = SalesOfferForm::where('user_id', \auth()->id())->where('is_complete', 1)->latest()->first();
+                        session()->flash('form_id_exists', $form->id);
+                        $form=[];
+                    }
+                }
             }
+
+
+
         }
         if ($page_type === 'Edit') {
             $sale_form_exist = 1;
@@ -878,6 +894,14 @@ class FormController extends Controller
             if ($is_complete == 1 and $sale_form->status == 0) {
                 session()->flash('need_submit', 1);
             }
+            if ($validate_items['is_save'] == 1) {
+                $user_forms = SalesOfferForm::where('user_id', $sale_form->user_id)->where('id', '!=', $sale_form->id)->get();
+                foreach ($user_forms as $user_form) {
+                    $user_form->update(['is_save' => 0]);
+                }
+                session()->flash('success', 'Your Information has been saved successfully');
+                return redirect()->route('admin.sale_form', ['page_type' => 'Edit', 'item' => $sale_form->id]);
+            }
             if ($validator->fails()) {
                 return redirect()->route('admin.sale_form', ['page_type' => 'Edit', 'item' => $sale_form->id])->withErrors($validator->errors());
             }
@@ -889,6 +913,14 @@ class FormController extends Controller
             $sale_form->update(['unique_number', $unique_number]);
             if ($is_complete == 1 and $sale_form->status) {
                 session()->flash('need_submit', 1);
+            }
+            if ($validate_items['is_save'] == 1) {
+                $user_forms = SalesOfferForm::where('user_id', $sale_form->user_id)->where('id', '!=', $sale_form->id)->get();
+                foreach ($user_forms as $user_form) {
+                    $user_form->update(['is_save' => 0]);
+                }
+                session()->flash('success', 'Your Information has been saved successfully');
+                return redirect()->route('admin.sale_form', ['page_type' => 'Edit', 'item' => $sale_form->id]);
             }
             if ($validator->fails()) {
                 return redirect()->route('admin.sale_form', ['page_type' => 'Edit', 'item' => $sale_form->id])->withErrors($validator->errors());
@@ -923,7 +955,7 @@ class FormController extends Controller
         $sales_form = SalesOfferForm::where('id', $id)->first();
         $sales_form->delete();
         $sales_form_copy = SalesOfferFormCopy::where('id', $id)->first();
-        if ($sales_form_copy){
+        if ($sales_form_copy) {
             $sales_form_copy->delete();
         }
 
@@ -939,7 +971,7 @@ class FormController extends Controller
         $sale_form->update([
             'status' => $new_status
         ]);
-        if ($new_status==4){
+        if ($new_status == 4) {
             SalesOfferFormCopy::create($sale_form->toArray());
         }
         session()->flash('success', 'Status was Changed Successfully');
@@ -949,8 +981,10 @@ class FormController extends Controller
     public function rules($item)
     {
         $rules = [
+            //company
             'company_name' => 'required',
             'company_type' => 'required',
+            //unit and currency
             'unit' => 'required',
             'unit_other' => ['required_if:unit,other'],
             'currency' => 'required',
@@ -1023,7 +1057,7 @@ class FormController extends Controller
             'discharging_more_details' => 'nullable',
             //destination
             'destination' => 'nullable',
-            'exclude_market' => 'nullable',
+            'exclude_market' => ['required_unless:destination,open'],
             'target_market' => 'nullable',
             //inspection
             'quality_quantity_inspection' => 'required',
@@ -1093,7 +1127,7 @@ class FormController extends Controller
             //
             if ($safety_product_file == null) {
                 $rules += [
-                    'safety_product_file' => ['required_if:safety_product,Yes'],
+                    'safety_product_file' => 'nullable',
                 ];
             } else {
                 $rules += [
@@ -1103,7 +1137,7 @@ class FormController extends Controller
             //
             if ($reach_certificate_file == null) {
                 $rules += [
-                    'reach_certificate_file' => ['required_if:reach_certificate,Yes'],
+                    'reach_certificate_file' => 'nullable',
                 ];
             } else {
                 $rules += [

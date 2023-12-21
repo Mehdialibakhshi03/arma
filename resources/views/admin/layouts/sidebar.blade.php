@@ -106,7 +106,7 @@
                                 <i class="fa fa-pen"></i>
                             </span>
                             <span class="dash-mtext custom-weight">
-                                Sales Offer Original
+                                Sales Order
                             </span>
                         </a>
                     </li>
@@ -122,7 +122,7 @@
                             </span>
 
                         <span
-                            class="dash-mtext custom-weight">{{ __('Commodity') }}</span><span
+                            class="dash-mtext custom-weight">{{ __('Inquiries') }}</span><span
                             class="dash-arrow"><i data-feather="chevron-right"></i></span>
                         @if($pending_count>0)
                             <span
@@ -134,34 +134,39 @@
                         $need_to_confirm_count=\App\Models\FormValue::where('status',3)->count();
                     @endphp
                     <ul class="dash-submenu {{ Request::route()->getName() == 'view.form.values' ? 'd-block' : '' }}">
-                        <li class="dash-item d-flex align-items-center">
-                            <a href="{{ route('admin.sales_form.index',['status'=>0]) }}" class="dash-link"><span
-                                    class="dash-mtext custom-weight">{{ __('Need To Confirm') }}
-                            </a>
-                            @if($need_to_confirm_count>0)
-                                <span class="circle-notification">{{ $need_to_confirm_count }}</span>
-                            @endif
-                        </li>
+{{--                        <li class="dash-item d-flex align-items-center">--}}
+{{--                            <a href="{{ route('admin.sales_form.index',['status'=>0]) }}" class="dash-link"><span--}}
+{{--                                    class="dash-mtext custom-weight">{{ __('Need To Confirm') }}--}}
+{{--                            </a>--}}
+{{--                            @if($need_to_confirm_count>0)--}}
+{{--                                <span class="circle-notification">{{ $need_to_confirm_count }}</span>--}}
+{{--                            @endif--}}
+{{--                        </li>--}}
                         <li class="dash-item d-flex align-items-center">
                             <a href="{{ route('admin.sales_form.index',['status'=>1]) }}" class="dash-link"><span
-                                    class="dash-mtext custom-weight">{{ __('Pending') }}
+                                    class="dash-mtext custom-weight">{{ __('Inbox') }}
                             </a>
                         </li>
                         <li class="dash-item d-flex align-items-center">
                             <a href="{{ route('admin.sales_form.index',['status'=>2]) }}" class="dash-link"><span
-                                    class="dash-mtext custom-weight">{{ __('Rejected') }}
+                                    class="dash-mtext custom-weight">{{ __('Pending') }}
                             </a>
                         </li>
                         <li class="dash-item d-flex align-items-center">
                             <a href="{{ route('admin.sales_form.index',['status'=>3]) }}" class="dash-link"><span
-                                    class="dash-mtext custom-weight">{{ __('Approved') }}
+                                    class="dash-mtext custom-weight">{{ __('Rejected') }}
                             </a>
                         </li>
                         <li class="dash-item d-flex align-items-center">
                             <a href="{{ route('admin.sales_form.index',['status'=>4]) }}" class="dash-link"><span
-                                    class="dash-mtext custom-weight">{{ __('Ready To Show In Market') }}
+                                    class="dash-mtext custom-weight">{{ __('Approved') }}
                             </a>
                         </li>
+{{--                        <li class="dash-item d-flex align-items-center">--}}
+{{--                            <a href="{{ route('admin.sales_form.index',['status'=>4]) }}" class="dash-link"><span--}}
+{{--                                    class="dash-mtext custom-weight">{{ __('Ready To Show In Market') }}--}}
+{{--                            </a>--}}
+{{--                        </li>--}}
                     </ul>
                 </li>
 

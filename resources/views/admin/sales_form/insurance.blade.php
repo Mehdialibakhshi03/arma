@@ -6,7 +6,7 @@
 </div>
 <div class="col-12 col-md-6 mb-3">
     @php
-        $label='The Cargo Has Insurance By';
+        $label='Insurance By';
             $name='Cargo Insurance';
             $is_required=0;
             $required_span='';

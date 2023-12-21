@@ -1,4 +1,4 @@
-@extends('home.homeLayout.app')
+@extends('home.homelayout.app')
 
 @section('content')
     <div class="vh-100 d-flex justify-content-center">

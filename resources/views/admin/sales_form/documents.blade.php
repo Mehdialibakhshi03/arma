@@ -5,12 +5,6 @@
             Documents <span class="text-danger">*</span>
         </strong>
     </div>
-
-   <div class="mb-3">
-       <strong class="text-danger">
-           You Have To Choose At Least 2 Documents
-       </strong>
-   </div>
 </div>
 <div class="row" id="documents-box">
     <div class="col-12 col-md-3 mb-3">

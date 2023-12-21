@@ -7,6 +7,9 @@
         @if(session()->exists('need_submit'))
         show_modal();
         @endif
+        @if(session()->exists('form_id_exists'))
+        show_modal_form_exists();
+        @endif
         check_unit();
         check_currency();
         check_quality_inspection_report_file();
@@ -19,6 +22,7 @@
         check_possible_buyers();
         check_loading_part();
         check_discharging_part()
+        check_destination();
         check_safety_file();
         check_reach_certificate_file();
         check_documents();
@@ -28,6 +32,12 @@
     function show_modal() {
         let NeedToSubmitModal = $('#NeedToSubmitModal');
         NeedToSubmitModal.modal('show');
+    }
+    function show_modal_form_exists() {
+        let show_modal_form_exists = $('#show_modal_form_exists');
+        show_modal_form_exists.modal('show');
+        let previous_form={{ session()->exists('form_id_exists')?session()->get('form_id_exists'):0 }};
+        $('#previous_form').val(previous_form);
     }
 
     function show_errors() {
@@ -341,7 +351,7 @@
             if (other_value === '' || other_value == null) {
                 src = null;
             }
-            addAttachmentFile($('input[name="safety_product"]'), 0, other_value, src);
+            addAttachmentFile($('input[name="safety_product"]'), 0, other_value, src, 0);
         }
         //errors
         let safety_product_file = "{{ $errors->has('safety_product_file') }}";
@@ -372,7 +382,7 @@
             if (other_value === '' || other_value == null) {
                 src = null;
             }
-            addAttachmentFile($('input[name="reach_certificate"]'), 0, other_value, src);
+            addAttachmentFile($('input[name="reach_certificate"]'), 0, other_value, src, 0);
         }
         //errors
         let reach_certificate_file = "{{ $errors->has('reach_certificate_file') }}";
@@ -424,11 +434,12 @@
         }
         let has_file = value === 'Yes' ? true : false;
 
+
         if (has_file) {
             if (other_value === '' || other_value == null) {
                 src = null;
             }
-            addAttachmentFile($('#picture_packing'), 1, other_value, src);
+            addAttachmentFile($('#picture_packing'), 0, other_value, src);
         }
         let picture_packing_file = "{{ $errors->has('picture_packing_file') }}";
         if (picture_packing_file) {
@@ -466,22 +477,39 @@
         if (is_yes === 0) {
             if (value === 'other') {
                 let element = createOtherElement(name);
-                $(element).insertAfter($(tag).parent());
+                $(element).insertAfter($(tag).parent().parent());
             } else {
                 removeOtherElement(name);
             }
         } else {
             let field_name = 'cost_per_unit';
             if (value === 'Yes') {
-                let element = '<div class="mt-3 mb-3"><label for="' + field_name + `" class="mb-2">How Much Will Be Cost Per Unit<span class="text-danger">*</span></label>` +
+                let element = '<div class="col-12 col-md-6 mb-3"><label for="' + field_name + `" class="mb-2">How Much Will Be Cost Per Unit<span class="text-danger">*</span></label>` +
                     '<input required id="' + field_name + '" type="text" name="' + field_name + '" class="form-control" ' +
                     '</div>';
-                $(element).insertAfter($(tag).parent());
+                $(element).insertAfter($(tag).parent().parent().parent());
             } else {
                 $('#' + field_name).parent().remove();
             }
         }
+    }
 
+    function DestinationOption(tag) {
+
+
+        let name = $(tag).attr('name');
+        let value = $(tag).val();
+        let first_part = value.split(' ');
+        let label = first_part[0];
+        let field_name = 'exclude_market';
+        $('#' + field_name).parent().remove();
+
+        if (value !== 'open') {
+            let element = '<div class="col-12 col-md-4 mb-3"><label for="' + field_name + `" class="mb-2">${label} Market<span class="text-danger ml-2">*</span></label>` +
+                '<input required id="' + field_name + '" type="text" name="' + field_name + '" class="form-control" ' +
+                '</div>';
+            $(element).insertAfter($(tag).parent().parent());
+        }
     }
 
     function PriceType(tag) {
@@ -501,10 +529,10 @@
             field_type = 'text';
         }
         $('#' + id).parent().remove();
-        let element = '<div class="col-12 mt-3 mb-3"><label for="' + id + `" class="mb-2">${field_label}<span class="text-danger">*</span></label>` +
+        let element = '<div class="col-12 col-md-6 mb-3"><label for="' + id + `" class="mb-2">${field_label}<span class="text-danger">*</span></label>` +
             '<input required id="' + id + `" type="${field_type}" name="` + field_name + '" class="form-control" ' +
             '</div>';
-        $(element).insertAfter($(tag).parent());
+        $(element).insertAfter($(tag).parent().parent());
     }
 
     function PaymentTerm(tag) {
@@ -534,11 +562,11 @@
         }
     }
 
-    function addAttachmentFile(tag, is_select_option = 0, other_value = null, src = null) {
+    function addAttachmentFile(tag, is_select_option = 0, other_value = null, src = null, is_necessary = 1) {
         let name = $(tag).attr('name');
         let value = $(tag).val();
         if (value === 'Yes') {
-            let element = createAttachmentElement(name, src);
+            let element = createAttachmentElement(name, src, is_necessary);
             if (is_select_option === 0) {
                 $(element).insertAfter($(tag).parent().parent().parent());
             } else {
@@ -552,15 +580,19 @@
 
     function createOtherElement(name) {
         let field_name = name + '_other';
-        return '<div class="mt-3 mb-3"><label for="' + field_name + `" class="mb-2">Write Your ${name} <span class="text-danger">*</span></label>` +
+        return '<div class="col-12 col-md-6 mb-3"><label for="' + field_name + `" class="mb-2">Write Your ${name} <span class="text-danger">*</span></label>` +
             '<input required id="' + field_name + '" type="text" name="' + field_name + '" class="form-control" ' +
             '</div>';
     }
 
-    function createAttachmentElement(name, src = null) {
+    function createAttachmentElement(name, src = null, is_necessary) {
         let field_name = name + '_file';
         let href = '';
-        let star = '<span class="text-danger">*</span>';
+        let star = '';
+        if (is_necessary == 1) {
+            star = '<span class="text-danger">*</span>';
+        }
+
         if (src != null) {
             href = `<a target="_blank" href="${src}">` +
                 ' <i class="fa fa-paperclip ml-3 text-info"></i></a>';
@@ -582,8 +614,30 @@
         $('#' + id).parent().remove();
     }
 
-    function submitForm() {
+    function submitForm(is_save = 0) {
+        $('#is_save').val(is_save);
         $('#sales_form').submit();
+    }
+
+    function CancelForm(form_id) {
+        $('#sales_form')[0].reset();
+        if (form_id !== 0) {
+            $.ajax({
+                url: "{{ route('admin.sales_form.remove') }}",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    id: form_id,
+                },
+                method: "POST",
+                dataType: "json",
+                success: function (msg) {
+                    window.location.href = "{{ route('admin.dashboard') }}";
+                }
+            })
+        }else {
+            window.location.href = "{{ route('admin.dashboard') }}";
+        }
+
     }
 
     //loading part function
@@ -661,7 +715,6 @@
         }
     }
 
-
     function check_discharging_part() {
         let old_value = "{{ old('has_discharging') }}";
         let value;
@@ -688,6 +741,40 @@
             has_discharging_change($('#has_discharging'));
             let input = $('#discharging_options input[value="' + other_value + '"]');
             dischargingOption(input);
+        }
+    }
+
+    function check_destination() {
+        let old_value = "{{ old('destination') }}";
+        let value;
+        let other_value;
+        let sale_form_exist = {{ $sale_form_exist }};
+        if (old_value !== '') {
+            value = old_value;
+        } else {
+            if (sale_form_exist === 1) {
+                value = "{{ isset($form['destination'])?$form['destination']:'' }}";
+
+            }
+        }
+        let is_open = value === 'open' ? 1 : 0;
+        if (!is_open) {
+            let has_old = "{{ old('exclude_market') }}";
+
+            if (has_old !== '') {
+                other_value = "{{ old('exclude_market') }}";
+            } else {
+                other_value = "{{ isset($form['exclude_market'])?$form['exclude_market']:'' }}"
+            }
+            DestinationOption($('#destination'));
+            $('#exclude_market').val(other_value);
+        }
+        //check errors
+        let exclude_market = "{{ $errors->has('exclude_market') }}";
+        if (exclude_market) {
+            let exclude_market_error = "{{ $errors->first('exclude_market') }}";
+            let error_message = `<p class="input-error-validate">${exclude_market_error}</p>`;
+            $(error_message).insertAfter($('#exclude_market'));
         }
     }
 

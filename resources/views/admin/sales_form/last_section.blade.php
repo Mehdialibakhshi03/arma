@@ -20,9 +20,7 @@
             }
         }
     @endphp
-    <label for="{{ filed_name($name) }}"
-           class="mb-2">{!! $label.' '.$required_span !!}</label>
-    <textarea name="{{ filed_name($name) }}" class="form-control form-control-sm">{{ $value }}</textarea>
+    <textarea name="{{ filed_name($name) }}" class="form-control form-control-sm" placeholder="{{ $label }}">{{ $value }}</textarea>
     @error(filed_name($name))
     <p class="input-error-validate">
         {{ $message }}

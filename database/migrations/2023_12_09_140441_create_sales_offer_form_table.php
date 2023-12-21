@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->integer('user_id');
             $table->integer('unique_number')->nullable();
+            //company
             $table->text('company_name')->nullable();
             $table->text('company_type')->nullable();
             $table->text('unit')->nullable();
@@ -39,7 +40,7 @@ return new class extends Migration
             $table->text('specification_file')->nullable();
             $table->text('quality_inspection_report')->nullable();
             $table->text('quality_inspection_report_file')->nullable();
-            //Partial Shipment & incoterms
+            //incoterms
             $table->text('partial_shipment')->nullable();
             $table->text('partial_shipment_number')->nullable();
             $table->text('shipment_more_details')->nullable();

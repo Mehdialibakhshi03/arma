@@ -3,12 +3,6 @@
         Quality
     </strong>
 </div>
-<div class="col-12 text-danger" id="specification_error">
-    <strong>
-        please write your specification or attach the file <span
-            class="text-danger">*</span>
-    </strong>
-</div>
 <div class="col-12 col-md-6 mb-3">
     @php
         $name='Specification';
@@ -93,9 +87,9 @@
         }
     @endphp
     <div>
-        <label for="quality_inspection_report" class="mb-2">Do You have
-            the
-            quality inspection report? </label>
+        <label for="quality_inspection_report" class="mb-2">
+            quality inspection?
+        </label>
         @error('quality_inspection_report')
         <p class="input-error-validate">
             {{ $message }}

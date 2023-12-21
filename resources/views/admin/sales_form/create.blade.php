@@ -11,15 +11,7 @@
                              aria-labelledby="settings-profile-tab">
                             <div class="card">
                                 <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <a href="#" class="btn btn-secondary btn-sm mb-2">
-                                                <i class="icon ion-md-arrow-back mr-1"></i>
-                                                <span>
-                                                Back
-                                            </span>
-                                            </a>
-                                        </div>
+                                    <div>
                                         @if ($sale_form_exist==1)
                                             <div>
                                                 <p>No: {{ $form->unique_number }}</p>
@@ -28,13 +20,16 @@
                                                     Status: {{ $form->is_complete===1?$form->Status->title:'The form is not complete' }}</p>
                                             </div>
                                         @endif
+                                        <hr>
                                     </div>
                                     <div class="settings-profile">
                                         <form id="sales_form" method="POST" action="{{ $route }}"
                                               enctype="multipart/form-data">
                                             @csrf
                                             <div class="row mt-4">
-                                                @include('admin.sales_form.commodity')
+                                                @include('admin.sales_form.company')
+
+                                                @include('admin.sales_form.unit_currency')
 
                                                 @include('admin.sales_form.product')
 
@@ -42,11 +37,13 @@
 
                                                 @include('admin.sales_form.quality')
 
-                                                @include('admin.sales_form.shipment_and_incoterm')
+                                                @include('admin.sales_form.incoterm')
+
+                                                @include('admin.sales_form.price_type')
 
                                                 @include('admin.sales_form.payment_term')
 
-                                                @include('admin.sales_form.marking')
+                                                @include('admin.sales_form.packing')
 
                                                 @include('admin.sales_form.origin')
 
@@ -71,13 +68,22 @@
                                                 @include('admin.sales_form.last_section')
 
                                                 <div class="col-md-12 mt-3">
-                                                    <button title="Edit" type="button" onclick="submitForm()"
-                                                            class="btn btn-sm btn-success">
-                                                        <i class="fa fa-pen"></i>
+                                                    <button title="Submit" type="button" onclick="submitForm()"
+                                                            class="btn btn-sm btn-info">
+                                                        Submit
                                                     </button>
-                                                    @include('admin.sales_form.change_status')
+                                                    <button title="Your Information Saved But Not Submitted" type="button" onclick="submitForm(1)"
+                                                            class="btn btn-sm btn-success">
+                                                        Save
+                                                    </button>
+                                                    <button title="Your Information Permanently deleted" type="button" onclick="CancelForm({{ isset($form->id)?$form->id:0 }})"
+                                                            class="btn btn-sm btn-danger">
+                                                        Cancel
+                                                    </button>
+{{--                                                    @include('admin.sales_form.change_status')--}}
                                                 </div>
                                             </div>
+                                            <input id="is_save" name="is_save" type="hidden" value="0">
                                         </form>
                                     </div>
                                 </div>

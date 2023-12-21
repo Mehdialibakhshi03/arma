@@ -18,11 +18,11 @@
         }
  @endphp
     <div>
-        <label for="safety_product" class="mb-2">Is Your Product? <span class="text-danger">*</span></label>
+        <label for="safety_product" class="mb-2">Safety? <span class="text-danger">*</span></label>
     </div>
     <div>
         <div class="form-check form-check-inline mr-3">
-            <input onchange="addAttachmentFile(this)"
+            <input onchange="addAttachmentFile(this,0,null,null,0)"
                    {{ $value==='Yes' ? 'checked' : '' }} class="form-check-input"
                    type="radio"
                    name="{{ filed_name($name) }}"
@@ -32,7 +32,7 @@
                    for="{{ filed_name($name).'1' }}">Yes</label>
         </div>
         <div class="form-check form-check-inline">
-            <input onchange="addAttachmentFile(this)"
+            <input onchange="addAttachmentFile(this,0,null,null,0)"
                    {{ $value==='No' ? 'checked' : '' }} class="form-check-input"
                    type="radio"
                    name="{{ filed_name($name) }}"
