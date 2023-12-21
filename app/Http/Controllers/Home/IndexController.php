@@ -13,7 +13,7 @@ class IndexController extends Controller
 {
     public function index()
     {
-        $markets = Market::where('start', '>', Carbon::yesterday())->orderBy('start', 'asc')->get();
+        $markets = Market::all();
         foreach ($markets as $market) {
             $result = $this->statusTimeMarket($market);
             $market['difference'] = $result[0];

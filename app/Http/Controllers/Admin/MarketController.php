@@ -44,7 +44,7 @@ class MarketController extends Controller
 {
     public function index()
     {
-        $markets = Market::orderBy('start', 'desc')->paginate(100);
+        $markets = Market::paginate(100);
         return view('admin.markets.index', compact('markets'));
     }
 
@@ -57,7 +57,8 @@ class MarketController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'start' => 'required|date',
+            'date' => 'required|date',
+            'time' => 'required',
             'min_wallet' => 'required|numeric',
             'commodity_id' => 'required'
         ]);

@@ -33,7 +33,8 @@
                                                     <th>#</th>
                                                     <th>commodity</th>
                                                     <th>User</th>
-                                                    <th>start</th>
+                                                    <th>date</th>
+                                                    <th>Time</th>
                                                     <th>status</th>
                                                     <th>action</th>
                                                 </tr>
@@ -51,7 +52,10 @@
                                                             {{ $item->SalesForm->User->name }}
                                                         </td>
                                                         <td>
-                                                            {{ $item->start }}
+                                                            {{ $item->date }}
+                                                        </td>
+                                                        <td>
+                                                            {{ $item->time }}
                                                         </td>
                                                         <td style="color: {{ $item->Status->color }}">
                                                             {{ $item->Status->title }}

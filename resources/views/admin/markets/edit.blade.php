@@ -25,18 +25,31 @@
                                             @csrf
                                             @method('put')
                                             <div class="row mt-4">
-                                                <div class="col-12 col-md-4 mb-3">
-                                                    <label for="start">start</label>
-                                                    <input id="start" type="datetime-local" name="start"
+                                                <div class="col-12 col-md-3 mb-3">
+                                                    <label for="date">start(Date)</label>
+                                                    <input onchange="getDate(this)" id="date" type="date" name="date"
                                                            class="form-control"
-                                                           value="{{ $market->start }}">
-                                                    @error('start')
+                                                           value="{{ $market->date }}">
+                                                    <p id="DayName" class="mt-2">
+                                                        {{ Carbon\Carbon::parse($market->date)->dayName }}
+                                                    </p>
+                                                    @error('date')
                                                     <p class="input-error-validate">
                                                         {{ $message }}
                                                     </p>
                                                     @enderror
                                                 </div>
-                                                <div class="col-12 col-md-4 mb-3">
+                                                <div class="col-12 col-md-3 mb-3">
+                                                    <label for="start">start(Time)</label>
+                                                    <input id="start" type="time" name="time" class="form-control"
+                                                           value="{{ $market->time }}">
+                                                    @error('time')
+                                                    <p class="input-error-validate">
+                                                        {{ $message }}
+                                                    </p>
+                                                    @enderror
+                                                </div>
+                                                <div class="col-12 col-md-3 mb-3">
                                                     <label for="min_wallet">min wallet for bidding ($)</label>
                                                     <input id="min_wallet" type="number" name="min_wallet"
                                                            class="form-control"
@@ -47,12 +60,13 @@
                                                     </p>
                                                     @enderror
                                                 </div>
-                                                <div class="col-12 col-md-4 mb-3">
+                                                <div class="col-12 col-md-3 mb-3">
                                                     <label for="min_wallet">Commodity</label>
                                                     <select class="form-control" name="commodity_id">
                                                         <option value="">select</option>
                                                         @foreach($sales_offer_form_copy as $item)
-                                                            <option {{ $market->commodity_id==$item->id?'selected':'' }} value="{{ $item->id }}">
+                                                            <option
+                                                                {{ $market->commodity_id==$item->id?'selected':'' }} value="{{ $item->id }}">
                                                                 Commodity:{{ $item->commodity }}
                                                                 /User:{{ $item->User->name }}</option>
                                                         @endforeach
@@ -65,7 +79,7 @@
                                                 </div>
                                                 <div class="col-md-12 mt-3">
                                                     <button type="submit" class="btn btn-primary btn-block btn-sm">
-                                                        Create
+                                                        Edit
                                                     </button>
                                                 </div>
                                             </div>
@@ -85,6 +99,31 @@
 
 @endpush
 @push('script')
+    <script>
+        function getDate(tag) {
+            let date = $(tag).val();
+            date = date.replaceAll('-', '/', date);
+            date = new Date(date);
 
+            let day = date.getDay();
+            let DayName;
+            if (day === 0) {
+                DayName = "Sunday";
+            } else if (day === 1) {
+                DayName = "Monday";
+            } else if (day === 2) {
+                DayName = "Tuesday";
+            } else if (day === 3) {
+                DayName = "Wednesday";
+            } else if (day === 4) {
+                DayName = "Thursday";
+            } else if (day === 5) {
+                DayName = "Friday";
+            } else if (day === 6) {
+                DayName = "Saturday";
+            }
+            $('#DayName').text(DayName);
+        }
+    </script>
 @endpush
 
