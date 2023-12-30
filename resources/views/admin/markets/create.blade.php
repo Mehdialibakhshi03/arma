@@ -24,7 +24,7 @@
                                               action="{{ route('admin.market.store') }}">
                                             @csrf
                                             <div class="row mt-4">
-                                                <div class="col-12 col-md-3 mb-3">
+                                                <div class="col-12 col-md-4 mb-3">
                                                     <label for="date">start(Date)</label>
                                                     <input onchange="getDate(this)" id="date" type="date" name="date" class="form-control"
                                                            value="{{ old('date') }}">
@@ -37,7 +37,7 @@
                                                     </p>
                                                     @enderror
                                                 </div>
-                                                <div class="col-12 col-md-3 mb-3">
+                                                <div class="col-12 col-md-4 mb-3">
                                                     <label for="start">start(Time)</label>
                                                     <input id="start" type="time" name="time" class="form-control"
                                                            value="{{ old('time') }}">
@@ -47,17 +47,7 @@
                                                     </p>
                                                     @enderror
                                                 </div>
-                                                <div class="col-12 col-md-3 mb-3">
-                                                    <label for="min_wallet">min wallet for bidding ($)</label>
-                                                    <input id="min_wallet" type="number" name="min_wallet" class="form-control"
-                                                           value="{{ old('min_wallet') }}">
-                                                    @error('min_wallet')
-                                                    <p class="input-error-validate">
-                                                        {{ $message }}
-                                                    </p>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-12 col-md-3 mb-3">
+                                                <div class="col-12 col-md-4 mb-3">
                                                     <label for="min_wallet">Commodity</label>
                                                     <select class="form-control" name="commodity_id">
                                                         <option value="">select</option>

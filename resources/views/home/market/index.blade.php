@@ -17,59 +17,8 @@
                 }
             }, 1000)
         });
-        function refreshMarketTablewithJs(val) {
-            let statusText = '';
-            let market = $('#market-' + val);
-            let status = market.attr('data-status');
-            let difference = market.attr('data-difference');
-            let benchmark1 = market.attr('data-benchmark1');
-            let benchmark2 = market.attr('data-benchmark2');
-            let benchmark3 = market.attr('data-benchmark3');
-            let benchmark4 = market.attr('data-benchmark4');
-            let benchmark5 = market.attr('data-benchmark5');
-            let benchmark6 = market.attr('data-benchmark6');
-            let now = moment();
-            benchmark1 = new Date(benchmark1);
-            benchmark2 = new Date(benchmark2);
-            benchmark3 = new Date(benchmark3);
-            benchmark4 = new Date(benchmark4);
-            benchmark5 = new Date(benchmark5);
-            benchmark6 = new Date(benchmark6);
-            if (now < benchmark1) {
-                difference = benchmark1 - now;
-                status = 1;
-                statusText = 'long time to open';
-            } else if (benchmark1 < now && now < benchmark2) {
-                //ready to open
-                difference = benchmark2 - now;
-                status = 2;
-                statusText = 'ready to open';
-            } else if (benchmark2 < now && now < benchmark3) {
-                difference = benchmark3 - now;
-                status = 3;
-                statusText = 'open';
-            } else if (benchmark3 < now && now < benchmark4) {
-                difference = benchmark4 - now;
-                status = 4;
-                statusText = 'open(1/3)';
-            } else if (benchmark4 < now && now < benchmark5) {
-                difference = benchmark5 - now;
-                status = 5;
-                statusText = 'open(2/3)';
-            } else if (benchmark5 < now && now < benchmark6) {
-                difference = benchmark6 - now;
-                status = 6;
-                statusText = 'open(3/3)';
-            } else {
-                difference = 0;
-                status = 7;
-                statusText = 'close';
-            }
-            difference = parseInt(difference / 1000);
-            $('#market-difference-' + val).html(difference);
-            $('#market-status-' + val).html(statusText);
-        }
 
+        refreshMarketTablewithJs({{ $market->id }});
 
         function refreshBidTable() {
             let market = {{ $market->id }};
@@ -194,6 +143,36 @@
         .error {
             display: none
         }
+
+        .bid_textarea {
+            width: 100%;
+            height: 300px;
+            border: 1px solid black;
+        }
+
+        .bid_deposit {
+            width: 100%;
+            height: fit-content;
+            border: 1px solid black;
+            background-color: #31bd31;
+        }
+
+        .bid_term_condition {
+            width: 100%;
+            height: fit-content;
+            border: 1px solid black;
+            background-color: #162fa2;
+        }
+
+        .bid_input {
+            width: 100%;
+            height: 50px;
+            border: 1px solid black;
+        }
+
+        .text-light-blue {
+            color: #162fa2;
+        }
     </style>
 @endsection
 
@@ -201,81 +180,363 @@
 
     <div class="container mt-5 mb-5">
         <div class="row">
-            <div class="col-12 col-md-6 mb-3 d-flex justify-content-center">
+            <div class="col-12 col-md-4">
+                <h5 class="text-center">
+                    {{ $market->SalesForm->commodity }}
+                </h5>
                 <div style="width: 100%">
-                    @for($i=0;$i<34;$i++)
-                        <div class="d-flex justify-content-around mb-2">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Type/Grade</span>
+                        <span class="text-bold text-light-blue w-50">{{ $market->SalesForm->type_grade }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">HS Code</span>
+                        <span class="text-bold text-light-blue w-50">{{ $market->SalesForm->hs_code }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Cas No</span>
+                        <span class="text-bold text-light-blue w-50">{{ $market->SalesForm->cas_no }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Quantity</span>
+                        <span class="text-bold text-light-blue w-50">{{ $market->SalesForm->max_quantity }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Min Order</span>
+                        <span class="text-bold text-light-blue w-50">{{ $market->SalesForm->min_order }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Partial Shipment</span>
+                        <span class="text-bold text-light-blue w-50">{{ $market->SalesForm->partial_shipment }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Delivery Term</span>
+                        <span class="text-bold text-light-blue w-50">
+                            -
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Supplier</span>
+                        <span class="text-bold text-light-blue w-50">
+                            {{ $market->SalesForm->company_type }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Price Type</span>
+                        <span class="text-bold text-light-blue w-50">
+                            {{ $market->SalesForm->price_type }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Offer Price</span>
+                        <span class="text-bold text-light-blue w-50">
+                            -
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Payment term</span>
+                        <span class="text-bold text-light-blue w-50">
+                            {{ $market->SalesForm->payment_term }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Packing</span>
+                        <span class="text-bold text-light-blue w-50">
+                            {{ $market->SalesForm->packing }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Marking</span>
+                        <span class="text-bold text-light-blue w-50">
+                            -
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Origin</span>
+                        <span class="text-bold text-light-blue w-50">
+                           -
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Delivery Date</span>
+                        <span class="text-bold text-light-blue w-50">
+                           -
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Loading Port</span>
+                        <span class="text-bold text-light-blue w-50">
+                            {{ $market->SalesForm->loading_country }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Loading Rate</span>
+                        <span class="text-bold text-light-blue w-50">
+                           {{ $market->SalesForm->bulk_loading_rate }}
+                        </span>
+                    </div>
 
-                            <span class="text-bold text-gray-100">Commodity</span>
-                            <span class="text-bold text-dark">Commodity</span>
-                        </div>
-                    @endfor
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Container Type</span>
+                        <span class="text-bold text-light-blue w-50">
+                            {{ $market->SalesForm->loading_container_type }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">THC</span>
+                        <span class="text-bold text-light-blue w-50">
+                            ???
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Discharge Port</span>
+                        <span class="text-bold text-light-blue w-50">
+                            {{ $market->SalesForm->discharging_country }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Discharge Rate</span>
+                        <span class="text-bold text-light-blue w-50">
+                            {{ $market->SalesForm->bulk_discharging_rate }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Container Type</span>
+                        <span class="text-bold text-light-blue w-50">
+                            {{ $market->SalesForm->discharging_container_type }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">THC Included</span>
+                        <span class="text-bold text-light-blue w-50">
+                            ???
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Destination</span>
+                        <span class="text-bold text-light-blue w-50">
+                            {{ $market->SalesForm->destination }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Demurrage/Dispatch</span>
+                        <span class="text-bold text-light-blue w-50">
+                            ???
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Inspection</span>
+                        <span class="text-bold text-light-blue w-50">
+                           ???
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Reach Certificate</span>
+                        <span class="text-bold text-light-blue w-50">
+                           {{ $market->SalesForm->reach_certificate }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Insurance</span>
+                        <span class="text-bold text-light-blue w-50">
+                           {{ $market->SalesForm->cargo_insurance }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Documents</span>
+                        <span class="text-bold text-light-blue w-50">
+                           ???
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Specification</span>
+                        <span class="text-bold text-light-blue w-50">
+                           <a target="_blank"
+                              href="{{ asset(imageExist(env('SALE_OFFER_FORM'),$market->SalesForm->specification_file)) }}">
+                            Download
+                        </a>
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">Analysis</span>
+                        <span class="text-bold text-light-blue w-50">
+                        <a target="_blank"
+                           href="{{ asset(imageExist(env('SALE_OFFER_FORM'),$market->SalesForm->msds)) }}">
+                           ????
+                        </a>
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-bold text-gray-100">MSDS</span>
+                        <span class="text-bold text-light-blue w-50">
+                           <a target="_blank"
+                              href="{{ asset(imageExist(env('SALE_OFFER_FORM'),$market->SalesForm->msds)) }}">
+                               ???
+                           </a>
+                        </span>
+                    </div>
                 </div>
             </div>
-            <div class="col-12 col-md-6 mb-3 d-flex align-items-center">
-                <div style="width: 100%">
-                    <div class="row mb-3 justify-content-around align-items-center">
-                        <div class="col-12 col-md-6">
-                            <h5 class="text-center">Status:
+            <div class="col-12 col-md-8">
+                <div class="row">
+                    <div class="col-12">
+                        <h5 class="text-center">
+                            Step : <span id="market-status-{{ $market->id }}"></span>
+                        </h5>
+                        <span id="market-difference-{{ $market->id }}" class="circle_timer">
+                            5:00
+                        </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="bid_textarea"></div>
+                        <div class="mt-3">
+                            <label for="quantity">Quantity( {{ $market->SalesForm->unit }} )</label>
+                            <input id="quantity" type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="bid_textarea">
+                            <table class="table">
+                                <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Quantity( {{ $market->SalesForm->unit }} )</th>
+                                    <th scope="col">Last</th>
+                                    <th scope="col">Handle</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <th scope="row">1</th>
+                                    <td>Mark</td>
+                                    <td>Otto</td>
+                                    <td>@mdo</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">2</th>
+                                    <td>Jacob</td>
+                                    <td>Thornton</td>
+                                    <td>@fat</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">3</th>
+                                    <td>Larry</td>
+                                    <td>the Bird</td>
+                                    <td>@twitter</td>
+                                </tr>
+                                </tbody>
+                            </table>
 
-                                <span id="market-status-{{ $market->id }}">
-                                {{ $market->status===7 ? 'Close' : '' }}
-                            </span>
-                            </h5>
-                            <div style="display: flex;justify-content: center">
-                                <span id="market-difference-{{ $market->id }}">
-                                    {{ $market->status===7 ? '0:00' : '' }}
-                                </span>
+                            <table class="table">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">First</th>
+                                    <th scope="col">Last</th>
+                                    <th scope="col">Handle</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <th scope="row">1</th>
+                                    <td>Mark</td>
+                                    <td>Otto</td>
+                                    <td>@mdo</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">2</th>
+                                    <td>Jacob</td>
+                                    <td>Thornton</td>
+                                    <td>@fat</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">3</th>
+                                    <td>Larry</td>
+                                    <td>the Bird</td>
+                                    <td>@twitter</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-3">
+                            <label for="price">Price( {{ $market->SalesForm->price }} )</label>
+                            <input id="price" type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-12 text-center mt-3">
+                        <button class="btn btn-secondary pt-1 pb-1 pr-5 pl-5">Bid</button>
+                    </div>
+                    <div class="col-12 mt-3">
+                        <div class="bid_textarea"></div>
+                    </div>
+                    <div class="col-12 mt-3">
+                        <div class="bid_deposit p-3">
+                            <h4 class="text-center text-white">Bid Deposit: $120.000</h4>
+                            <p class="text-justify">
+                                <span>Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                                    Excepturi, quasi, unde. Aperiam fugiat fugit perferendis soluta vel! Fuga,
+                                    illum, nesciunt. Ad animi enim maxime nihil nostrum optio possimus soluta vero!</span>
+                                <span>Alias asperiores aut blanditiis consequuntur corporis culpa dolores, eaque error
+                                    excepturi fugiat id incidunt iusto, odio qui quibusdam quidem quo rem rerum similique
+                                    temporibus ullam velit voluptatem! Doloremque, modi sapiente?</span>
+                                <span>Accusamus accusantium at aut, blanditiis cum eos odio provident voluptas.
+                                    Accusamus atque debitis deleniti et, inventore laboriosam magni maiores,
+                                    maxime nostrum quae ratione tempore ut? Amet enim esse explicabo numquam.</span>
+                            </p>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" value="Online" id="Online"
+                                       name="payment_type">
+                                <label class="form-check-label" for="Online">
+                                    Online
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" value="Wallet" id="Wallet"
+                                       name="payment_type">
+                                <label class="form-check-label" for="Wallet">
+                                    Wallet
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" value="Cash" id="Cash" name="payment_type">
+                                <label class="form-check-label" for="Cash">
+                                    Cash
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" value="Account" id="Account"
+                                       name="payment_type">
+                                <label class="form-check-label" for="Account">
+                                    Account
+                                </label>
                             </div>
                         </div>
                     </div>
-                    <div class="row mb-3 d-flex align-items-center" style="border: 1px solid black;height: 400px">
-                        <div class="col-12 col-md-5">
-                            <div
-                                style="border: 1px solid black;height: 300px;display: flex;justify-content: center;align-items: center">
-                                <div>
-                                    <div>
-                                        <span>Min Price</span>
-                                        <span>350 USD/Mt</span>
-                                    </div>
-                                    <div>
-                                        <span>Quantity</span>
-                                        <span>30.000 Mt</span>
-                                    </div>
-                                    <div>
-                                        <span>Min Order</span>
-                                        <span>5.000 Mt</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="bids_table" class="col-12 col-md-7" style="height: 300px">
-                            @include('home.partials.bids_table')
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-md-6">
-                            <label for="price">Price ($)</label>
-                            <input disabled type="number" class="form-control disabled_prop" id="price"
-                                   placeholder="Price">
-                            <p id="price_error" class="text-danger error"></p>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="quantity">Quantity</label>
-                            <input disabled type="number" class="form-control disabled_prop" id="quantity"
-                                   placeholder="Quantity">
-                            <p id="quantity_error" class="text-danger error"></p>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-12 d-flex justify-content-center">
-                            <button disabled onclick="Bid()" class="btn btn-success disabled_prop"
-                                    style="width: 150px;">
-                                Bid
-                            </button>
-                        </div>
-                    </div>
-
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 mt-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" value="1" id="flexCheckDefault" name="term_condition">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        <strong>
+                            I Read and accept Bid Instruction and General terms and conditions
+                        </strong>
+                    </label>
+                </div>
+                <div class="bid_term_condition p-3 text-justify text-white mt-3">
+                    <p>
+                        For sales and purchase of petroleum, petrochemical, mineral and metal products in addition to
+                        the terms and conditions agreed in writing elsewhere between the parties in particular the
+                        pro-forma invoice (PI), which are considered as binding and effective between the parties, the
+                        following terms and conditions apply to the parties’ relationship unless otherwise agreed
+                        between the parties in the PI. By signing the PI, the parties are considered to have agreed with
+                        this GTC which are incorporated by reference in the parties’ agreement. The GTC and PI, will be
+                        collectively referred to as the “contract”.
+                    </p>
                 </div>
             </div>
         </div>

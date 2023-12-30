@@ -271,85 +271,11 @@
         }
     }
 
-    function FormPending(form_value_id) {
-        $.ajax({
-            url: "{{ route('admin.submit.form') }}",
-            data: {
-                form_value_id: form_value_id,
-                _token: "{{ csrf_token() }}",
-            },
-            dataType: 'json',
-            method: 'post',
-            success: function (msg) {
-
-                if (msg[0] == 1) {
-                    notifier.show('Done!', msg[1], 'success',
-                        '{{ asset('assets/images/notification/ok-48.png') }}', 3000);
-                    setTimeout(function () {
-                        window.location.href = msg[2];
-                    }, 3000);
-                } else {
-                    notifier.show('Failed!', msg[1], 'danger',
-                        '{{ asset('assets/images/notification/high_priority-48.png') }}', 3000);
-                }
-
-            },
-            failed: function (msg) {
-                console.error(msg);
-            }
-        })
-    }
-
-    function CopyFormValue(form_value_id) {
-        $.ajax({
-            url: "{{ route('admin.copy.form') }}",
-            data: {
-                form_value_id: form_value_id,
-                _token: "{{ csrf_token() }}",
-            },
-            dataType: 'json',
-            method: 'post',
-            success: function (msg) {
-
-                if (msg[0] == 1) {
-                    notifier.show('Done!', msg[1], 'success',
-                        '{{ asset('assets/images/notification/ok-48.png') }}', 3000);
-                    setTimeout(function () {
-                        window.location.reload();
-                    }, 3000);
-                } else {
-                    notifier.show('Failed!', msg[1], 'danger',
-                        '{{ asset('assets/images/notification/high_priority-48.png') }}', 3000);
-                }
-
-            },
-            failed: function (msg) {
-                console.error(msg);
-            }
-        })
-    }
-
     $('#profile-toggle').click(function () {
         $('#profile-dropdown').slideToggle();
     })
 
-    function changeFormStatus(new_status, form_id) {
-        $.ajax({
-            url: '{{ route('admin.sale_form.change_status') }}',
-            data: {
-                _token: "{{ csrf_token() }}",
-                new_status: new_status,
-                form_id: form_id,
-            },
-            method: "post",
-            dataType: "json",
-            success: function (msg) {
-                if (msg[0] == 1) {
-                    window.location.reload();
-                }
-            }
-        });
-    }
+
 </script>
 
 @include('admin.layouts.includes.alerts')

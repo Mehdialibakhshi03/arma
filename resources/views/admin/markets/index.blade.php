@@ -40,10 +40,11 @@
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                @foreach($markets as $key=>$item)
+                                                @foreach($group_markets as $markets)
+                                                @foreach($markets->sortBy('time') as $key=>$item)
                                                     <tr>
                                                         <td>
-                                                            {{ $markets->firstItem()+$key }}
+                                                            {{ $key }}
                                                         </td>
                                                         <td>
                                                             {{ $item->SalesForm->commodity }}
@@ -66,7 +67,7 @@
                                                                 <i class="fa fa-pen"></i>
                                                                  Market
                                                             </a>
-                                                            <a title="Edit Commodity" href="{{ route('admin.market.sale_form', ['page_type'=>'Edit','item'=>$item->SalesForm->id]) }}"
+                                                            <a title="Edit Commodity" href="{{ route('sale_form',['page_type'=>'Edit','item'=>$item->commodity_id]) }}"
                                                                class="btn btn-sm btn-primary">
                                                                 <i class="fa fa-list"></i>
                                                                  Commodity
@@ -74,13 +75,9 @@
                                                         </td>
                                                     </tr>
                                                 @endforeach
+                                                @endforeach
                                                 </tbody>
                                             </table>
-                                            <div class="text-center">
-                                                <div class="d-flex justify-content-center mt-4">
-                                                    {{ $markets->links() }}
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>

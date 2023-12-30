@@ -44,13 +44,13 @@ class MarketController extends Controller
 {
     public function index()
     {
-        $markets = Market::paginate(100);
-        return view('admin.markets.index', compact('markets'));
+        $group_markets = Market::all()->groupby('date');
+        return view('admin.markets.index', compact('group_markets'));
     }
 
     public function create()
     {
-        $sales_offer_form_copy = SalesOfferFormCopy::where('status', 4)->get();
+        $sales_offer_form_copy = SalesOfferForm::where('status', 5)->get();
         return view('admin.markets.create', compact('sales_offer_form_copy'));
     }
 
@@ -59,7 +59,6 @@ class MarketController extends Controller
         $request->validate([
             'date' => 'required|date',
             'time' => 'required',
-            'min_wallet' => 'required|numeric',
             'commodity_id' => 'required'
         ]);
         Market::create($request->all());
@@ -69,15 +68,15 @@ class MarketController extends Controller
 
     public function edit(Market $market)
     {
-        $sales_offer_form_copy = SalesOfferFormCopy::where('status', 4)->get();
+        $sales_offer_form_copy = SalesOfferForm::where('status', 5)->get();
         return view('admin.markets.edit', compact('market','sales_offer_form_copy'));
     }
 
     public function update(Market $market, Request $request)
     {
         $request->validate([
-            'start' => 'required|date',
-            'min_wallet' => 'required|numeric',
+            'date' => 'required|date',
+            'time' => 'required',
             'commodity_id' => 'required'
         ]);
         $request['status'] = 7;
@@ -199,7 +198,7 @@ class MarketController extends Controller
                 session()->flash('need_submit', 1);
             }
             if ($validator->fails()) {
-                return redirect()->route('admin.sale_form', ['page_type' => 'Edit', 'item' => $sale_form->id])->withErrors($validator->errors());
+                return redirect()->route('sale_form', ['page_type' => 'Edit', 'item' => $sale_form->id])->withErrors($validator->errors());
             }
             return redirect()->back()->with('success', 'updated successfully');
         } else {
@@ -211,7 +210,7 @@ class MarketController extends Controller
                 session()->flash('need_submit', 1);
             }
             if ($validator->fails()) {
-                return redirect()->route('admin.sale_form', ['page_type' => 'Edit', 'item' => $sale_form->id])->withErrors($validator->errors());
+                return redirect()->route('sale_form', ['page_type' => 'Edit', 'item' => $sale_form->id])->withErrors($validator->errors());
             }
         }
     }

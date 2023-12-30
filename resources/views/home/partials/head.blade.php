@@ -17,4 +17,5 @@
     <link rel="stylesheet" href="{{ asset('home/css/developer.css') }}">
     <link rel="stylesheet" href="{{ asset('home/css/developer.css') }}">
     <link rel="stylesheet" href="{{ asset('home/css/font-awsome.css') }}">
+    @yield('style')
 </head>

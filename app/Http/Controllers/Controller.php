@@ -16,13 +16,18 @@ class Controller extends BaseController
 
     public function statusTimeMarket($market)
     {
+
         $ready_to_duration = MarketSetting::where('key', 'ready_to_duration')->pluck('value')->first();
         $open_duration = MarketSetting::where('key', 'open_duration')->pluck('value')->first();
         $q_1 = MarketSetting::where('key', 'q_1')->pluck('value')->first();
         $q_2 = MarketSetting::where('key', 'q_2')->pluck('value')->first();
         $q_3 = MarketSetting::where('key', 'q_3')->pluck('value')->first();
         $endMinutes = $open_duration + $q_1 + $q_2 + $q_3 + 3;
-        $startTime = Carbon::parse($market->start);
+        $date = $market->date;
+        $time = $market->time;
+        $date_time = $date.' '.$time;
+
+        $startTime = Carbon::parse($date_time);
         $now = Carbon::now();
         $benchmark1 = $startTime->copy()->addMinutes(-$ready_to_duration);
         $benchmark2 = $startTime;
@@ -32,7 +37,7 @@ class Controller extends BaseController
         $benchmark6 = $benchmark5->copy()->addMinutes($q_3);
         $bids = $market->Bids;
         if ($market->status == 7) {
-            return [0, $market->status,$benchmark1,$benchmark2,$benchmark3,$benchmark4,$benchmark5,$benchmark6];
+            return [0, $market->status, $benchmark1, $benchmark2, $benchmark3, $benchmark4, $benchmark5, $benchmark6,$date_time];
         }
 
         if ($now < $benchmark1) {
@@ -61,7 +66,7 @@ class Controller extends BaseController
             }
             //exists min-price
             $bid_touch_price = $market->Bids()->where('price', '>=', $market->min_price)->exists();
-            if (!$bid_touch_price){
+            if (!$bid_touch_price) {
                 $status = 7;
                 $difference = 0;
             }
@@ -77,9 +82,9 @@ class Controller extends BaseController
             $status = 6;
             //check if total quality < $market->quantity
             $bids_quantity = $market->Bids()->sum('quantity');
-            $market_quantity=$market->quantity;
+            $market_quantity = $market->quantity;
 
-            if ($bids_quantity<=$market_quantity){
+            if ($bids_quantity <= $market_quantity) {
                 $status = 7;
                 $difference = 0;
             }
@@ -91,7 +96,7 @@ class Controller extends BaseController
 
         }
         $market->update(['status' => $status]);
-        return [$difference,$status,$benchmark1,$benchmark2,$benchmark3,$benchmark4,$benchmark5,$benchmark6];
+        return [$difference, $status, $benchmark1, $benchmark2, $benchmark3, $benchmark4, $benchmark5, $benchmark6,$date_time];
     }
 
     public function convertTime($seconds)

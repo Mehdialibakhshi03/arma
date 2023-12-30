@@ -13,71 +13,23 @@
     @endif
     <script>
         $(document).ready(function () {
-            let markets =@json($markets);
+            let latest_today_market_id = {{ $latest_today_market_id }};
+            let markets_groups =@json($markets_groups);
             let ids = [];
-            $.each(markets, function (i, val) {
-                ids.push(val.id);
+            $.each(markets_groups, function (i, markets) {
+                $.each(markets, function (i, val) {
+                    ids.push(val.id);
+                })
             })
             setInterval(function () {
                 $.each(ids, function (i, val) {
-                    refreshMarketTablewithJs(val);
+                    refreshMarketTablewithJs(val, latest_today_market_id);
                 });
             }, 1000);
 
         });
 
-        function refreshMarketTablewithJs(val) {
-            let statusText = '';
-            let market = $('#market-' + val);
-            let status = market.attr('data-status');
-            let difference = market.attr('data-difference');
-            let benchmark1 = market.attr('data-benchmark1');
-            let benchmark2 = market.attr('data-benchmark2');
-            let benchmark3 = market.attr('data-benchmark3');
-            let benchmark4 = market.attr('data-benchmark4');
-            let benchmark5 = market.attr('data-benchmark5');
-            let benchmark6 = market.attr('data-benchmark6');
-            let now = moment();
-            benchmark1 = new Date(benchmark1);
-            benchmark2 = new Date(benchmark2);
-            benchmark3 = new Date(benchmark3);
-            benchmark4 = new Date(benchmark4);
-            benchmark5 = new Date(benchmark5);
-            benchmark6 = new Date(benchmark6);
-            if (now < benchmark1) {
-                difference = benchmark1 - now;
-                status = 1;
-                statusText = 'long time to open';
-            } else if (benchmark1 < now && now < benchmark2) {
-                //ready to open
-                difference = benchmark2 - now;
-                status = 2;
-                statusText = 'ready to open';
-            } else if (benchmark2 < now && now < benchmark3) {
-                difference = benchmark3 - now;
-                status = 3;
-                statusText = 'open';
-            } else if (benchmark3 < now && now < benchmark4) {
-                difference = benchmark4 - now;
-                status = 4;
-                statusText = 'open(1/3)';
-            } else if (benchmark4 < now && now < benchmark5) {
-                difference = benchmark5 - now;
-                status = 5;
-                statusText = 'open(2/3)';
-            } else if (benchmark5 < now && now < benchmark6) {
-                difference = benchmark6 - now;
-                status = 6;
-                statusText = 'open(3/3)';
-            } else {
-                difference = 0;
-                status = 7;
-                statusText = 'close';
-            }
-            difference = parseInt(difference / 1000);
-            $('#market-difference-' + val).html(difference);
-            $('#market-status-' + val).html(statusText);
-        }
+
 
         {{--var config = {--}}
         {{--    endDate: '{{ \Carbon\Carbon::parse($markets[0]->end)->format('Y-m-d') }} 17:00',--}}

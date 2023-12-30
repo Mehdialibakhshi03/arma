@@ -14,7 +14,7 @@ class Market extends Model
 
     public function SalesForm()
     {
-        return $this->belongsTo(SalesOfferFormCopy::class, 'commodity_id', 'id');
+        return $this->belongsTo(SalesOfferForm::class, 'commodity_id', 'id');
     }
 
     public function Status()

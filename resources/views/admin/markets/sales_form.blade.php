@@ -34,8 +34,9 @@
                                         <form id="sales_form" method="POST" action="{{ $route }}"
                                               enctype="multipart/form-data">
                                             @csrf
-                                            <div class="row mt-4">
-                                                @include('admin.sales_form.company')
+                                            <div class="row mt-4">@include('admin.sales_form.company')
+
+                                                @include('admin.sales_form.unit_currency')
 
                                                 @include('admin.sales_form.product')
 
@@ -43,11 +44,13 @@
 
                                                 @include('admin.sales_form.quality')
 
-                                                @include('admin.sales_form.shipment_and_incoterm')
+                                                @include('admin.sales_form.incoterm')
+
+                                                @include('admin.sales_form.price_type')
 
                                                 @include('admin.sales_form.payment_term')
 
-                                                @include('admin.sales_form.marking')
+                                                @include('admin.sales_form.packing')
 
                                                 @include('admin.sales_form.origin')
 

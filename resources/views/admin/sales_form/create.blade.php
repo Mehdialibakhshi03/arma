@@ -1,4 +1,4 @@
-@extends('admin.layouts.main')
+@extends($role=='seller'?'seller.layouts.main':'admin.layouts.main')
 
 @section('content')
     @include('admin.sales_form.modal')
@@ -26,7 +26,8 @@
                                         <form id="sales_form" method="POST" action="{{ $route }}"
                                               enctype="multipart/form-data">
                                             @csrf
-                                            <div class="row mt-4">
+
+                                            <div id="sales_offer_form_inputs" class="row">
                                                 @include('admin.sales_form.company')
 
                                                 @include('admin.sales_form.unit_currency')
@@ -66,21 +67,24 @@
                                                 @include('admin.sales_form.contact_person')
 
                                                 @include('admin.sales_form.last_section')
-
+                                            </div>
+                                            <div id="status_buttons" class="row mt-4">
                                                 <div class="col-md-12 mt-3">
                                                     <button title="Submit" type="button" onclick="submitForm()"
                                                             class="btn btn-sm btn-info">
                                                         Submit
                                                     </button>
-                                                    <button title="Your Information Saved But Not Submitted" type="button" onclick="submitForm(1)"
+                                                    <button title="Your Information Saved But Not Submitted"
+                                                            type="button" onclick="submitForm(1)"
                                                             class="btn btn-sm btn-success">
                                                         Save
                                                     </button>
-                                                    <button title="Your Information Permanently deleted" type="button" onclick="CancelForm({{ isset($form->id)?$form->id:0 }})"
+                                                    <button title="Your Information Permanently deleted" type="button"
+                                                            onclick="CancelForm({{ isset($form->id)?$form->id:0 }})"
                                                             class="btn btn-sm btn-danger">
                                                         Cancel
                                                     </button>
-{{--                                                    @include('admin.sales_form.change_status')--}}
+                                                    {{--                                                    @include('admin.sales_form.change_status')--}}
                                                 </div>
                                             </div>
                                             <input id="is_save" name="is_save" type="hidden" value="0">
@@ -102,6 +106,15 @@
           href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css"
           integrity="sha512-ARJR74swou2y0Q2V9k0GbzQ/5vJ2RBSoCWokg4zkfM29Fb3vZEQyv0iWBMW/yvKgyHSR/7D64pFMmU8nYmbRkg=="
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
+
+    <style>
+        @media (min-width: 576px) {
+            #show_modal_form_exists .modal-dialog {
+                max-width: 30% !important;
+                margin: 1.75rem auto;
+            }
+        }
+    </style>
 @endpush
 
 @push('script')

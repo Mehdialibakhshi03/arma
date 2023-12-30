@@ -5,11 +5,13 @@
 <script>
     $(document).ready(function () {
         @if(session()->exists('need_submit'))
-        show_modal();
+        show_submit_modal();
         @endif
         @if(session()->exists('form_id_exists'))
+        console.log('ppppppppppppppppp');
         show_modal_form_exists();
         @endif
+        $('#modal_form_id').val(' ');
         check_unit();
         check_currency();
         check_quality_inspection_report_file();
@@ -27,16 +29,73 @@
         check_reach_certificate_file();
         check_documents();
         show_errors();
+
+        let first_error =@json($errors->toArray());
+        let i = 0;
+        $.each(first_error, function (key, val) {
+            if (i == 0) {
+                window.location.href = "#" + key;
+            }
+            i++;
+        });
+        @if(isset($is_show) and $is_show==1)
+        show_page();
+        @endif
     });
 
-    function show_modal() {
+    function maybe_first_in_object(ob) {
+        for (var props in ob) {
+            return prop;
+        }
+    }
+
+    function show_submit_modal() {
+        let Sales_offer_form_html = $('#sales_offer_form_inputs').html();
+        $('#modal_body').html(Sales_offer_form_html);
+        $('#modal_body').find('input').prop('disabled', true);
+        $('#modal_body').find('textarea').prop('disabled', true);
+        $('#modal_body').find('select').prop('disabled', true);
+        $('#modal_body').find('button').prop('disabled', true);
+        let id = '{{ $item }}';
+        $('#modal_form_id').val(id);
         let NeedToSubmitModal = $('#NeedToSubmitModal');
         NeedToSubmitModal.modal('show');
     }
+
+    function show_page() {
+        $('body').find('input').prop('disabled', true);
+        $('body').find('textarea').prop('disabled', true);
+        $('body').find('select').prop('disabled', true);
+        $('body').find('button').prop('disabled', true);
+        $('#status_buttons').remove();
+    }
+
+    function Final_Submit() {
+        let modal_form_id = $('#modal_form_id').val();
+        let url = "{{ route('admin.Final_Submit') }}";
+        $.ajax({
+            url: url,
+            data: {
+                _token: "{{ csrf_token() }}",
+                id: modal_form_id,
+            },
+            dataType: 'json',
+            method: 'POST',
+            beforeSend: function () {
+                console.log('okk');
+            },
+            success: function (msg) {
+                if (msg[0] === 1) {
+                    window.location.href = msg[1];
+                }
+            }
+        })
+    }
+
     function show_modal_form_exists() {
         let show_modal_form_exists = $('#show_modal_form_exists');
         show_modal_form_exists.modal('show');
-        let previous_form={{ session()->exists('form_id_exists')?session()->get('form_id_exists'):0 }};
+        let previous_form = {{ session()->exists('form_id_exists')?session()->get('form_id_exists'):0 }};
         $('#previous_form').val(previous_form);
     }
 
@@ -634,7 +693,7 @@
                     window.location.href = "{{ route('admin.dashboard') }}";
                 }
             })
-        }else {
+        } else {
             window.location.href = "{{ route('admin.dashboard') }}";
         }
 

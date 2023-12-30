@@ -6598,7 +6598,7 @@ fieldset:disabled .btn {
 
 @media (min-width: 576px) {
     .modal-dialog {
-        max-width: 500px;
+        max-width: 95%;
         margin: 1.75rem auto;
     }
 

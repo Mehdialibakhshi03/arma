@@ -17,4 +17,8 @@ class SalesOfferForm extends Model
     {
         return $this->belongsTo(FormStatus::class,'status','id');
     }
+    public function User()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

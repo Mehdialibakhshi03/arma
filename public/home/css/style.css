@@ -2758,3 +2758,16 @@ body {
     border-radius: 100%;
     color: white
 }
+.circle_timer{
+    width: 80px;
+    height: 80px;
+    background-color: green;
+    border-radius: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 5px auto;
+    text-align: center;
+    color: white;
+    font-size: 21px;
+}

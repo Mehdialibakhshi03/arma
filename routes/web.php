@@ -4,7 +4,6 @@
 use App\Http\Controllers\Admin\CKEditorController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FormController;
-use App\Http\Controllers\Admin\FormValueController;
 use App\Http\Controllers\Admin\Header1Controller;
 use App\Http\Controllers\Admin\Header2Controller;
 use App\Http\Controllers\Admin\MarketController;
@@ -16,7 +15,7 @@ use App\Http\Controllers\Admin\WalletController;
 use App\Http\Controllers\Home\IndexController;
 use App\Http\Controllers\Home\MarketHomeController;
 use App\Http\Controllers\Home\ProfileController;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Seller\SellerController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -42,8 +41,6 @@ Route::post('/role-permission/{id}', [
     'as' => 'roles_permit',
     'uses' => '\App\Http\Controllers\Admin\RoleController@assignPermission',
 ]);
-
-Route::get('form-detail/id', [HomeController::class, 'form_details'])->name('form.details');
 
 /////////////////////////////////web
 Route::get('/', [IndexController::class, 'index'])->name('home.index');
@@ -71,7 +68,7 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
         Route::put('setting/header2/update/{item}', [Header2Controller::class, 'update'])->name('header2.update');
         Route::post('setting/header2/remove/{id}', [Header2Controller::class, 'remove'])->name('header2.remove');
     });
-    //header1
+
 
     //Config
     Route::middleware('permission:user')->group(function () {
@@ -109,23 +106,6 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
         Route::get('form-status/{id}', [FormController::class, 'formStatus'])->name('form.status');
         Route::post('forms/destroy/{form}', [FormController::class, 'destroy'])->name('forms.destroy')->middleware('permission:form-delete');
     });
-    Route::put('/forms/fill/{id}', [FormController::class, 'fillStore'])->name('forms.fill.store');
-    Route::get('/forms/fill/{id}', [FormController::class, 'fill'])->name('forms.fill')->middleware('permission:form-fill');
-    //FormValues
-    Route::middleware('permission:commodity')->group(function () {
-        Route::get('/form-values/{id}/download/pdf', [FormValueController::class, 'download_pdf'])->name('download.form.values.pdf');
-        Route::get('/form-values/{id}/edit', [FormValueController::class, 'edit'])->name('edit.form.values');
-        Route::get('/form-values/{status}/view', [FormValueController::class, 'showSubmitedForms'])->name('form.values');
-        Route::post('submit/Forms', [FormValueController::class, 'submit_form'])->name('submit.form')->middleware('permission:commodity-submit-preview');
-        Route::post('copy/Forms', [FormValueController::class, 'copy_form'])->name('copy.form')->middleware('permission:commodity-duplicate');
-        Route::post('formvalues/changeStatus', [FormValueController::class, 'changeStatus'])->name('formValue.changeStatus')->middleware('permission:commodity-change-status');
-        //Route::get('/form-values/{id}/view', ['as' => 'view.form.values', 'uses' => '\App\Http\Controllers\Admin\FormValueController@showSubmitedForms'])->middleware(['auth', 'xss']);
-        Route::resource('formvalues', FormValueController::class);
-        Route::get('/form-values/{id}/download/csv2', [FormValueController::class, 'download_csv_2'])->name('download.form.values.csv2');
-        Route::post('/mass/export/xlsx', [FormValueController::class, 'export_xlsx'])->name('mass.export.xlsx');
-        Route::post('/mass/export/csv', [FormValueController::class, 'export'])->name('mass.export.csv');
-        Route::post('filter-chart/{id}', [FormValueController::class, 'getGraphData'])->name('filter_chart');
-    });
     //messages
     Route::middleware('permission:message')->group(function () {
         Route::get('messages/emails/index', [MessagesController::class, 'emails'])->name('emails.index');
@@ -135,8 +115,6 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
         Route::get('messages/alerts/{alert}/edit', [MessagesController::class, 'alert_edit'])->name('alert.edit');
         Route::put('messages/alerts/{alert}/update', [MessagesController::class, 'alert_update'])->name('alert.update');
     });
-
-
     //Markets
     Route::middleware('permission:markets')->group(function () {
         Route::get('markets', [MarketController::class, 'index'])->name('markets.index');
@@ -149,12 +127,22 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
         Route::get('market/sale_form/{page_type?}/{item?}',[MarketController::class,'sales_form'])->name('market.sale_form');
         Route::post('market/sales_form/update_or_store/{item?}',[MarketController::class,'sales_form_update_or_store'])->name('market.sale_form.update_or_store');
     });
-    //SaleForm
-    Route::get('/sale_form/{page_type?}/{item?}',[FormController::class,'sales_form'])->name('sale_form');
-    Route::post('/sales_form/update_or_store/{item?}',[FormController::class,'sales_form_update_or_store'])->name('sale_form.update_or_store');
-    Route::post('/sales_form/status/change',[FormController::class,'change_status'])->name('sale_form.change_status');
     Route::get('/sales_form/index/{status}',[FormController::class,'sales_form_index'])->name('sales_form.index');
     Route::post('/sales_form/remove',[FormController::class,'sales_form_remove'])->name('sales_form.remove');
+    Route::post('/Final_Submit',[FormController::class,'Final_Submit'])->name('Final_Submit');
+});
+
+//SaleForm
+Route::get('/sale_form/{page_type?}/{item?}',[FormController::class,'sales_form'])->name('sale_form');
+Route::post('/sales_form/update_or_store/{item?}',[FormController::class,'sales_form_update_or_store'])->name('sale_form.update_or_store');
+Route::post('/sales_form_change_status/',[FormController::class,'change_status'])->name('sale_form.change_status');
+Route::get('sales_offer/show/{id}', [FormController::class, 'sales_form_show'])->name('sale_form.show');
+//seller
+Route::name('seller.')->prefix('/seller/')->group(function () {
+    Route::get('dashboard', [SellerController::class, 'dashboard'])->name('dashboard');
+    Route::get('profile', [SellerController::class, 'profile'])->name('profile');
+    Route::get('requests', [SellerController::class, 'requests'])->name('requests');
+
 });
 Route::name('profile.')->prefix('/profile/')->group(function () {
     Route::get('index', [ProfileController::class, 'index'])->name('index');

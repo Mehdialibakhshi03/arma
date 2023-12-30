@@ -128,6 +128,9 @@ return new class extends Migration
             $table->text('accept_terms')->nullable();
             //status
             $table->integer('status')->default(0);
+            $table->text('has_deposit')->nullable();
+            $table->text('deposit_value')->nullable();
+            $table->text('data_pending_message')->nullable();
             $table->timestamps();
         });
     }

@@ -19,7 +19,7 @@
                 @php
                     $pending_count=\App\Models\User::where('active_status',0)->count();
                 @endphp
-                @can('user')
+
                     <li class="dash-item dash-hasmenu {{ request()->is('admin-panel/management/users*') ? 'active dash-trigger' : 'collapsed' }}">
 
                         <a href="#!" class="dash-link position-relative"><span class="dash-micon"><i
@@ -60,48 +60,8 @@
                         </ul>
 
                     </li>
-                @endcan
-                @can('user-edit')
                     <li class="">
-                        <a href="{{ route('admin.user.edit',['type'=>auth()->user()->active_status,'user'=>auth()->id()]) }}"
-                           class="dash-link">
-                            <span class="dash-micon">
-                                <i class="fa fa-user"></i>
-                            </span>
-                            <span class="dash-mtext custom-weight">
-                                {{ __('me') }}
-                            </span>
-                        </a>
-                    </li>
-                @endcan
-                {{--                @can('form')--}}
-                {{--                    <li class="">--}}
-                {{--                        <a href="{{ route('admin.forms.index') }}" class="dash-link">--}}
-                {{--                            <span class="dash-micon">--}}
-                {{--                                <i class="fa fa-pen"></i>--}}
-                {{--                            </span>--}}
-                {{--                            <span class="dash-mtext custom-weight">--}}
-                {{--                                {{ __('Forms Generator') }}--}}
-                {{--                            </span>--}}
-                {{--                        </a>--}}
-                {{--                    </li>--}}
-                {{--                @endcan--}}
-                {{--                @can('form-fill')--}}
-                {{--                    <li class="">--}}
-                {{--                        <a href="{{ route('admin.forms.fill',['id'=>1]) }}" class="dash-link">--}}
-                {{--                            <span class="dash-micon">--}}
-                {{--                                <i class="fa fa-pen"></i>--}}
-                {{--                            </span>--}}
-                {{--                            <span class="dash-mtext custom-weight">--}}
-                {{--                                Sales Offer--}}
-                {{--                            </span>--}}
-                {{--                        </a>--}}
-                {{--                    </li>--}}
-                {{--                @endcan--}}
-
-                @can('form-fill')
-                    <li class="">
-                        <a href="{{ route('admin.sale_form',['page_type'=>'Create']) }}" class="dash-link">
+                        <a href="{{ route('sale_form',['page_type'=>'Create']) }}" class="dash-link">
                             <span class="dash-micon">
                                 <i class="fa fa-pen"></i>
                             </span>
@@ -110,9 +70,12 @@
                             </span>
                         </a>
                     </li>
-                @endcan
                 @php
-                    $pending_count=\App\Models\FormValue::where('status',0)->count();
+                    $inbox_count=\App\Models\SalesOfferForm::where('status',1)->count();
+                    $cash_pending_count=\App\Models\SalesOfferForm::where('status',2)->count();
+                    $data_pending_count=\App\Models\SalesOfferForm::where('status',3)->count();
+                    $reject_count=\App\Models\SalesOfferForm::where('status',4)->count();
+                    $approved_count=\App\Models\SalesOfferForm::where('status',5)->count();
                 @endphp
 
                 <li class="dash-item">
@@ -124,53 +87,44 @@
                         <span
                             class="dash-mtext custom-weight">{{ __('Inquiries') }}</span><span
                             class="dash-arrow"><i data-feather="chevron-right"></i></span>
-                        @if($pending_count>0)
-                            <span
-                                class="circle-notification circle-notification-absolute">{{ $pending_count }}</span>
-                        @endif
+{{--                        @if($pending_count>0)--}}
+{{--                            <span--}}
+{{--                                class="circle-notification circle-notification-absolute">{{ $pending_count }}</span>--}}
+{{--                        @endif--}}
                     </a>
 
                     @php
                         $need_to_confirm_count=\App\Models\FormValue::where('status',3)->count();
                     @endphp
                     <ul class="dash-submenu {{ Request::route()->getName() == 'view.form.values' ? 'd-block' : '' }}">
-{{--                        <li class="dash-item d-flex align-items-center">--}}
-{{--                            <a href="{{ route('admin.sales_form.index',['status'=>0]) }}" class="dash-link"><span--}}
-{{--                                    class="dash-mtext custom-weight">{{ __('Need To Confirm') }}--}}
-{{--                            </a>--}}
-{{--                            @if($need_to_confirm_count>0)--}}
-{{--                                <span class="circle-notification">{{ $need_to_confirm_count }}</span>--}}
-{{--                            @endif--}}
-{{--                        </li>--}}
                         <li class="dash-item d-flex align-items-center">
                             <a href="{{ route('admin.sales_form.index',['status'=>1]) }}" class="dash-link"><span
-                                    class="dash-mtext custom-weight">{{ __('Inbox') }}
+                                    class="dash-mtext custom-weight">{{ __('Inbox').'('.$inbox_count.')' }}
                             </a>
                         </li>
                         <li class="dash-item d-flex align-items-center">
                             <a href="{{ route('admin.sales_form.index',['status'=>2]) }}" class="dash-link"><span
-                                    class="dash-mtext custom-weight">{{ __('Pending') }}
+                                    class="dash-mtext custom-weight">{{ __('Cash Pending').'('.$cash_pending_count.')' }}
                             </a>
                         </li>
                         <li class="dash-item d-flex align-items-center">
                             <a href="{{ route('admin.sales_form.index',['status'=>3]) }}" class="dash-link"><span
-                                    class="dash-mtext custom-weight">{{ __('Rejected') }}
+                                    class="dash-mtext custom-weight">{{ __('Data Pending').'('.$data_pending_count.')' }}
                             </a>
                         </li>
                         <li class="dash-item d-flex align-items-center">
                             <a href="{{ route('admin.sales_form.index',['status'=>4]) }}" class="dash-link"><span
-                                    class="dash-mtext custom-weight">{{ __('Approved') }}
+                                    class="dash-mtext custom-weight">{{ __('Rejected').'('.$reject_count.')' }}
                             </a>
                         </li>
-{{--                        <li class="dash-item d-flex align-items-center">--}}
-{{--                            <a href="{{ route('admin.sales_form.index',['status'=>4]) }}" class="dash-link"><span--}}
-{{--                                    class="dash-mtext custom-weight">{{ __('Ready To Show In Market') }}--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
+                        <li class="dash-item d-flex align-items-center">
+                            <a href="{{ route('admin.sales_form.index',['status'=>5]) }}" class="dash-link"><span
+                                    class="dash-mtext custom-weight">{{ __('Approved').'('.$approved_count.')' }}
+                            </a>
+                        </li>
                     </ul>
                 </li>
 
-                @can('setting')
                     <li class="dash-item dash-hasmenu {{ request()->is('mailtemplate*') || request()->is('sms-template*') || request()->is('manage-language*') || request()->is('create-language*') || request()->is('settings*') ? 'active dash-trigger' : 'collapsed' }} || {{ request()->is('create-language*') || request()->is('settings*') ? 'active' : '' }}">
                         <a href="#!" class="dash-link"><span class="dash-micon"><i class="ti ti-apps"></i></span><span
                                 class="dash-mtext">{{ __('Setting') }}</span><span class="dash-arrow"><i
@@ -184,9 +138,6 @@
 
                         </ul>
                     </li>
-                @endcan
-
-                @can('header-setting')
                     <li
                         class="dash-item dash-hasmenu {{ request()->is('admin-panel/management/setting*') ? 'active dash-trigger' : 'collapsed' }}">
                         <a href="#!" class="dash-link"><span class="dash-micon"><i
@@ -203,8 +154,6 @@
 
                         </ul>
                     </li>
-                @endcan
-                @can('message')
                     <li
                         class="dash-item dash-hasmenu {{ request()->is('admin-panel/management/messages*') ? 'active dash-trigger' : 'collapsed' }}">
                         <a href="#!" class="dash-link"><span class="dash-micon"><i
@@ -221,8 +170,6 @@
 
                         </ul>
                     </li>
-                @endcan
-                @can('markets')
                     <li class="dash-item dash-hasmenu {{ request()->is('admin-panel/management/markets*') ? 'active dash-trigger' : 'collapsed' }}">
                         <a href="#!" class="dash-link">
                             <span class="dash-micon">
@@ -236,7 +183,7 @@
                             </li>
                         </ul>
                     </li>
-                @endcan
+
             </ul>
         </div>
     </div>
