@@ -45,11 +45,14 @@ Route::post('/role-permission/{id}', [
 /////////////////////////////////web
 Route::get('/', [IndexController::class, 'index'])->name('home.index');
 Route::get('/redirect-user', [IndexController::class, 'redirectUser'])->name('home');
+Route::post('/startBroadCast', [IndexController::class, 'startBroadCast'])->name('startBroadCast');
 Route::get('/bid/{market}', [MarketHomeController::class, 'bid'])->name('home.bid');
 Route::post('/bid_market/', [MarketHomeController::class, 'bid_market'])->name('home.bid_market');
 Route::post('/refreshMarketTable', [MarketHomeController::class, 'refreshMarketTable'])->name('home.refreshMarketTable');
 Route::post('/refreshMarket', [MarketHomeController::class, 'refreshMarket'])->name('home.refreshMarket');
 Route::post('/refreshBidTable', [MarketHomeController::class, 'refreshBidTable'])->name('home.refreshBidTable');
+Route::post('/change_market_status', [MarketHomeController::class, 'change_market_status'])->name('home.change_market_status');
+Route::post('/seller_change_offer', [MarketHomeController::class, 'seller_change_offer'])->name('home.seller_change_offer');
 Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
     //dashboard
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -116,7 +119,6 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
         Route::put('messages/alerts/{alert}/update', [MessagesController::class, 'alert_update'])->name('alert.update');
     });
     //Markets
-    Route::middleware('permission:markets')->group(function () {
         Route::get('markets', [MarketController::class, 'index'])->name('markets.index');
         Route::get('market/create', [MarketController::class, 'create'])->name('market.create');
         Route::post('market/store', [MarketController::class, 'store'])->name('market.store');
@@ -126,7 +128,7 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
         Route::put('market/form_update/{market}', [MarketController::class, 'form_update'])->name('market.form.update');
         Route::get('market/sale_form/{page_type?}/{item?}',[MarketController::class,'sales_form'])->name('market.sale_form');
         Route::post('market/sales_form/update_or_store/{item?}',[MarketController::class,'sales_form_update_or_store'])->name('market.sale_form.update_or_store');
-    });
+        Route::post('market/getMarket',[MarketController::class,'getMarket'])->name('getMarket');
     Route::get('/sales_form/index/{status}',[FormController::class,'sales_form_index'])->name('sales_form.index');
     Route::post('/sales_form/remove',[FormController::class,'sales_form_remove'])->name('sales_form.remove');
     Route::post('/Final_Submit',[FormController::class,'Final_Submit'])->name('Final_Submit');

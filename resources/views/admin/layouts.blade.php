@@ -3,7 +3,8 @@
 
 
 <!-- Mirrored from crypo.netlify.app/signin-dark by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 10 Oct 2023 07:28:30 GMT -->
-<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
+<!-- Added by HTTrack -->
+<meta http-equiv="content-type" content="text/html;charset=UTF-8"/><!-- /Added by HTTrack -->
 <head>
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta charset="UTF-8">
@@ -11,7 +12,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="description" content="@section('meta_keywords'){{ $meta_description }}@show">
     <meta name="keywords" content="@section('meta_keywords'){{ $meta_keywords }}@show">
-    <meta name="robots" content="noindex,nofollow" />
+    <meta name="robots" content="noindex,nofollow"/>
     <title>
         @section('title')
             {{ $title }}
@@ -20,6 +21,7 @@
     <link rel="icon" href="{{ imageExist(env('SETTING_UPLOAD_PATH'),$fav_icon) }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ asset('home/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('admin/css/developer.css') }}">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @yield('style')
 </head>
 
@@ -35,69 +37,69 @@
 
         <div class="collapse navbar-collapse" id="headerMenu">
             <ul class="navbar-nav mr-auto">
-{{--                <li class="nav-item dropdown">--}}
-{{--                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"--}}
-{{--                       aria-expanded="false">--}}
-{{--                        Landing Page--}}
-{{--                    </a>--}}
-{{--                    <div class="dropdown-menu">--}}
-{{--                        <a class='dropdown-item' href='landing-page-dark.html'>Landing One</a>--}}
-{{--                        <a class='dropdown-item' href='landing-page-dark-two.html'>Landing Two</a>--}}
-{{--                    </div>--}}
-{{--                </li>--}}
-{{--                <li class="nav-item dropdown">--}}
-{{--                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"--}}
-{{--                       aria-expanded="false">--}}
-{{--                        Exchange--}}
-{{--                    </a>--}}
-{{--                    <div class="dropdown-menu">--}}
-{{--                        <a class='dropdown-item' href='exchange-dark.html'>Exchange</a>--}}
-{{--                        <a class='dropdown-item' href='exchange-dark-live-price.html'>Exchange Live Price</a>--}}
-{{--                        <a class='dropdown-item' href='exchange-dark-ticker.html'>Exchange Ticker</a>--}}
-{{--                        <a class='dropdown-item' href='exchange-dark-fluid.html'>Exchange Fluid</a>--}}
-{{--                    </div>--}}
-{{--                </li>--}}
-{{--                <li class="nav-item dropdown">--}}
-{{--                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"--}}
-{{--                       aria-expanded="false">--}}
-{{--                        Markets--}}
-{{--                    </a>--}}
-{{--                    <div class="dropdown-menu">--}}
-{{--                        <a class='dropdown-item' href='markets-dark.html'>Markets</a>--}}
-{{--                        <a class='dropdown-item' href='market-capital-dark.html'>Markets Line</a>--}}
-{{--                        <a class='dropdown-item' href='market-capital-bar-dark.html'>Markets Bar</a>--}}
-{{--                        <a class='dropdown-item' href='market-overview-dark.html'>Market Overview</a>--}}
-{{--                        <a class='dropdown-item' href='market-screener-dark.html'>Market Screener</a>--}}
-{{--                        <a class='dropdown-item' href='market-crypto-dark.html'>Market Crypto</a>--}}
-{{--                    </div>--}}
-{{--                </li>--}}
+                {{--                <li class="nav-item dropdown">--}}
+                {{--                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"--}}
+                {{--                       aria-expanded="false">--}}
+                {{--                        Landing Page--}}
+                {{--                    </a>--}}
+                {{--                    <div class="dropdown-menu">--}}
+                {{--                        <a class='dropdown-item' href='landing-page-dark.html'>Landing One</a>--}}
+                {{--                        <a class='dropdown-item' href='landing-page-dark-two.html'>Landing Two</a>--}}
+                {{--                    </div>--}}
+                {{--                </li>--}}
+                {{--                <li class="nav-item dropdown">--}}
+                {{--                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"--}}
+                {{--                       aria-expanded="false">--}}
+                {{--                        Exchange--}}
+                {{--                    </a>--}}
+                {{--                    <div class="dropdown-menu">--}}
+                {{--                        <a class='dropdown-item' href='exchange-dark.html'>Exchange</a>--}}
+                {{--                        <a class='dropdown-item' href='exchange-dark-live-price.html'>Exchange Live Price</a>--}}
+                {{--                        <a class='dropdown-item' href='exchange-dark-ticker.html'>Exchange Ticker</a>--}}
+                {{--                        <a class='dropdown-item' href='exchange-dark-fluid.html'>Exchange Fluid</a>--}}
+                {{--                    </div>--}}
+                {{--                </li>--}}
+                {{--                <li class="nav-item dropdown">--}}
+                {{--                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"--}}
+                {{--                       aria-expanded="false">--}}
+                {{--                        Markets--}}
+                {{--                    </a>--}}
+                {{--                    <div class="dropdown-menu">--}}
+                {{--                        <a class='dropdown-item' href='markets-dark.html'>Markets</a>--}}
+                {{--                        <a class='dropdown-item' href='market-capital-dark.html'>Markets Line</a>--}}
+                {{--                        <a class='dropdown-item' href='market-capital-bar-dark.html'>Markets Bar</a>--}}
+                {{--                        <a class='dropdown-item' href='market-overview-dark.html'>Market Overview</a>--}}
+                {{--                        <a class='dropdown-item' href='market-screener-dark.html'>Market Screener</a>--}}
+                {{--                        <a class='dropdown-item' href='market-crypto-dark.html'>Market Crypto</a>--}}
+                {{--                    </div>--}}
+                {{--                </li>--}}
 
-{{--                <li class="nav-item dropdown">--}}
-{{--                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"--}}
-{{--                       aria-expanded="false">--}}
-{{--                        Dashboard--}}
-{{--                    </a>--}}
-{{--                    <div class="dropdown-menu">--}}
-{{--                        <a class='dropdown-item' href='settings-profile-dark.html'>Profile</a>--}}
-{{--                        <a class='dropdown-item' href='settings-wallet-dark.html'>Wallet</a>--}}
-{{--                        <a class='dropdown-item' href='settings-dark.html'>Settings</a>--}}
-{{--                    </div>--}}
-{{--                </li>--}}
-{{--                <li class="nav-item dropdown">--}}
-{{--                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"--}}
-{{--                       aria-expanded="false">--}}
-{{--                        Others--}}
-{{--                    </a>--}}
-{{--                    <div class="dropdown-menu">--}}
-{{--                        <a class='dropdown-item' href='technical-analysis-dark.html'>Technical Analysis</a>--}}
-{{--                        <a class='dropdown-item' href='cross-rates-dark.html'>Cross Rates</a>--}}
-{{--                        <a class='dropdown-item' href='symbol-info-dark.html'>Symbol Info</a>--}}
-{{--                        <a class='dropdown-item' href='heat-map-dark.html'>Heat Map</a>--}}
-{{--                        <a class='dropdown-item' href='signin-dark.html'>Sign in</a>--}}
-{{--                        <a class='dropdown-item' href='signup-dark.html'>Sign up</a>--}}
-{{--                        <a class='dropdown-item' href='404-dark.html'>404</a>--}}
-{{--                    </div>--}}
-{{--                </li>--}}
+                {{--                <li class="nav-item dropdown">--}}
+                {{--                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"--}}
+                {{--                       aria-expanded="false">--}}
+                {{--                        Dashboard--}}
+                {{--                    </a>--}}
+                {{--                    <div class="dropdown-menu">--}}
+                {{--                        <a class='dropdown-item' href='settings-profile-dark.html'>Profile</a>--}}
+                {{--                        <a class='dropdown-item' href='settings-wallet-dark.html'>Wallet</a>--}}
+                {{--                        <a class='dropdown-item' href='settings-dark.html'>Settings</a>--}}
+                {{--                    </div>--}}
+                {{--                </li>--}}
+                {{--                <li class="nav-item dropdown">--}}
+                {{--                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"--}}
+                {{--                       aria-expanded="false">--}}
+                {{--                        Others--}}
+                {{--                    </a>--}}
+                {{--                    <div class="dropdown-menu">--}}
+                {{--                        <a class='dropdown-item' href='technical-analysis-dark.html'>Technical Analysis</a>--}}
+                {{--                        <a class='dropdown-item' href='cross-rates-dark.html'>Cross Rates</a>--}}
+                {{--                        <a class='dropdown-item' href='symbol-info-dark.html'>Symbol Info</a>--}}
+                {{--                        <a class='dropdown-item' href='heat-map-dark.html'>Heat Map</a>--}}
+                {{--                        <a class='dropdown-item' href='signin-dark.html'>Sign in</a>--}}
+                {{--                        <a class='dropdown-item' href='signup-dark.html'>Sign up</a>--}}
+                {{--                        <a class='dropdown-item' href='404-dark.html'>404</a>--}}
+                {{--                    </div>--}}
+                {{--                </li>--}}
             </ul>
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item header-custom-icon">
@@ -106,7 +108,8 @@
                     </a>
                 </li>
                 <li class="nav-item dropdown header-custom-icon">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
+                       aria-haspopup="true"
                        aria-expanded="false">
                         <i class="icon ion-md-notifications"></i>
                         <span class="circle-pulse"></span>
@@ -169,7 +172,8 @@
                     </div>
                 </li>
                 <li class="nav-item dropdown header-img-icon">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
+                       aria-haspopup="true"
                        aria-expanded="false">
                         <img src="{{ asset('home/img/avatar.svg') }}" alt="avatar">
                     </a>
@@ -232,11 +236,16 @@
 <script src="{{ asset('home/js/custom.js') }}"></script>
 <script src="{{ asset('admin/js/developer.js') }}"></script>
 <script src="{{ asset('admin/fullCKEditor/ckeditor/ckeditor.js') }}"></script>
+
 <script>
+    $(document).ready(function () {
+        alert('okk');
+    })
     $('.nav-link').click(function () {
         $('.dropdown-menu').removeClass('show');
         $(this).parent().addClass('show');
     });
+
 </script>
 @yield('script')
 </body>

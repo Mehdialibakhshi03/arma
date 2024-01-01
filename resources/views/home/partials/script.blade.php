@@ -5,10 +5,12 @@
 <script src="{{ asset('home/js/amcharts.min.js') }}"></script>
 <script src="{{ asset('home/js/custom.js') }}"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.4/moment-timezone-with-data.js"></script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.4/moment-timezone-with-data.js"></script>
 <script src="{{ asset('home/js/timer.js') }}"></script>
 <script src="{{ asset('home/js/yscountdown.min.js') }}"></script>
 <script src="{{ asset('home/js/font-awsome.js') }}"></script>
+<script src="{{ asset('js/app.js') }}"></script>
 <script>
     let header1Width = $('#scroll-container').find('div')[0].clientWidth;
     let width = screen.width;
@@ -46,12 +48,15 @@
         }
 
     });
-    function refreshMarketTablewithJs(val, latest_today_market_id = null) {
+
+    function refreshMarketTablewithJs(id) {
+        let canBid = false;
         let goToEnd = 0;
         let change_color = 0;
         let statusText = '';
-        let market = $('#market-' + val);
-        let status = market.attr('data-status');
+        let market = $('#market-' + id);
+        let previous_status = $('#previous_status').val();
+        let status;
         let difference = market.attr('data-difference');
         let benchmark1 = market.attr('data-benchmark1');
         let benchmark2 = market.attr('data-benchmark2');
@@ -78,6 +83,7 @@
             color = '#8a8a00';
             statusText = '<span>Ready to open</span>';
         } else if (benchmark2 < now && now < benchmark3) {
+            canBid = true;
             difference = benchmark3 - now;
             status = 3;
             color = '#1f9402';
@@ -107,28 +113,90 @@
             color = '#ff0000';
             change_color = 1;
             statusText = '<span>Close</span>';
-            goToEnd = 1;
         }
+        $('#previous_status').val(status);
         difference = parseInt(difference / 1000);
-        if (difference > 300) {
-            difference = '-';
-        }
-        if (difference == 0) {
-            difference = ' ';
-        }
         if (change_color) {
-            $('#market-' + val).css('color', color);
+            $('#market-' + id).css('color', color);
+            $('.status-box').css('color', color);
+            $('.circle_timer').css('background', color);
         }
-        if (latest_today_market_id != null) {
-            if (goToEnd) {
-                $('#market-' + val).insertAfter($('#market-' + latest_today_market_id));
-            }
+        if (previous_status != status) {
+            change_status_market(id, status);
+        }
+        // if (canBid){
+        //     $('#quantity_bid_box').prop('disabled', false);
+        //     $('#price_bid_box').prop('disabled', false);
+        //     $('#button_bid_box').prop('disabled', false);
+        // }else{
+        //     $('#quantity_bid_box').prop('disabled', true);
+        //     $('#price_bid_box').prop('disabled', true);
+        //     $('#button_bid_box').prop('disabled', true);
+        // }
+
+        $('#market-difference-' + id).html(secondsToHms(difference));
+        $('#market-status-' + id).html(statusText);
+    }
+
+    function secondsToHms(d) {
+        d = Number(d);
+        var h = Math.floor(d / 3600);
+        var m = Math.floor(d % 3600 / 60);
+        var s = Math.floor(d % 3600 % 60);
+        var hDisplay = h;
+        if (h < 10) {
+            hDisplay = '0' + h;
+        }
+        var mDisplay = m;
+        if (m < 10) {
+            mDisplay = '0' + m;
+        }
+        var sDisplay = s;
+        if (s < 10) {
+            sDisplay = '0' + s;
         }
 
-        $('#market-difference-' + val).html(difference);
-        $('#market-status-' + val).html(statusText);
+
+        return hDisplay + ':' + mDisplay + ':' + sDisplay;
+    }
+
+    function change_status_market(id, status) {
+        $.ajax({
+            url: "{{ route('home.change_market_status') }}",
+            data: {
+                _token: "{{ csrf_token() }}",
+                market_id: id,
+                status: status,
+            },
+            dataType: "json",
+            method: 'post',
+            success: function (msg) {
+                console.log('status changed!')
+            }
+        })
+    }
+
+    window.Echo.channel('new_bid_created')
+        .listen('NewBidCreated', function (e) {
+            let market_id = e.market_id;
+            refreshBidTable(market_id);
+        });
+
+    function refreshBidTable(market) {
+        $.ajax({
+            url: "{{ route('home.refreshBidTable') }}",
+            data: {
+                _token: "{{ csrf_token() }}",
+                market: market
+            },
+            dataType: "json",
+            method: 'post',
+            success: function (msg) {
+                if (msg) {
+                    $('#bidder_offer').html(msg[1]);
+                }
+            }
+        })
     }
 </script>
-
-<script src="{{ asset('js/app.js') }}"></script>
 @yield('script')

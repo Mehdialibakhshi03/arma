@@ -58,7 +58,7 @@
                                                         <td>
                                                             {{ $item->time }}
                                                         </td>
-                                                        <td style="color: {{ $item->Status->color }}">
+                                                        <td id="market_status_{{ $item->id }}" style="color: {{ $item->Status->color }}">
                                                             {{ $item->Status->title }}
                                                         </td>
                                                         <td>

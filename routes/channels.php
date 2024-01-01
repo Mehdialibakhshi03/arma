@@ -17,8 +17,19 @@ use Illuminate\Support\Facades\Broadcast;
 //    return (int) $user->id === (int) $id;
 //});
 
-
-Broadcast::channel('test', function ($user) {
-   return ['ok'];
+Broadcast::channel('reza', function ($user, $id) {
+    return (int) $user->id === (int) $id;
 });
+Broadcast::channel('new_bid_created', function ($user, $id) {
+    return (int) $user->id === (int) $id;
+});
+Broadcast::channel('market-status-updated', function ($user, $id) {
+    return (int) $user->id === (int) $id;
+});
+
+//
+//
+//Broadcast::channel('test', function ($user) {
+//   return ['ok'];
+//});
 

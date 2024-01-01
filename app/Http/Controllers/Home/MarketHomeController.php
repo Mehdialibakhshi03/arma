@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers\Home;
 
+use App\Events\MarketStatusUpdated;
+use App\Events\NewBidCreated;
+use App\Events\TestEvent;
 use App\Http\Controllers\Controller;
 use App\Models\BidHistory;
 use App\Models\Market;
 use App\Models\MarketSetting;
+use App\Models\MarketStatus;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -13,17 +17,17 @@ class MarketHomeController extends Controller
 {
     public function bid(Market $market)
     {
-        $result=$this->statusTimeMarket($market);
-        $market['difference']=$result[0];
-        $market['status']=$result[1];
-        $market['benchmark1']=$result[2];
-        $market['benchmark2']=$result[3];
-        $market['benchmark3']=$result[4];
-        $market['benchmark4']=$result[5];
-        $market['benchmark5']=$result[6];
-        $market['benchmark6']=$result[7];
+        $result = $this->statusTimeMarket($market);
+        $market['difference'] = $result[0];
+        $market['status'] = $result[1];
+        $market['benchmark1'] = $result[2];
+        $market['benchmark2'] = $result[3];
+        $market['benchmark3'] = $result[4];
+        $market['benchmark4'] = $result[5];
+        $market['benchmark5'] = $result[6];
+        $market['benchmark6'] = $result[7];
         $bids = $market->Bids()->orderBy('price', 'desc')->take(10)->get();
-        return view('home.market.index', compact('market','bids'));
+        return view('home.market.index', compact('market', 'bids'));
     }
 
     public function refreshMarketTable()
@@ -65,8 +69,38 @@ class MarketHomeController extends Controller
     public function refreshBidTable(Request $request)
     {
         $bids = BidHistory::where('market_id', $request->market)->orderBy('price', 'desc')->take(10)->get();
-        $view = view('home.partials.bids_table', compact('bids'))->render();
+        $view = view('home.market.bidder_table', compact('bids'))->render();
         return response()->json([1, $view]);
+    }
+
+    public function change_market_status(Request $request)
+    {
+        try {
+            $market_id = $request->market_id;
+            $status = $request->status;
+            Market::where('id', $market_id)->update([
+                'status' => $status
+            ]);
+            broadcast(new MarketStatusUpdated($market_id));
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+        }
+    }
+
+    public function seller_change_offer(Request $request)
+    {
+        try {
+            $user_id = auth()->id();
+            $price = $request->price;
+            $quantity = $request->quantity;
+            $market_id = $request->market_id;
+            $market = Market::where('id', $market_id)->first();
+            if ($user_id!=$market->user_id) {
+                return response()->json([1,'user_different']);
+            }
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+        }
     }
 
     public function bid_market(Request $request)
@@ -76,31 +110,32 @@ class MarketHomeController extends Controller
             'quantity' => 'required',
         ]);
         try {
-            //user must login
-            if (!auth()->check()) {
-                $msg = 'You must Login!';
-                return response()->json(['login', $msg]);
-            }
-            //user must bidder
-            if (!auth()->user()->hasRole('buyer')) {
-                $msg = 'You must Buyer!';
-                return response()->json(['bidder', $msg]);
-            }
-            //user can bid or not
-            $pre_bid = BidHistory::where('user_id', auth()->id())->where('market_id', $request->market)->first();
-            if ($pre_bid) {
-                if ($request->price <= $pre_bid->price) {
-                    $msg = 'Your New Bid Must Better Than Previous!';
-                    return response()->json(['better_Bid', $msg]);
-                }
-                $pre_bid->delete();
-            }
+//            //user must login
+//            if (!auth()->check()) {
+//                $msg = 'You must Login!';
+//                return response()->json(['login', $msg]);
+//            }
+//            //user must bidder
+//            if (!auth()->user()->hasRole('buyer')) {
+//                $msg = 'You must Buyer!';
+//                return response()->json(['bidder', $msg]);
+//            }
+//            //user can bid or not
+//            $pre_bid = BidHistory::where('user_id', auth()->id())->where('market_id', $request->market)->first();
+//            if ($pre_bid) {
+//                if ($request->price <= $pre_bid->price) {
+//                    $msg = 'Your New Bid Must Better Than Previous!';
+//                    return response()->json(['better_Bid', $msg]);
+//                }
+//                $pre_bid->delete();
+//            }
             BidHistory::create([
-                'user_id' => auth()->id(),
+                'user_id' => 1,
                 'market_id' => $request->market,
                 'price' => $request->price,
                 'quantity' => $request->quantity,
             ]);
+            broadcast(new NewBidCreated($request->market));
             return response()->json([1, 'success']);
         } catch (\Exception $e) {
             return response()->json([0, 'error']);

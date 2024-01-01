@@ -2759,8 +2759,8 @@ body {
     color: white
 }
 .circle_timer{
-    width: 80px;
-    height: 80px;
+    width: 110px;
+    height: 110px;
     background-color: green;
     border-radius: 100%;
     display: flex;
@@ -2770,4 +2770,10 @@ body {
     text-align: center;
     color: white;
     font-size: 21px;
+}
+
+.error_text{
+    color:red;
+    font-size: 9pt !important;
+    display: none;
 }

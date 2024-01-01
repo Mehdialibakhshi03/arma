@@ -12,8 +12,8 @@
         </script>
     @endif
     <script>
+
         $(document).ready(function () {
-            let latest_today_market_id = {{ $latest_today_market_id }};
             let markets_groups =@json($markets_groups);
             let ids = [];
             $.each(markets_groups, function (i, markets) {
@@ -23,10 +23,9 @@
             })
             setInterval(function () {
                 $.each(ids, function (i, val) {
-                    refreshMarketTablewithJs(val, latest_today_market_id);
+                    refreshMarketTablewithJs(val);
                 });
             }, 1000);
-
         });
 
 
@@ -108,11 +107,32 @@
 
         startTime();
 
+        function StartBroadCast(){
+            $.ajax({
+                url:"{{ route('startBroadCast') }}",
+                data:{
+                    _token:"{{ csrf_token() }}",
+                },
+                dataType : 'json',
+                method: 'POST',
+                success: function (msg){
+                    console.log(msg);
+                }
+            })
+        }
+
+
+
 
     </script>
 @endsection
 
 @section('content')
+    <div>
+        <button type="button" onclick="StartBroadCast()" class="btn btn-success">
+            Start Broadcast
+        </button>
+    </div>
     <div id="time"></div>
     @if($alert_active==1)
         <div style="background-color: {{ $alert_bg_color }} !important;height: {{ $alert_height.'px' }} !important;"

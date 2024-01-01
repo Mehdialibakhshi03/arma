@@ -232,7 +232,7 @@
 <script src="{{ asset('assets/js/plugins/sweetalert2.all.min.js') }}"></script>
 <script src="{{ asset('assets/js/plugins/bouncer.min.js') }}"></script>
 <script src="{{ asset('assets/js/pages/form-validation.js') }}"></script>
-
+<script src="{{ asset('js/app.js') }}"></script>
 @if (!empty(setting('gtag')))
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ setting('gtag') }}"></script>
     <script>
@@ -274,6 +274,34 @@
     $('#profile-toggle').click(function () {
         $('#profile-dropdown').slideToggle();
     })
+
+    window.Echo.channel('market-status-updated')
+        .listen('MarketStatusUpdated', function (e) {
+            console.log('popopopo');
+            console.log(e.market_id);
+            getMarketStatus(e.market_id)
+        });
+
+    function getMarketStatus(market_id) {
+        $.ajax({
+            url: "{{ route('admin.getMarket') }}",
+            data: {
+                _token: '{{ csrf_token() }}',
+                market_id: market_id,
+            },
+            dataType: 'json',
+            method: 'post',
+            success: function (msg) {
+                if (msg) {
+                    let status = msg[1];
+                    let color = msg[2];
+                    $('#market_status_' + market_id).text(status);
+                    $('#market_status_' + market_id).css('color', color);
+                }
+
+            }
+        })
+    }
 
 
 </script>

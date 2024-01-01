@@ -69,7 +69,7 @@ class MarketController extends Controller
     public function edit(Market $market)
     {
         $sales_offer_form_copy = SalesOfferForm::where('status', 5)->get();
-        return view('admin.markets.edit', compact('market','sales_offer_form_copy'));
+        return view('admin.markets.edit', compact('market', 'sales_offer_form_copy'));
     }
 
     public function update(Market $market, Request $request)
@@ -86,6 +86,7 @@ class MarketController extends Controller
         $market->update($request->all());
         return redirect()->route('admin.markets.index')->with('success', 'Market updated successfully');
     }
+
     public function sales_form($page_type = 'Create', $item = 'null')
     {
         $sale_form_exist = 0;
@@ -214,12 +215,28 @@ class MarketController extends Controller
             }
         }
     }
+
+    public function getMarket(Request $request)
+    {
+        try {
+            $market_id = $request->market_id;
+            $market = Market::where('id', $market_id)->first();
+            $status = $market->Status->title;
+            $color = $market->Status->color;
+            return response()->json([1,$status,$color]);
+        }catch (\Exception $e) {
+            return response()->json([0,$e->getMessage()]);
+        }
+
+    }
+
     public function Upload_files($env, $file)
     {
         $fileNamePrimaryImage = generateFileName($file->getClientOriginalName());
         $file->move(\public_path($env), $fileNamePrimaryImage);
         return $fileNamePrimaryImage;
     }
+
     public function rules($item)
     {
         $rules = [

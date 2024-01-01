@@ -7,8 +7,9 @@
         <th scope="col">Delivery Term</th>
         <th scope="col">Region</th>
         <th scope="col">Date</th>
+        <th scope="col">Time</th>
         <th scope="col">Status</th>
-        <th scope="col"></th>
+        <th scope="col">Remaining Time</th>
         <th scope="col"></th>
         <th scope="col"></th>
     </tr>
@@ -52,7 +53,10 @@
                     -
                 </td>
                 <td>
-                    {{ \Carbon\Carbon::parse($market->date_time) }}
+                    {{ \Carbon\Carbon::parse($market->date_time)->format('Y-m-d') }}
+                </td>
+                <td>
+                    {{ \Carbon\Carbon::parse($market->date_time)->format('H:i') }}
                 </td>
                 <td id="market-status-{{ $market->id }}">
                     Loading...

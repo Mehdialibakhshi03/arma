@@ -7,6 +7,7 @@
     </tr>
     </thead>
     <tbody>
+
     @foreach($bids as $key=>$bid)
     <tr>
         <td scope="col">{{ $key+1 }}</td>
