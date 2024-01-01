@@ -127,6 +127,8 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
         Route::put('market/{market}/update', [MarketController::class, 'update'])->name('market.update');
         Route::put('market/form_update/{market}', [MarketController::class, 'form_update'])->name('market.form.update');
         Route::get('market/sale_form/{page_type?}/{item?}',[MarketController::class,'sales_form'])->name('market.sale_form');
+        Route::get('market/settings',[MarketController::class,'settings'])->name('markets.settings');
+        Route::post('market/settings/update',[MarketController::class,'settings_update'])->name('markets.settings.update');
         Route::post('market/sales_form/update_or_store/{item?}',[MarketController::class,'sales_form_update_or_store'])->name('market.sale_form.update_or_store');
         Route::post('market/getMarket',[MarketController::class,'getMarket'])->name('getMarket');
     Route::get('/sales_form/index/{status}',[FormController::class,'sales_form_index'])->name('sales_form.index');

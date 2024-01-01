@@ -150,6 +150,37 @@ class MarketController extends Controller
         ));
     }
 
+    public function settings()
+    {
+        $ready_to_open = MarketSetting::where('key', 'ready_to_open')->pluck('value')->first();
+        $opening = MarketSetting::where('key', 'opening')->pluck('value')->first();
+        $q_1 = MarketSetting::where('key', 'q_1')->pluck('value')->first();
+        $q_2 = MarketSetting::where('key', 'q_2')->pluck('value')->first();
+        $q_3 = MarketSetting::where('key', 'q_3')->pluck('value')->first();
+        return view('admin.markets.setting', compact('q_1', 'q_2', 'q_3', 'ready_to_open', 'opening'));
+    }
+
+    public function settings_update(Request $request)
+    {
+        $ready_to_open = $request->ready_to_open;
+        $opening = $request->opening;
+        $q_1 = $request->q_1;
+        $q_2 = $request->q_2;
+        $q_3 = $request->q_3;
+        $array = [
+            'ready_to_open' => $ready_to_open,
+            'opening' => $opening,
+            'q_1' => $q_1,
+            'q_2' => $q_2,
+            'q_3' => $q_3,
+        ];
+        foreach ($array as $key => $val) {
+            MarketSetting::where('key', $key)->update(['value' => $val]);
+        }
+        session()->flash('success','Successfully updated');
+        return redirect()->back();
+    }
+
     public function sales_form_update_or_store(Request $request, $item = null)
     {
         $is_complete = 0;
@@ -223,9 +254,9 @@ class MarketController extends Controller
             $market = Market::where('id', $market_id)->first();
             $status = $market->Status->title;
             $color = $market->Status->color;
-            return response()->json([1,$status,$color]);
-        }catch (\Exception $e) {
-            return response()->json([0,$e->getMessage()]);
+            return response()->json([1, $status, $color]);
+        } catch (\Exception $e) {
+            return response()->json([0, $e->getMessage()]);
         }
 
     }
