@@ -39,7 +39,6 @@
     <script>
         function copyToClipboard(element) {
             var $temp = $("<input>");
-            console.log($temp);
             $("body").append($temp);
             $temp.val($(element).data('url')).select();
             document.execCommand("copy");

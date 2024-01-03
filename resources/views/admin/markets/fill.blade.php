@@ -210,7 +210,6 @@
                 }
                 if ($(this).attr('type') == 'hidden') {
                     if ($(this).parents('.signature-pad-body').length) {
-                        // console.log($(this));
                         if ($(this).val() == "") {
                             $(this).parents('.signature-pad-body').find('.signaturePad').addClass('is-invalid');
                             $(this).parents('.signature-pad-body').find('.signaturePad').removeClass('is-valid');

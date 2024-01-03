@@ -277,8 +277,6 @@
 
     window.Echo.channel('market-status-updated')
         .listen('MarketStatusUpdated', function (e) {
-            console.log('popopopo');
-            console.log(e.market_id);
             getMarketStatus(e.market_id)
         });
 

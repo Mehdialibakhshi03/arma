@@ -177,7 +177,7 @@ class MarketController extends Controller
         foreach ($array as $key => $val) {
             MarketSetting::where('key', $key)->update(['value' => $val]);
         }
-        session()->flash('success','Successfully updated');
+        session()->flash('success', 'Successfully updated');
         return redirect()->back();
     }
 
@@ -257,6 +257,27 @@ class MarketController extends Controller
             return response()->json([1, $status, $color]);
         } catch (\Exception $e) {
             return response()->json([0, $e->getMessage()]);
+        }
+
+    }
+
+    public function check_market_status_for_continue(Request $request)
+    {
+        try {
+            $market_id = $request->market_id;
+            $market = Market::find($market_id);
+            $price = $market->SalesForm->price;
+            $base_price = $price / 2;
+            $bids = $market->Bids()->where('price', '>=', $base_price)->get();
+            if (count($bids)>0){
+                return response()->json([1,'continue']);
+            }
+            $market->update([
+                'status'=>7
+            ]);
+            return response()->json([1,'close']);
+        }catch (\Exception $e) {
+            dd($e->getMessage());
         }
 
     }

@@ -26,12 +26,11 @@
             if ($.inArray('#', dataSet) >= 0) {
                 possible += '![]{}()%&*$#^<>~@|';
             }
-            console.log(possible);
+
             var text = '';
             for (var i = 0; i < 20; i++) {
                 text += possible.charAt(Math.floor(Math.random() * possible.length));
             }
-            console.log(text);
             $('#new_password').val(text);
         }
 

@@ -15,4 +15,7 @@ class BidHistory extends Model
     public function User(){
         return $this->belongsTo(User::class);
     }
+    public function Market(){
+        return $this->belongsTo(Market::class);
+    }
 }

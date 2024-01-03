@@ -48,6 +48,7 @@ Route::get('/redirect-user', [IndexController::class, 'redirectUser'])->name('ho
 Route::post('/startBroadCast', [IndexController::class, 'startBroadCast'])->name('startBroadCast');
 Route::get('/bid/{market}', [MarketHomeController::class, 'bid'])->name('home.bid');
 Route::post('/bid_market/', [MarketHomeController::class, 'bid_market'])->name('home.bid_market');
+Route::post('/remove_bid/', [MarketHomeController::class, 'remove_bid'])->name('home.remove_bid');
 Route::post('/refreshMarketTable', [MarketHomeController::class, 'refreshMarketTable'])->name('home.refreshMarketTable');
 Route::post('/refreshMarket', [MarketHomeController::class, 'refreshMarket'])->name('home.refreshMarket');
 Route::post('/refreshBidTable', [MarketHomeController::class, 'refreshBidTable'])->name('home.refreshBidTable');
@@ -131,6 +132,7 @@ Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {
         Route::post('market/settings/update',[MarketController::class,'settings_update'])->name('markets.settings.update');
         Route::post('market/sales_form/update_or_store/{item?}',[MarketController::class,'sales_form_update_or_store'])->name('market.sale_form.update_or_store');
         Route::post('market/getMarket',[MarketController::class,'getMarket'])->name('getMarket');
+        Route::post('check_market_status_for_continue',[MarketController::class,'check_market_status_for_continue'])->name('check_market_status_for_continue');
     Route::get('/sales_form/index/{status}',[FormController::class,'sales_form_index'])->name('sales_form.index');
     Route::post('/sales_form/remove',[FormController::class,'sales_form_remove'])->name('sales_form.remove');
     Route::post('/Final_Submit',[FormController::class,'Final_Submit'])->name('Final_Submit');

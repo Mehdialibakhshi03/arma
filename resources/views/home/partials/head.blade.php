@@ -18,4 +18,5 @@
     <link rel="stylesheet" href="{{ asset('home/css/font-awsome.css') }}">
     <link rel="stylesheet" href="/resources/css/app.css">
     @yield('style')
+
 </head>

@@ -8,7 +8,6 @@
         show_submit_modal();
         @endif
         @if(session()->exists('form_id_exists'))
-        console.log('ppppppppppppppppp');
         show_modal_form_exists();
         @endif
         $('#modal_form_id').val(' ');
@@ -82,7 +81,7 @@
             dataType: 'json',
             method: 'POST',
             beforeSend: function () {
-                console.log('okk');
+
             },
             success: function (msg) {
                 if (msg[0] === 1) {
@@ -724,7 +723,7 @@
 
     function loadingOption(tag) {
         let value = $(tag).val();
-        console.log(value);
+
         if (value === 'Flexi Tank') {
             value = 'Flexi_Tank';
         }

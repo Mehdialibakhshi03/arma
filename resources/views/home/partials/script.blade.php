@@ -49,94 +49,378 @@
 
     });
 
-    function refreshMarketTablewithJs(id) {
-        let canBid = false;
-        let goToEnd = 0;
-        let change_color = 0;
-        let statusText = '';
-        let market = $('#market-' + id);
-        let previous_status = $('#previous_status').val();
-        let status;
-        let difference = market.attr('data-difference');
-        let benchmark1 = market.attr('data-benchmark1');
-        let benchmark2 = market.attr('data-benchmark2');
-        let benchmark3 = market.attr('data-benchmark3');
-        let benchmark4 = market.attr('data-benchmark4');
-        let benchmark5 = market.attr('data-benchmark5');
-        let benchmark6 = market.attr('data-benchmark6');
-        let now = moment();
-        benchmark1 = new Date(benchmark1);
-        benchmark2 = new Date(benchmark2);
-        benchmark3 = new Date(benchmark3);
-        benchmark4 = new Date(benchmark4);
-        benchmark5 = new Date(benchmark5);
-        benchmark6 = new Date(benchmark6);
-        if (now < benchmark1) {
-            difference = benchmark1 - now;
-            status = 1;
-            statusText = '<span>Waiting To Open</span>';
-        } else if (benchmark1 < now && now < benchmark2) {
-            //ready to open
-            difference = benchmark2 - now;
-            status = 2;
-            change_color = 1;
-            color = '#8a8a00';
-            statusText = '<span>Ready to open</span>';
-        } else if (benchmark2 < now && now < benchmark3) {
-            canBid = true;
-            difference = benchmark3 - now;
-            status = 3;
-            color = '#1f9402';
-            change_color = 1;
-            statusText = '<span>Open</span>';
-        } else if (benchmark3 < now && now < benchmark4) {
-            difference = benchmark4 - now;
-            status = 4;
-            color = '#135e00';
-            change_color = 1;
-            statusText = '<span>Open(1/3)</span>';
-        } else if (benchmark4 < now && now < benchmark5) {
-            difference = benchmark5 - now;
-            status = 5;
-            color = '#104800';
-            change_color = 1;
-            statusText = '<span>Open(2/3)</span>';
-        } else if (benchmark5 < now && now < benchmark6) {
-            difference = benchmark6 - now;
-            status = 6;
-            color = '#0a2a00';
-            change_color = 1;
-            statusText = '<span>Open(3/3)</span>';
-        } else {
-            difference = 0;
-            status = 7;
-            color = '#ff0000';
-            change_color = 1;
-            statusText = '<span>Close</span>';
+    function MarketOnline(id) {
+        var MarketSystem = {
+            start: function () {
+                this.interval = setInterval(function () {
+                    refreshMarketTablewithJs(id);
+                }, 1000);
+            },
+            stop: function () {
+                clearInterval(this.interval);
+                delete this.interval;
+                Stop(id);
+            }
         }
-        $('#previous_status').val(status);
-        difference = parseInt(difference / 1000);
-        if (change_color) {
-            $('#market-' + id).css('color', color);
-            $('.status-box').css('color', color);
-            $('.circle_timer').css('background', color);
-        }
-        if (previous_status != status) {
-            change_status_market(id, status);
-        }
-        // if (canBid){
-        //     $('#quantity_bid_box').prop('disabled', false);
-        //     $('#price_bid_box').prop('disabled', false);
-        //     $('#button_bid_box').prop('disabled', false);
-        // }else{
-        //     $('#quantity_bid_box').prop('disabled', true);
-        //     $('#price_bid_box').prop('disabled', true);
-        //     $('#button_bid_box').prop('disabled', true);
-        // }
+        MarketSystem.start();
 
-        $('#market-difference-' + id).html(secondsToHms(difference));
-        $('#market-status-' + id).html(statusText);
+        async function refreshMarketTablewithJs(id) {
+            let market = $('#market-' + id);
+            let benchmark1 = market.attr('data-benchmark1');
+            let benchmark2 = market.attr('data-benchmark2');
+            let benchmark3 = market.attr('data-benchmark3');
+            let benchmark4 = market.attr('data-benchmark4');
+            let benchmark5 = market.attr('data-benchmark5');
+            let benchmark6 = market.attr('data-benchmark6');
+            let now = moment();
+            benchmark1 = new Date(benchmark1);
+            benchmark2 = new Date(benchmark2);
+            benchmark3 = new Date(benchmark3);
+            benchmark4 = new Date(benchmark4);
+            benchmark5 = new Date(benchmark5);
+            benchmark6 = new Date(benchmark6);
+            if (now < benchmark1) {
+                waiting_to_open(benchmark1, now, id);
+            } else if (benchmark1 < now && now < benchmark2) {
+                ready_to_open(benchmark2, now, id)
+            } else if (benchmark2 < now && now < benchmark3) {
+                opening(benchmark3, now, id)
+            } else if (benchmark3 < now && now < benchmark4) {
+                Quotation_1_2(benchmark4, now, id);
+            } else if (benchmark4 < now && now < benchmark5) {
+                Quotation_2_2(benchmark5, now, id);
+            } else if (benchmark5 < now && now < benchmark6) {
+                Competition(benchmark6, now, id);
+            } else {
+                Stop(id);
+            }
+        }
+
+        function check_continue_market(market_id, status) {
+            let market_continue = true;
+            if (status === 4) {
+                $.ajax({
+                    url: "{{ route('admin.check_market_status_for_continue') }}",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        market_id: market_id
+                    },
+                    dataType: "json",
+                    method: "POST",
+                    async: false,
+                    success: function (msg) {
+                        if (msg) {
+                            if (msg[1] == 'close') {
+                                MarketSystem.stop();
+                            }
+                        }
+                    }
+                })
+            }
+            return market_continue;
+        }
+
+        function waiting_to_open(benchmark1, now, id) {
+            remove_function();
+            deactive_bid();
+            let difference = benchmark1 - now;
+            let status = 1;
+            let statusText = '<span>Waiting To Open</span>';
+            let change_color = 0;
+            let color = '#6e6e0c';
+            change_market_status(status, difference, change_color, color, statusText, id)
+        }
+
+        function ready_to_open(benchmark2, now, id) {
+            remove_function();
+            deactive_bid();
+            let difference = benchmark2 - now;
+            let status = 2;
+            let statusText = '<span>Ready to open</span>';
+            let change_color = 1;
+            let color = '#8a8a00';
+            change_market_status(status, difference, change_color, color, statusText, id)
+        }
+
+        function opening(benchmark3, now, id) {
+            active_bid();
+            let difference = benchmark3 - now;
+            let status = 3;
+            let color = '#1f9402';
+            let change_color = 1;
+            let statusText = '<span>Opening</span>';
+            change_market_status(status, difference, change_color, color, statusText, id)
+        }
+
+        function Quotation_1_2(benchmark4, now, id) {
+            remove_function();
+            active_bid();
+            let difference = benchmark4 - now;
+            let status = 4;
+            let color = '#135e00';
+            let change_color = 1;
+            let statusText = '<span>Quotation 1/2</span>';
+            change_market_status(status, difference, change_color, color, statusText, id)
+        }
+
+        function Quotation_2_2(benchmark5, now, id) {
+            remove_function();
+            active_bid();
+            let difference = benchmark5 - now;
+            let status = 5;
+            let color = '#104800';
+            let change_color = 1;
+            let statusText = '<span>Quotation 2/2</span>';
+            change_market_status(status, difference, change_color, color, statusText, id)
+        }
+
+        function Competition(benchmark6, now, id) {
+            remove_function();
+            active_bid();
+            let difference = benchmark6 - now;
+            let status = 6;
+            let color = '#0a2a00';
+            let change_color = 1;
+            let statusText = '<span>Competition</span>';
+            change_market_status(status, difference, change_color, color, statusText, id)
+        }
+
+        function Stop(id) {
+            remove_function();
+            deactive_bid();
+            let difference = 0;
+            let status = 7;
+            let color = '#ff0707';
+            let change_color = 1;
+            let statusText = '<span>Close</span>';
+            change_market_status(status, difference, change_color, color, statusText, id)
+        }
+
+        function change_market_status(status, difference, change_color, color, statusText, id) {
+            let previous_status = $('#previous_status').val();
+            $('#previous_status').val(status);
+            difference = parseInt(difference / 1000);
+            if (change_color) {
+                $('#market-' + id).css('color', color);
+                $('.status-box').css('color', color);
+                $('.circle_timer').css('background', color);
+            }
+            $('#market-difference-' + id).html(secondsToHms(difference));
+            $('#market-status-' + id).html(statusText);
+            sales_offer_buttons(status);
+            if (previous_status != status) {
+                change_status_market(id, status);
+                check_continue_market(id, status);
+            }
+        }
     }
+
+
+    function active_bid() {
+        $('#bid_quantity').prop('disabled', false);
+        $('#bid_price').prop('disabled', false);
+        $('#bid_button').prop('disabled', false);
+    }
+
+    function deactive_bid() {
+        $('#bid_quantity').val(' ');
+        $('#bid_price').val(' ');
+        $('#bid_quantity').prop('disabled', true);
+        $('#bid_price').prop('disabled', true);
+        $('#bid_button').prop('disabled', true);
+    }
+
+    function Bid(market_id) {
+        $('.error_text').hide();
+        let price = $('#bid_price').val();
+        let quantity = $('#bid_quantity').val();
+        $.ajax({
+            url: "{{  route('home.bid_market') }}",
+            data: {
+                price: price,
+                quantity: quantity,
+                market: market_id,
+                _token: "{{ csrf_token() }}",
+            },
+            dataType: 'json',
+            method: "post",
+            beforeSend: function () {
+                deactive_bid();
+            },
+            success: function (msg) {
+                if (msg[0] === 'login') {
+                    alert(msg[1]);
+                }
+                if (msg[0] === 'bidder') {
+                    alert(msg[1]);
+                }
+                if (msg[0] === 'better_Bid') {
+                    alert(msg[1]);
+                }
+                if (msg[0] === 'price_quantity') {
+                    $('#bid_' + msg[1] + '_error').text(msg[2]);
+                    $('#bid_' + msg[1] + '_error').show();
+                }
+                if (msg[0] === 'alert') {
+                    alert(msg[2]);
+                }
+                active_bid();
+            },
+            error: function (msg) {
+
+                if (msg.responseJSON.errors) {
+                    let errors = msg.responseJSON.errors;
+                    $.each(errors, function (i, val) {
+                        $('#bid_' + i + '_error').text(val);
+                        $('#bid_' + i + '_error').show();
+                    })
+                }
+            }
+        })
+    }
+
+    function removeBid(bid_id) {
+        $.ajax({
+            url: "{{  route('home.remove_bid') }}",
+            data: {
+                bid_id: bid_id,
+                _token: "{{ csrf_token() }}",
+            },
+            dataType: 'json',
+            method: "post",
+        })
+    }
+
+    function remove_function() {
+        $('.remove_function').remove();
+    }
+
+    function Offer(market_id) {
+        $('.error_text').hide();
+        let status = $('#previous_status').val();
+        let price_is_disable = $('#seller_price').attr('disabled');
+        let price = $('#seller_price').val()
+        if (price_is_disable) {
+            price = 'disabled';
+        }
+        let quantity = $('#seller_quantity').val();
+        let quantity_is_disable = $('#seller_quantity').attr('disabled');
+        if (quantity_is_disable) {
+            quantity = 'disabled';
+        }
+        $.ajax({
+            url: "{{  route('home.seller_change_offer') }}",
+            data: {
+                price: price,
+                quantity: quantity,
+                market_id: market_id,
+                status: status,
+                _token: "{{ csrf_token() }}",
+            },
+            dataType: 'json',
+            method: "post",
+            success: function (msg) {
+                if (msg) {
+                    if (msg[1] == 'user_different') {
+                        alert('You Dont have permission to Change Bid Offer');
+                    }
+                }
+            },
+            error: function (msg) {
+                console.log(msg.responseJSON.errors);
+            }
+        })
+    }
+
+    {{--function refreshMarket(market_id) {--}}
+    {{--    $.ajax({--}}
+    {{--        url: "{{  route('home.refreshMarket') }}",--}}
+    {{--        data: {--}}
+    {{--            market: market_id,--}}
+    {{--            _token: "{{ csrf_token() }}",--}}
+    {{--        },--}}
+    {{--        dataType: 'json',--}}
+    {{--        method: "post",--}}
+    {{--        success: function (msg) {--}}
+    {{--            console.log(msg);--}}
+    {{--            $('#market_status').html(msg[1]);--}}
+    {{--            let market_is_open = msg[4];--}}
+    {{--            // countdownTimmer(msg[2], msg[3]);--}}
+    {{--            if (market_is_open === 1) {--}}
+    {{--                $('.disabled_prop').prop('disabled', false)--}}
+    {{--            } else {--}}
+    {{--                $('.disabled_prop').prop('disabled', true)--}}
+    {{--            }--}}
+    {{--        },--}}
+
+    {{--    })--}}
+    {{--}--}}
+
+    function countdownTimmer(timer2, color) {
+        var interval = setInterval(function () {
+            var timer = timer2.split(':');
+            //by parsing integer, I avoid all extra string processing
+            var minutes = parseInt(timer[0], 10);
+            var seconds = parseInt(timer[1], 10);
+            --seconds;
+            minutes = (seconds < 0) ? --minutes : minutes;
+            if (minutes < 0) clearInterval(interval);
+            seconds = (seconds < 0) ? 59 : seconds;
+            seconds = (seconds < 10) ? '0' + seconds : seconds;
+            //minutes = (minutes < 10) ?  minutes : minutes;
+            if (minutes < 0) {
+                $('.countdown').html('0:00');
+            } else {
+                $('.countdown').html(minutes + ':' + seconds);
+            }
+
+            $('.countdown').css('background', color)
+            timer2 = minutes + ':' + seconds;
+        }, 1000);
+    }
+
+
+    function sales_offer_buttons(status) {
+        let seller_quantity = $('#seller_quantity');
+        let seller_price = $('#seller_price');
+        let seller_button = $('#seller_button');
+        if (status == 1) {
+            seller_quantity.prop('disabled', true);
+            seller_price.prop('disabled', true);
+            seller_button.prop('disabled', true);
+        }
+        if (status == 2) {
+            seller_quantity.prop('disabled', true);
+            seller_price.prop('disabled', true);
+            seller_button.prop('disabled', true);
+        }
+        if (status == 3) {
+            seller_quantity.prop('disabled', true);
+            seller_price.prop('disabled', true);
+            seller_button.prop('disabled', true);
+        }
+        if (status == 4) {
+            seller_quantity.prop('disabled', false);
+            seller_price.prop('disabled', true);
+            seller_button.prop('disabled', false);
+        }
+        if (status == 5) {
+            seller_quantity.prop('disabled', true);
+            seller_price.prop('disabled', false);
+            seller_button.prop('disabled', false);
+        }
+        if (status == 6) {
+            seller_quantity.prop('disabled', true);
+            seller_price.prop('disabled', true);
+            seller_button.prop('disabled', true);
+        }
+        if (status == 7) {
+            seller_quantity.prop('disabled', true);
+            seller_price.prop('disabled', true);
+            seller_button.prop('disabled', true);
+        }
+    }
+
 
     function secondsToHms(d) {
         d = Number(d);
@@ -171,7 +455,7 @@
             dataType: "json",
             method: 'post',
             success: function (msg) {
-                console.log('status changed!')
+
             }
         })
     }

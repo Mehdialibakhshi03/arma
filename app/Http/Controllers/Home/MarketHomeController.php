@@ -12,11 +12,17 @@ use App\Models\MarketSetting;
 use App\Models\MarketStatus;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use function Symfony\Component\Translation\t;
 
 class MarketHomeController extends Controller
 {
     public function bid(Market $market)
     {
+        $market_status=$market->status;
+        if($market_status==4 or $market_status==5 or $market_status==6){
+            return redirect()->route('home.index');
+        }
         $result = $this->statusTimeMarket($market);
         $market['difference'] = $result[0];
         $market['status'] = $result[1];
@@ -95,8 +101,8 @@ class MarketHomeController extends Controller
             $quantity = $request->quantity;
             $market_id = $request->market_id;
             $market = Market::where('id', $market_id)->first();
-            if ($user_id!=$market->user_id) {
-                return response()->json([1,'user_different']);
+            if ($user_id != $market->user_id) {
+                return response()->json([1, 'user_different']);
             }
         } catch (\Exception $e) {
             dd($e->getMessage());
@@ -109,6 +115,22 @@ class MarketHomeController extends Controller
             'price' => 'required',
             'quantity' => 'required',
         ]);
+        $market = Market::find($request->market);
+        $price = $market->SalesForm->price;
+        $min_order = $market->SalesForm->min_order;
+        $max_quantity = $market->SalesForm->max_quantity;
+        $unit = $market->SalesForm->unit;
+
+        $currency = $market->SalesForm->currency;
+        $base_price = $price / 2;
+        $Opening_roles = $this->Opening_roles($request->all(), $min_order, $max_quantity, $unit, $currency, $base_price, $price, $market);
+        if (!$Opening_roles[0]) {
+            $error_type = $Opening_roles['validate_error'];
+            $key = $Opening_roles['key'];
+            $message = $Opening_roles['message'];
+            return response()->json([$error_type, $key, $message]);
+        }
+
         try {
 //            //user must login
 //            if (!auth()->check()) {
@@ -140,5 +162,72 @@ class MarketHomeController extends Controller
         } catch (\Exception $e) {
             return response()->json([0, 'error']);
         }
+    }
+
+    public function remove_bid(Request $request)
+    {
+        try {
+            $bid_id = $request->bid_id;
+            $bid=BidHistory::where('id', $bid_id,)->where('user_id', auth()->id())->first();
+            $market_id=$bid->market_id;
+            $bid->delete();
+            broadcast(new NewBidCreated($market_id));
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+        }
+
+
+    }
+
+    function Opening_roles($request, $min_order, $max_quantity, $unit, $currency, $base_price, $price, $market)
+    {
+        if ($request['price'] < $base_price) {
+            $key = 'price';
+            $message = 'min price you can enter is: ' . $base_price . ' ' . $currency;
+            return [0 => false, 'validate_error' => 'price_quantity', 'key' => $key, 'message' => $message];
+        }
+        if ($request['price'] > $price) {
+            $key = 'price';
+            $message = 'Max price you can enter is: ' . $price . ' ' . $currency;
+            return [0 => false, 'validate_error' => 'price_quantity', 'key' => $key, 'message' => $message];
+        }
+        if ($request['quantity'] > $max_quantity) {
+            $key = 'quantity';
+            $message = 'Max quantity you can enter is: ' . $max_quantity . ' ' . $unit;
+            return [0 => false, 'validate_error' => 'price_quantity', 'key' => $key, 'message' => $message];
+        }
+
+        if ($request['quantity'] < $min_order) {
+            $key = 'quantity';
+            $message = 'Min quantity you can enter is: ' . $min_order . ' ' . $unit;
+            return [0 => false, 'validate_error' => 'price_quantity', 'key' => $key, 'message' => $message];
+        }
+        if ($market->status === 3) {
+            $user_bids = $market->Bids()->where('user_id', auth()->id())->get();
+            if (count($user_bids) > 2) {
+                $key = 'bid number';
+                $message = 'Maximum number You Can Bid is: 3';
+                return [0 => false, 'validate_error' => 'alert', 'key' => $key, 'message' => $message];
+            }
+        }
+        $this_my_bid_exists = $market->Bids()->where('price', $request['price'])->where('quantity', $request['quantity'])->where('user_id', auth()->id())->exists();
+        if ($this_my_bid_exists) {
+            $key = 'bid_exists';
+            $message = 'Please enter different Bid';
+            return [0 => false, 'validate_error' => 'alert', 'key' => $key, 'message' => $message];
+        }
+        $bid_exists = $market->Bids()->exists();
+        if ($bid_exists) {
+            $highest_price = $market->Bids()->orderBy('price', 'desc')->first();
+            $highest_price = $highest_price->price;
+            if ($request['price'] < $highest_price) {
+                $key = 'highest_price';
+                $message = 'Your New Bid Must Better Than Previous!';
+                return [0 => false, 'validate_error' => 'alert', 'key' => $key, 'message' => $message];
+            }
+        }
+
+
+        return [0 => true];
     }
 }

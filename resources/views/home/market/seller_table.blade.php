@@ -13,8 +13,8 @@
         </thead>
         <tbody>
         <tr>
-            <td class="text-center">20.000</td>
-            <td class="text-center">350</td>
+            <td class="text-center">{{ $market->SalesForm->min_order }}</td>
+            <td class="text-center">{{ $market->SalesForm->price }}</td>
         </tr>
         </tbody>
     </table>

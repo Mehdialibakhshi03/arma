@@ -801,7 +801,6 @@
                 },
                 show: function() {
                     $(this).slideDown();
-                    console.log($(this).find('input')[1]);
                     $('#cat-id').val(window.id);
                     document.addEventListener('DOMContentLoaded', function() {
                         var genericExamples = document.querySelectorAll('[data-trigger]');

@@ -21,11 +21,9 @@
                     ids.push(val.id);
                 })
             })
-            setInterval(function () {
-                $.each(ids, function (i, val) {
-                    refreshMarketTablewithJs(val);
-                });
-            }, 1000);
+            $.each(ids, function (i, val) {
+                MarketOnline(val);
+            });
         });
 
 
@@ -107,21 +105,19 @@
 
         startTime();
 
-        function StartBroadCast(){
+        function StartBroadCast() {
             $.ajax({
-                url:"{{ route('startBroadCast') }}",
-                data:{
-                    _token:"{{ csrf_token() }}",
+                url: "{{ route('startBroadCast') }}",
+                data: {
+                    _token: "{{ csrf_token() }}",
                 },
-                dataType : 'json',
+                dataType: 'json',
                 method: 'POST',
-                success: function (msg){
-                    console.log(msg);
+                success: function (msg) {
+
                 }
             })
         }
-
-
 
 
     </script>

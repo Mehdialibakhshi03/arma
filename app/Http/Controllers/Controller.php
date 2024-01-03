@@ -17,8 +17,8 @@ class Controller extends BaseController
     public function statusTimeMarket($market)
     {
 
-        $ready_to_duration = MarketSetting::where('key', 'ready_to_duration')->pluck('value')->first();
-        $open_duration = MarketSetting::where('key', 'open_duration')->pluck('value')->first();
+        $ready_to_duration = MarketSetting::where('key', 'ready_to_open')->pluck('value')->first();
+        $open_duration = MarketSetting::where('key', 'opening')->pluck('value')->first();
         $q_1 = MarketSetting::where('key', 'q_1')->pluck('value')->first();
         $q_2 = MarketSetting::where('key', 'q_2')->pluck('value')->first();
         $q_3 = MarketSetting::where('key', 'q_3')->pluck('value')->first();
@@ -28,6 +28,7 @@ class Controller extends BaseController
         $date_time = $date.' '.$time;
 
         $startTime = Carbon::parse($date_time);
+
         $now = Carbon::now();
         $benchmark1 = $startTime->copy()->addMinutes(-$ready_to_duration);
         $benchmark2 = $startTime;
@@ -35,6 +36,7 @@ class Controller extends BaseController
         $benchmark4 = $benchmark3->copy()->addMinutes($q_1);
         $benchmark5 = $benchmark4->copy()->addMinutes($q_2);
         $benchmark6 = $benchmark5->copy()->addMinutes($q_3);
+
         $bids = $market->Bids;
         if ($market->status == 7) {
             return [0, $market->status, $benchmark1, $benchmark2, $benchmark3, $benchmark4, $benchmark5, $benchmark6,$date_time];

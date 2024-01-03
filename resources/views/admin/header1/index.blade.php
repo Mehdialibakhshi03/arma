@@ -216,7 +216,6 @@
 <script>
     $(function() {
         $('body').on('click', '#add_header1', function() {
-            console.log('ok');
             var modal = $('#common_modal');
             $.ajax({
                 type: "GET",
