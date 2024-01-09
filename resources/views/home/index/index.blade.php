@@ -14,17 +14,52 @@
     <script>
 
         $(document).ready(function () {
-            let markets_groups =@json($markets_groups);
-            let ids = [];
-            $.each(markets_groups, function (i, markets) {
-                $.each(markets, function (i, val) {
-                    ids.push(val.id);
-                })
+
+            GetMarkets();
+
+            let market_open_finished_modal_exists = {{ $market_open_finished_modal_exists }};
+            if (market_open_finished_modal_exists) {
+                $('#market_open_finished_modal_exists').modal('show');
+            }
+            {{--let markets_groups =@json($markets_groups);--}}
+            {{--let ids = [];--}}
+            // $.each(markets_groups, function (i, markets) {
+            //     $.each(markets, function (i, val) {
+            //         ids.push(val.id);
+            //     })
+            // })
+
+
+            $('#market_open_finished_modal_exists_close').click(function () {
+                $('#market_open_finished_modal_exists').modal('hide');
             })
-            $.each(ids, function (i, val) {
-                MarketOnline(val);
+        })
+        window.Echo.channel('market-setting-updated-channel')
+            .listen('MarketTimeUpdated', function (e) {
+                GetMarkets();
             });
-        });
+        function GetMarkets(){
+            $.ajax({
+                url:"{{ route('home.MarketTableIndex') }}",
+                data:{
+                    _token:"{{ csrf_token() }}",
+                },
+                method:'post',
+                dataType:'json',
+                beforeSend:function(){
+                    let loader='<div class="loader"></div>'
+                    $('#market_table').html(loader);
+                },
+                success:function(msg){
+                    let table_view=msg[1];
+                    let ids=msg[2];
+                    $('#market_table').html(table_view)
+                    $.each(ids, function (i, val) {
+                        MarketOnline(val);
+                    });
+                }
+            })
+        }
 
 
 
@@ -104,31 +139,11 @@
         }
 
         startTime();
-
-        function StartBroadCast() {
-            $.ajax({
-                url: "{{ route('startBroadCast') }}",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                },
-                dataType: 'json',
-                method: 'POST',
-                success: function (msg) {
-
-                }
-            })
-        }
-
-
     </script>
 @endsection
 
 @section('content')
-    <div>
-        <button type="button" onclick="StartBroadCast()" class="btn btn-success">
-            Start Broadcast
-        </button>
-    </div>
+
     <div id="time"></div>
     @if($alert_active==1)
         <div style="background-color: {{ $alert_bg_color }} !important;height: {{ $alert_height.'px' }} !important;"
@@ -177,7 +192,7 @@
     <div class="landing-feature container">
         <div class="row">
             <div id="market_table" class="col-12">
-                @include('home.partials.market')
+
             </div>
         </div>
     </div>
@@ -304,6 +319,28 @@
                     </div>
                     <div class="modal-body">
                         {!! $UserRegistered_message->text !!}
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if($market_open_finished_modal_exists)
+        <!-- Modal -->
+        <div class="modal fade" id="market_open_finished_modal_exists" tabindex="-1"
+             aria-labelledby="market_open_finished_modal_exists_Label"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="market_open_finished_modal_exists_Label">Unfortunately</h5>
+                        <button id="market_open_finished_modal_exists_close" type="button" class="close"
+                                aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        {!! $market_open_finished_modal !!}
                     </div>
                 </div>
             </div>

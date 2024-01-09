@@ -1,3 +1,7 @@
+<div class="col-12">
+    <h5>Cargo Owner</h5>
+    <hr>
+</div>
 <div class="col-12 col-md-6 mb-3">
 
     @php

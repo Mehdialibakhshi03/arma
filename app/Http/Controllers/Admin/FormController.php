@@ -368,9 +368,9 @@ class FormController extends Controller
                 'deposit_value' => $deposit_value,
                 'data_pending_message' => $data_pending_message,
             ]);
-            if ($new_status == 5) {
-                SalesOfferFormCopy::create($sale_form->toArray());
-            }
+//            if ($new_status == 5) {
+//                SalesOfferFormCopy::create($sale_form->toArray());
+//            }
             session()->flash('success', 'Successfully Updated');
             return response()->json([1, 'success'], 200);
         } catch (\Exception $e) {
@@ -404,6 +404,8 @@ class FormController extends Controller
             'tolerance_weight_by' => 'nullable',
             'partial_shipment' => 'nullable',
             'partial_shipment_number' => ['required_if:partial_shipment,Yes'],
+            'increase_quantity' => 'nullable',
+            'increase_quantity_value' => ['required_if:increase_quantity,Yes'],
             'shipment_more_detail' => 'nullable',
             'incoterms' => 'required',
             'incoterms_other' => ['required_if:incoterms,other'],
@@ -480,7 +482,9 @@ class FormController extends Controller
             'contact_person_name' => 'required',
             'contact_person_job_title' => 'required',
             'contact_person_email' => 'required',
+            'pre_code' => 'required',
             'contact_person_mobile_phone' => 'required',
+            'platform' => 'required',
             //last part
             'last_more_detail' => 'nullable',
             'accept_terms' => 'required',

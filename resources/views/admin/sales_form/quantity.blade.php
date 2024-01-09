@@ -188,6 +188,55 @@
     </p>
     @enderror
 </div>
+<div class="col-12 col-md-6 mb-3 d-flex justify-content-between align-items-end">
+    @php
+
+        $is_required=1;
+        $required_span='';
+        $required='';
+        $name='increase_quantity';
+        //common conditional
+        if ($is_required===1){
+            $required_span='<span class="text-danger">*</span>';
+            $required='required';
+        }
+        if (old(filed_name($name)) !== null){
+            $value=old(filed_name($name));
+        }else{
+            if ($sale_form_exist==1){
+                $value=$form[filed_name($name)];
+            }else{
+                $value=null;
+            }
+        }
+    @endphp
+    <label for="{{ filed_name($name) }}" class="mb-2">Is It Possible To Increase Your Max Quantity In This Cargo? {!! $required_span !!} </label>
+    <div>
+        <div class="form-check form-check-inline mr-3">
+            <input onchange="addIncreaseQuantity(this)"
+                   {{ $value==='Yes' ? 'checked' : '' }} class="form-check-input"
+                   type="radio"
+                   name="{{ filed_name($name) }}" id="{{ filed_name($name) }}"
+                   value="Yes">
+            <label class="form-check-label"
+                   for="{{ filed_name($name) }}">Yes</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input onchange="addIncreaseQuantity(this)"
+                   {{ $value==='No' ? 'checked' : '' }} class="form-check-input"
+                   type="radio"
+                   name="{{ filed_name($name) }}" id="{{ filed_name($name) }}"
+                   value="No">
+            <label class="form-check-label"
+                   for="{{ filed_name($name) }}">No</label>
+        </div>
+    </div>
+    @error(filed_name($name))
+    <p class="input-error-validate">
+        {{ $message }}
+    </p>
+    @enderror
+</div>
 <div class="col-12">
     <hr>
 </div>

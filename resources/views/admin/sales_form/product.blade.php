@@ -131,7 +131,7 @@
     </p>
     @enderror
 </div>
-<div class="col-12 col-md-6 mb-3">
+<div class="col-12 mb-3">
     @php
         $label='More Details';
          $name='product_'.$label;
@@ -153,11 +153,11 @@
             }
         }
     @endphp
-    <textarea rows="2"
+    <input rows="2"
               {{ $required }} id="{{ filed_name($name) }}"
               type="text"
               name="{{ filed_name($name) }}"
-              class="form-control" placeholder="{{ $label }}">{{ $value }}</textarea>
+              class="form-control" placeholder="{{ $label }}" value="{{ $value }}">
     @error(filed_name($name))
     <p class="input-error-validate">
         {{ $message }}

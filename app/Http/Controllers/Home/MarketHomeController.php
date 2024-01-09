@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Home;
 
+use App\Events\ChangeSaleOffer;
 use App\Events\MarketStatusUpdated;
 use App\Events\NewBidCreated;
 use App\Events\TestEvent;
@@ -19,10 +20,15 @@ class MarketHomeController extends Controller
 {
     public function bid(Market $market)
     {
-        $market_status=$market->status;
-        if($market_status==4 or $market_status==5 or $market_status==6){
+        if (!auth()->check()) {
+            session()->flash('Login', 'Please login');
             return redirect()->route('home.index');
         }
+        $market_status = $market->status;
+//        if ($market_status == 4 or $market_status == 5 or $market_status == 6 ) {
+//            session()->flash('market_open_finished','You Just Enter The Market When Is Open');
+//            return redirect()->route('home.index');
+//        }
         $result = $this->statusTimeMarket($market);
         $market['difference'] = $result[0];
         $market['status'] = $result[1];
@@ -33,7 +39,25 @@ class MarketHomeController extends Controller
         $market['benchmark5'] = $result[6];
         $market['benchmark6'] = $result[7];
         $bids = $market->Bids()->orderBy('price', 'desc')->take(10)->get();
-        return view('home.market.index', compact('market', 'bids'));
+        $bid_deposit_text_area = MarketSetting::where('key', 'bid_deposit_text_area')->pluck('value')->first();
+        $term_conditions = MarketSetting::where('key', 'term_conditions')->pluck('value')->first();
+        return view('home.market.index', compact('market', 'bids', 'bid_deposit_text_area', 'term_conditions'));
+    }
+
+    public function GetMarket(Request $request){
+        $market_id=$request->market_id;
+        $market=Market::where('id',$market_id)->first();
+        $result = $this->statusTimeMarket($market);
+        $market['difference'] = $result[0];
+        $market['status'] = $result[1];
+        $market['benchmark1'] = $result[2];
+        $market['benchmark2'] = $result[3];
+        $market['benchmark3'] = $result[4];
+        $market['benchmark4'] = $result[5];
+        $market['benchmark5'] = $result[6];
+        $market['benchmark6'] = $result[7];
+        $view=view('home.market.benchmark_info',compact('market'))->render();
+        return response()->json([1,$view]);
     }
 
     public function refreshMarketTable()
@@ -79,6 +103,13 @@ class MarketHomeController extends Controller
         return response()->json([1, $view]);
     }
 
+    public function refreshSellerTable(Request $request)
+    {
+        $market = Market::find($request->market);
+        $view = view('home.market.seller_table', compact('market'))->render();
+        return response()->json([1, $view]);
+    }
+
     public function change_market_status(Request $request)
     {
         try {
@@ -100,10 +131,34 @@ class MarketHomeController extends Controller
             $price = $request->price;
             $quantity = $request->quantity;
             $market_id = $request->market_id;
+            $status = $request->status;
             $market = Market::where('id', $market_id)->first();
-            if ($user_id != $market->user_id) {
-                return response()->json([1, 'user_different']);
+            $currency = $market->SalesForm->currency;
+//            if ($user_id != $market->user_id) {
+//                return response()->json([1, 'error','You Do Not Have Permission To Change Offer']);
+//            }
+            if ($status == '4') {
+                //quotation 1/2
+                $pre_max_quantity = $market->SalesForm->max_quantity;
+                if ($quantity <= $pre_max_quantity) {
+                    return response()->json([1, 'error', 'Just You Can Increase Quantity']);
+                }
+                $market->SalesForm()->update(['max_quantity' => $quantity]);
             }
+            if ($status == '5') {
+                //quotation 2/2
+                $highest_price_exists = $market->Bids()->Orderby('price', 'desc')->exists();
+                if ($highest_price_exists) {
+                    $highest = $market->Bids()->Orderby('price', 'desc')->first();
+                    $highest_price = $highest->price;
+                    if ($price != $highest_price) {
+                        return response()->json([1, 'error', 'Your New Price Just Can be: ' . $highest_price . ' ' . $currency]);
+                    }
+                    $market->SalesForm()->update(['price' => $price]);
+                }
+
+            }
+            broadcast(new ChangeSaleOffer($market->id));
         } catch (\Exception $e) {
             dd($e->getMessage());
         }
@@ -111,51 +166,60 @@ class MarketHomeController extends Controller
 
     public function bid_market(Request $request)
     {
-        $validator = $request->validate([
-            'price' => 'required',
-            'quantity' => 'required',
-        ]);
         $market = Market::find($request->market);
-        $price = $market->SalesForm->price;
+        if ($market->status == 6) {
+            $validator = $request->validate([
+                'price' => 'required',
+            ]);
+            $best_bid = $market->Bids()->where('user_id', auth()->id())->orderBy('price', 'asc')->first();
+            if ($best_bid){
+                $request['quantity'] = $best_bid->quantity;
+            }else{
+                $message = 'You Cannot Permission To Bid Because You Didnot Enter Any Bid In Previous Level';
+                return ['alert','error',$message];
+
+            }
+        } else {
+            $validator = $request->validate([
+                'price' => 'required',
+                'quantity' => 'required',
+            ]);
+
+        }
+        $price = $market->offer_price;
         $min_order = $market->SalesForm->min_order;
         $max_quantity = $market->SalesForm->max_quantity;
         $unit = $market->SalesForm->unit;
 
         $currency = $market->SalesForm->currency;
         $base_price = $price / 2;
-        $Opening_roles = $this->Opening_roles($request->all(), $min_order, $max_quantity, $unit, $currency, $base_price, $price, $market);
-        if (!$Opening_roles[0]) {
-            $error_type = $Opening_roles['validate_error'];
-            $key = $Opening_roles['key'];
-            $message = $Opening_roles['message'];
-            return response()->json([$error_type, $key, $message]);
-        }
+
 
         try {
-//            //user must login
-//            if (!auth()->check()) {
-//                $msg = 'You must Login!';
-//                return response()->json(['login', $msg]);
+//            $bid_permission = $this->Bid_Permissions();
+//            if ($bid_permission['response'] === 'error') {
+//                return response()->json([$bid_permission['response'], $bid_permission['message']]);
 //            }
-//            //user must bidder
-//            if (!auth()->user()->hasRole('buyer')) {
-//                $msg = 'You must Buyer!';
-//                return response()->json(['bidder', $msg]);
-//            }
-//            //user can bid or not
-//            $pre_bid = BidHistory::where('user_id', auth()->id())->where('market_id', $request->market)->first();
-//            if ($pre_bid) {
-//                if ($request->price <= $pre_bid->price) {
-//                    $msg = 'Your New Bid Must Better Than Previous!';
-//                    return response()->json(['better_Bid', $msg]);
-//                }
-//                $pre_bid->delete();
-//            }
+            $Opening_roles = $this->Opening_roles($request->all(), $min_order, $max_quantity, $unit, $currency, $base_price, $price, $market);
+            if (!$Opening_roles[0]) {
+                $error_type = $Opening_roles['validate_error'];
+                $key = $Opening_roles['key'];
+                $message = $Opening_roles['message'];
+                return response()->json([$error_type, $key, $message]);
+            }
+            $pre_user_bid=$market->Bids()->where('user_id', auth()->id())->first();
+            if ($pre_user_bid){
+                $tries=$pre_user_bid->tries+1;
+                $pre_user_bid->delete();
+            }else{
+                $tries=1;
+            }
             BidHistory::create([
-                'user_id' => 1,
+                'user_id' => auth()->id(),
                 'market_id' => $request->market,
                 'price' => $request->price,
                 'quantity' => $request->quantity,
+                'tries' => $tries,
             ]);
             broadcast(new NewBidCreated($request->market));
             return response()->json([1, 'success']);
@@ -168,8 +232,8 @@ class MarketHomeController extends Controller
     {
         try {
             $bid_id = $request->bid_id;
-            $bid=BidHistory::where('id', $bid_id,)->where('user_id', auth()->id())->first();
-            $market_id=$bid->market_id;
+            $bid = BidHistory::where('id', $bid_id,)->where('user_id', auth()->id())->first();
+            $market_id = $bid->market_id;
             $bid->delete();
             broadcast(new NewBidCreated($market_id));
         } catch (\Exception $e) {
@@ -203,8 +267,8 @@ class MarketHomeController extends Controller
             return [0 => false, 'validate_error' => 'price_quantity', 'key' => $key, 'message' => $message];
         }
         if ($market->status === 3) {
-            $user_bids = $market->Bids()->where('user_id', auth()->id())->get();
-            if (count($user_bids) > 2) {
+            $user_bids = $market->Bids()->where('user_id', auth()->id())->where('tries',3)->get();
+            if ($user_bids) {
                 $key = 'bid number';
                 $message = 'Maximum number You Can Bid is: 3';
                 return [0 => false, 'validate_error' => 'alert', 'key' => $key, 'message' => $message];
@@ -229,5 +293,26 @@ class MarketHomeController extends Controller
 
 
         return [0 => true];
+    }
+
+    public function Bid_Permissions()
+    {
+        //            //user must login
+        if (!auth()->check()) {
+            $msg = 'You must Login!';
+            return ['response' => 'error', 'message' => $msg];
+        }
+//            //user must bidder
+        if (!auth()->user()->hasRole('buyer')) {
+            $msg = 'You must Buyer!';
+            return ['response' => 'error', 'message' => $msg];
+        }
+        //user can bid
+        $user = auth()->user();
+        if ($user->can_bid === 0) {
+            $msg = 'You Do not have permission to Bid!';
+            return ['response' => 'error', 'message' => $msg];
+        }
+        return ['response' => true, 'message' => 'success'];
     }
 }

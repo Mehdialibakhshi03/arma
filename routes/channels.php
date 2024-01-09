@@ -26,6 +26,13 @@ Broadcast::channel('new_bid_created', function ($user, $id) {
 Broadcast::channel('market-status-updated', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
+Broadcast::channel('change-sales-offer', function ($user, $id) {
+    return (int) $user->id === (int) $id;
+});
+
+Broadcast::channel('market-setting-updated-channel', function ($user, $id) {
+    return (int) $user->id === (int) $id;
+});
 
 //
 //

@@ -6,7 +6,7 @@
 <div class="col-12 col-md-6 mb-3">
     @php
         $name='Specification';
-        $is_required=0;
+        $is_required=1;
         $required_span='';
         $required='';
        //common conditional
@@ -28,7 +28,7 @@
            class="mb-2">{!! $name.' '.$required_span !!}</label>
     <input {{ $required }} id="{{ filed_name($name) }}" type="text"
            name="{{ filed_name($name) }}" class="form-control"
-           value="{{ $value }}">
+           value="{{ $value }}" placeholder="Please Enter The Product Specification Or Attach As A File">
     @error(filed_name($name))
     <p class="input-error-validate">
         {{ $message }}
@@ -88,7 +88,7 @@
     @endphp
     <div>
         <label for="quality_inspection_report" class="mb-2">
-            quality inspection?
+            quality inspection/analyse?
         </label>
         @error('quality_inspection_report')
         <p class="input-error-validate">

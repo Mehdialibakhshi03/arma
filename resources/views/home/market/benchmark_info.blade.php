@@ -1,0 +1,11 @@
+<input type="hidden" id="market-{{ $market->id }}"
+       data-status="{{ $market->status }}"
+       data-difference="{{ $market->difference }}"
+       data-benchmark1="{{ $market->benchmark1 }}"
+       data-benchmark2="{{ $market->benchmark2 }}"
+       data-benchmark3="{{ $market->benchmark3 }}"
+       data-benchmark4="{{ $market->benchmark4 }}"
+       data-benchmark5="{{ $market->benchmark5 }}"
+       data-benchmark6="{{ $market->benchmark6 }}"
+       data-step="{{ $market->step_price_competition }}"
+>

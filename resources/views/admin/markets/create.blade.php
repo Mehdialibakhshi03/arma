@@ -24,7 +24,7 @@
                                               action="{{ route('admin.market.store') }}">
                                             @csrf
                                             <div class="row mt-4">
-                                                <div class="col-12 col-md-4 mb-3">
+                                                <div class="col-12 col-md-3 mb-3">
                                                     <label for="date">start(Date)</label>
                                                     <input onchange="getDate(this)" id="date" type="date" name="date" class="form-control"
                                                            value="{{ old('date') }}">
@@ -37,7 +37,7 @@
                                                     </p>
                                                     @enderror
                                                 </div>
-                                                <div class="col-12 col-md-4 mb-3">
+                                                <div class="col-12 col-md-3 mb-3">
                                                     <label for="start">start(Time)</label>
                                                     <input id="start" type="time" name="time" class="form-control"
                                                            value="{{ old('time') }}">
@@ -47,7 +47,17 @@
                                                     </p>
                                                     @enderror
                                                 </div>
-                                                <div class="col-12 col-md-4 mb-3">
+                                                <div class="col-12 col-md-3 mb-3">
+                                                    <label for="bid_deposit">Bid Deposit</label>
+                                                    <input id="bid_deposit"  name="bid_deposit" class="form-control"
+                                                           value="{{ old('bid_deposit') }}">
+                                                    @error('bid_deposit')
+                                                    <p class="input-error-validate">
+                                                        {{ $message }}
+                                                    </p>
+                                                    @enderror
+                                                </div>
+                                                <div class="col-12 col-md-3 mb-3">
                                                     <label for="min_wallet">Commodity</label>
                                                     <select class="form-control" name="commodity_id">
                                                         <option value="">select</option>
@@ -56,6 +66,35 @@
                                                         @endforeach
                                                     </select>
                                                     @error('commodity_id')
+                                                    <p class="input-error-validate">
+                                                        {{ $message }}
+                                                    </p>
+                                                    @enderror
+                                                </div>
+                                                <div class="col-12 col-md-3 mb-3">
+                                                    <label for="step_price_competition">Step Price In Competition</label>
+                                                    <input id="step_price_competition" name="step_price_competition" min="1" class="form-control"
+                                                           value="{{ old('step_price_competition') }}">
+                                                    @error('step_price_competition')
+                                                    <p class="input-error-validate">
+                                                        {{ $message }}
+                                                    </p>
+                                                    @enderror
+                                                </div>
+                                                <div class="col-12 col-md-3 mb-3">
+                                                    <label for="offer_price">Offer Price</label>
+                                                    <input id="offer_price"  name="offer_price" class="form-control"
+                                                           value="{{ old('offer_price') }}" type="number">
+                                                    @error('offer_price')
+                                                    <p class="input-error-validate">
+                                                        {{ $message }}
+                                                    </p>
+                                                    @enderror
+                                                </div>
+                                                <div class="col-12 mb-3">
+                                                    <label for="description">Description</label>
+                                                    <textarea id="description"  name="description" class="form-control"></textarea>
+                                                    @error('description')
                                                     <p class="input-error-validate">
                                                         {{ $message }}
                                                     </p>
@@ -108,6 +147,10 @@
             }
             $('#DayName').text(DayName);
         }
+        CKEDITOR.replace('description', {
+            filebrowserUploadUrl: "{{ route('admin.ckeditor.upload', ['_token' => csrf_token()]) }}",
+            filebrowserUploadMethod: 'form'
+        });
     </script>
 @endpush
 

@@ -4,9 +4,8 @@
 <script src="{{ asset('home/js/amcharts-core.min.js') }}"></script>
 <script src="{{ asset('home/js/amcharts.min.js') }}"></script>
 <script src="{{ asset('home/js/custom.js') }}"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.js"></script>
-<script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.4/moment-timezone-with-data.js"></script>
+<script type="text/javascript" src="{{ asset('home/js/moment.js') }}"></script>
+<script type="text/javascript" src="{{ asset('home/js/moment-timezone.js') }}"></script>
 <script src="{{ asset('home/js/timer.js') }}"></script>
 <script src="{{ asset('home/js/yscountdown.min.js') }}"></script>
 <script src="{{ asset('home/js/font-awsome.js') }}"></script>
@@ -60,7 +59,12 @@
                 clearInterval(this.interval);
                 delete this.interval;
                 Stop(id);
-            }
+            },
+            finish: function () {
+                clearInterval(this.interval);
+                delete this.interval;
+                finish(id);
+            },
         }
         MarketSystem.start();
 
@@ -72,6 +76,7 @@
             let benchmark4 = market.attr('data-benchmark4');
             let benchmark5 = market.attr('data-benchmark5');
             let benchmark6 = market.attr('data-benchmark6');
+            let step = market.attr('data-step');
             let now = moment();
             benchmark1 = new Date(benchmark1);
             benchmark2 = new Date(benchmark2);
@@ -90,7 +95,7 @@
             } else if (benchmark4 < now && now < benchmark5) {
                 Quotation_2_2(benchmark5, now, id);
             } else if (benchmark5 < now && now < benchmark6) {
-                Competition(benchmark6, now, id);
+                Competition(benchmark6, now, id,step);
             } else {
                 Stop(id);
             }
@@ -98,12 +103,13 @@
 
         function check_continue_market(market_id, status) {
             let market_continue = true;
-            if (status === 4) {
+            if (status === 4 || status ===6 || status ===7) {
                 $.ajax({
                     url: "{{ route('admin.check_market_status_for_continue') }}",
                     data: {
                         _token: "{{ csrf_token() }}",
-                        market_id: market_id
+                        market_id: market_id,
+                        status: status,
                     },
                     dataType: "json",
                     method: "POST",
@@ -113,15 +119,18 @@
                             if (msg[1] == 'close') {
                                 MarketSystem.stop();
                             }
+                            if (msg[1] == 'finish') {
+                                MarketSystem.finish();
+                            }
                         }
                     }
                 })
             }
+
             return market_continue;
         }
 
         function waiting_to_open(benchmark1, now, id) {
-            remove_function();
             deactive_bid();
             let difference = benchmark1 - now;
             let status = 1;
@@ -132,7 +141,6 @@
         }
 
         function ready_to_open(benchmark2, now, id) {
-            remove_function();
             deactive_bid();
             let difference = benchmark2 - now;
             let status = 2;
@@ -174,9 +182,11 @@
             change_market_status(status, difference, change_color, color, statusText, id)
         }
 
-        function Competition(benchmark6, now, id) {
+        function Competition(benchmark6, now, id,step) {
+            $('#bid_price').attr('onkeypress','step_price_competition(this,event)');
+            $('#bid_price').attr('step',step);
             remove_function();
-            active_bid();
+            Competition_Bid_buttons();
             let difference = benchmark6 - now;
             let status = 6;
             let color = '#0a2a00';
@@ -196,9 +206,20 @@
             change_market_status(status, difference, change_color, color, statusText, id)
         }
 
+        function finish(id) {
+            remove_function();
+            deactive_bid();
+            let difference = 0;
+            let status = 8;
+            let color = '#009800';
+            let change_color = 1;
+            let statusText = '<span>finish</span>';
+            change_market_status(status, difference, change_color, color, statusText, id)
+        }
+
         function change_market_status(status, difference, change_color, color, statusText, id) {
-            let previous_status = $('#previous_status').val();
-            $('#previous_status').val(status);
+            let previous_status = $('#previous_status-' + id).val();
+            $('#previous_status-' + id).val(status);
             difference = parseInt(difference / 1000);
             if (change_color) {
                 $('#market-' + id).css('color', color);
@@ -207,6 +228,9 @@
             }
             $('#market-difference-' + id).html(secondsToHms(difference));
             $('#market-status-' + id).html(statusText);
+            if (status != 1) {
+                $('#market-time-' + id).html(statusText);
+            }
             sales_offer_buttons(status);
             if (previous_status != status) {
                 change_status_market(id, status);
@@ -215,22 +239,54 @@
         }
     }
 
-
     function active_bid() {
         $('#bid_quantity').prop('disabled', false);
+        $('#bid_quantity').addClass('btn-success');
+
         $('#bid_price').prop('disabled', false);
+        $('#bid_price').addClass('btn-success');
+
         $('#bid_button').prop('disabled', false);
+        $('#bid_button').addClass('btn-success');
+
+
+    }
+
+    function Competition_Bid_buttons() {
+        $('#bid_quantity').prop('disabled', true);
+        $('#bid_quantity').removeClass('btn-success');
+
+        $('#bid_price').prop('disabled', false);
+        $('#bid_price').addClass('btn-success');
+
+        $('#bid_button').prop('disabled', false);
+        $('#bid_button').addClass('btn-success');
+
+
     }
 
     function deactive_bid() {
         $('#bid_quantity').val(' ');
         $('#bid_price').val(' ');
+
         $('#bid_quantity').prop('disabled', true);
+        $('#bid_quantity').removeClass('btn-success');
+
         $('#bid_price').prop('disabled', true);
+        $('#bid_price').removeClass('btn-success');
+
         $('#bid_button').prop('disabled', true);
+        $('#bid_button').removeClass('btn-success');
     }
 
     function Bid(market_id) {
+        let is_checked = $('#CheckTermCondition_' + market_id).is(':checked');
+        if (!is_checked) {
+            window.location.href = "#CheckTermCondition_" + market_id;
+            $('#CheckTermCondition_' + market_id).parent().addClass('border-danger');
+            alert('Accept Term and Conditions');
+            return;
+        }
         $('.error_text').hide();
         let price = $('#bid_price').val();
         let quantity = $('#bid_quantity').val();
@@ -244,17 +300,13 @@
             },
             dataType: 'json',
             method: "post",
+
             beforeSend: function () {
-                deactive_bid();
+                $('#bid_button').prop('disabled', true);
             },
+
             success: function (msg) {
-                if (msg[0] === 'login') {
-                    alert(msg[1]);
-                }
-                if (msg[0] === 'bidder') {
-                    alert(msg[1]);
-                }
-                if (msg[0] === 'better_Bid') {
+                if (msg[0] === 'error') {
                     alert(msg[1]);
                 }
                 if (msg[0] === 'price_quantity') {
@@ -264,10 +316,9 @@
                 if (msg[0] === 'alert') {
                     alert(msg[2]);
                 }
-                active_bid();
+                $('#bid_button').prop('disabled', false);
             },
             error: function (msg) {
-
                 if (msg.responseJSON.errors) {
                     let errors = msg.responseJSON.errors;
                     $.each(errors, function (i, val) {
@@ -275,8 +326,14 @@
                         $('#bid_' + i + '_error').show();
                     })
                 }
+                active_bid();
             }
         })
+
+    }
+
+    function competition_bid_buttons() {
+        $('#bid_quantity').prop('disabled', true);
     }
 
     function removeBid(bid_id) {
@@ -321,40 +378,13 @@
             method: "post",
             success: function (msg) {
                 if (msg) {
-                    if (msg[1] == 'user_different') {
-                        alert('You Dont have permission to Change Bid Offer');
+                    if (msg[1] == 'error') {
+                        alert(msg[2]);
                     }
                 }
             },
-            error: function (msg) {
-                console.log(msg.responseJSON.errors);
-            }
         })
     }
-
-    {{--function refreshMarket(market_id) {--}}
-    {{--    $.ajax({--}}
-    {{--        url: "{{  route('home.refreshMarket') }}",--}}
-    {{--        data: {--}}
-    {{--            market: market_id,--}}
-    {{--            _token: "{{ csrf_token() }}",--}}
-    {{--        },--}}
-    {{--        dataType: 'json',--}}
-    {{--        method: "post",--}}
-    {{--        success: function (msg) {--}}
-    {{--            console.log(msg);--}}
-    {{--            $('#market_status').html(msg[1]);--}}
-    {{--            let market_is_open = msg[4];--}}
-    {{--            // countdownTimmer(msg[2], msg[3]);--}}
-    {{--            if (market_is_open === 1) {--}}
-    {{--                $('.disabled_prop').prop('disabled', false)--}}
-    {{--            } else {--}}
-    {{--                $('.disabled_prop').prop('disabled', true)--}}
-    {{--            }--}}
-    {{--        },--}}
-
-    {{--    })--}}
-    {{--}--}}
 
     function countdownTimmer(timer2, color) {
         var interval = setInterval(function () {
@@ -378,7 +408,6 @@
             timer2 = minutes + ':' + seconds;
         }, 1000);
     }
-
 
     function sales_offer_buttons(status) {
         let seller_quantity = $('#seller_quantity');
@@ -420,7 +449,6 @@
             seller_button.prop('disabled', true);
         }
     }
-
 
     function secondsToHms(d) {
         d = Number(d);
@@ -465,6 +493,12 @@
             let market_id = e.market_id;
             refreshBidTable(market_id);
         });
+    window.Echo.channel('change-sales-offer')
+        .listen('ChangeSaleOffer', function (e) {
+            let market_id = e.market_id;
+            refreshSellerTable(market_id);
+        });
+
 
     function refreshBidTable(market) {
         $.ajax({
@@ -478,6 +512,23 @@
             success: function (msg) {
                 if (msg) {
                     $('#bidder_offer').html(msg[1]);
+                }
+            }
+        })
+    }
+
+    function refreshSellerTable(market) {
+        $.ajax({
+            url: "{{ route('home.refreshSellerTable') }}",
+            data: {
+                _token: "{{ csrf_token() }}",
+                market: market
+            },
+            dataType: "json",
+            method: 'post',
+            success: function (msg) {
+                if (msg) {
+                    $('#seller_offer_table').html(msg[1]);
                 }
             }
         })

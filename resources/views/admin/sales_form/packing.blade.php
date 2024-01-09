@@ -64,11 +64,13 @@
         }
 
     @endphp
-    <textarea rows="1"
-              {{ $required }} id="{{ filed_name($name) }}"
+    <input {{ $required }} style="margin-top: 28px"
+           id="{{ filed_name($name) }}"
               type="text"
               name="{{ filed_name($name) }}"
-              class="form-control" placeholder="{{ $label }}">{{ $value }}</textarea>
+              class="form-control"
+           placeholder="{{ $label }}"
+           value="{{ $value }}">
     @error(filed_name($name))
     <p class="input-error-validate">
         {{ $message }}

@@ -157,18 +157,6 @@
         <!-- [ Main Content ] end -->
     </div>
 </div>
-<!-- [ Main Content ] end -->
-<footer class="dash-footer">
-    <div class="footer-wrapper">
-        <div class="py-1">
-            <span class="text-muted">&copy; {{ date('Y') }} </span><b>
-                {!! Html::link('#', config('app.name'), []) !!}
-            </b>
-        </div>
-        <div class="py-1">
-        </div>
-    </div>
-</footer>
 
 <div class="modal fade" role="dialog" id="common_modal">
     <div class="modal-dialog" role="document">

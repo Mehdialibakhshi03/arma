@@ -46,12 +46,15 @@ Route::post('/role-permission/{id}', [
 Route::get('/', [IndexController::class, 'index'])->name('home.index');
 Route::get('/redirect-user', [IndexController::class, 'redirectUser'])->name('home');
 Route::post('/startBroadCast', [IndexController::class, 'startBroadCast'])->name('startBroadCast');
-Route::get('/bid/{market}', [MarketHomeController::class, 'bid'])->name('home.bid');
+Route::post('/MarketTableIndex', [IndexController::class, 'MarketTableIndex'])->name('home.MarketTableIndex');
+Route::post('/GetMarket', [MarketHomeController::class, 'GetMarket'])->name('home.GetMarket');
+Route::get('/bid/{market}', [MarketHomeController::class, 'bid'])->name('home.bid')->middleware('auth');
 Route::post('/bid_market/', [MarketHomeController::class, 'bid_market'])->name('home.bid_market');
 Route::post('/remove_bid/', [MarketHomeController::class, 'remove_bid'])->name('home.remove_bid');
 Route::post('/refreshMarketTable', [MarketHomeController::class, 'refreshMarketTable'])->name('home.refreshMarketTable');
 Route::post('/refreshMarket', [MarketHomeController::class, 'refreshMarket'])->name('home.refreshMarket');
 Route::post('/refreshBidTable', [MarketHomeController::class, 'refreshBidTable'])->name('home.refreshBidTable');
+Route::post('/refreshSellerTable', [MarketHomeController::class, 'refreshSellerTable'])->name('home.refreshSellerTable');
 Route::post('/change_market_status', [MarketHomeController::class, 'change_market_status'])->name('home.change_market_status');
 Route::post('/seller_change_offer', [MarketHomeController::class, 'seller_change_offer'])->name('home.seller_change_offer');
 Route::name('admin.')->prefix('/admin-panel/management/')->group(function () {

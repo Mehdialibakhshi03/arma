@@ -58,6 +58,3 @@
     </p>
     @enderror
 </div>
-<div class="col-12">
-    <hr>
-</div>

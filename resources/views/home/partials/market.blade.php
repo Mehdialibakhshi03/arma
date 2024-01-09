@@ -3,20 +3,20 @@
     <tr>
         <th scope="col">Commodity</th>
         <th scope="col">Quantity</th>
-        <th scope="col">Packing</th>
+        <th scope="col">Packaging</th>
         <th scope="col">Delivery Term</th>
         <th scope="col">Region</th>
         <th scope="col">Date</th>
         <th scope="col">Time</th>
-        <th scope="col">Status</th>
-        <th scope="col">Remaining Time</th>
         <th scope="col"></th>
         <th scope="col"></th>
     </tr>
     </thead>
     <tbody>
     @foreach($markets_groups as $markets)
+
         @foreach($markets->sortby('time') as $key=>$market)
+            <input type="hidden" id="previous_status-{{ $market->id }}" value="{{ $market->status }}">
             @php
                 $row_color='black';
             @endphp
@@ -41,31 +41,25 @@
                     {{ $market->SalesForm->commodity }}
                 </td>
                 <td>
-                    {{ $market->SalesForm->max_quantity }}
+                    {{ $market->SalesForm->max_quantity.'('.$market->SalesForm->unit.')' }}
                 </td>
                 <td>
                     {{ $market->SalesForm->packing }}
                 </td>
                 <td>
-                    -
+                    {{ $market->SalesForm->incoterms }}
                 </td>
                 <td>
-                    -
+                    {{ $market->SalesForm->country }}
                 </td>
                 <td>
                     {{ \Carbon\Carbon::parse($market->date_time)->format('Y-m-d') }}
                 </td>
-                <td>
+                <td id="market-time-{{ $market->id }}">
                     {{ \Carbon\Carbon::parse($market->date_time)->format('H:i') }}
                 </td>
-                <td id="market-status-{{ $market->id }}">
-                    Loading...
-                </td>
-                <td id="market-difference-{{ $market->id }}">
-
-                </td>
                 <td id="slide_more_angle_{{ $market->id }}" onclick="slidemore({{ $market->id }})"
-                    class="slide_more_angle d-flex justify-content-center align-items-center cursor-pointer">
+                    class="slide_more_angle cursor-pointer">
                     <span>more</span>
                     <i class="fa fa-angle-down ml-2 mt-1"></i>
                 </td>
@@ -76,160 +70,101 @@
                 </td>
             </tr>
             <tr id="more_table_{{ $market->id }}" style="display: none" class="slide_more_table">
-                <td colspan="9">
-                    <table style="width: 100%">
+                <td colspan="11">
+                    <table class="table-striped table_in_table" style="width: 100%">
                         <tr>
-                            <td class="text-bold">Commodity</td>
-                            <td>Urea</td>
-                            <td class="text-bold">Specification</td>
-                            <td>Available</td>
-                            <td class="text-bold">Inspection</td>
-                            <td>
-                                @auth
-                                    <span>Inspection</span>
-                                @else
-                                    <span class="text-danger">Log in/Register</span>
-                                @endauth
+                            <td class="text-left">
+                                <span class="text-bold" >Specification</span>
+                                <span >Available</span>
+                            </td>
+                            <td class="text-left">
+                                <span class="text-bold" >Contract Type</span>
+                                <span > {{ $market->SalesForm->price_type }}</span>
+                            </td>
+                            <td class="text-left">
+                                <span class="text-bold" >Offer Price</span>
+                                <span >
+                                    @auth
+                                        Available
+                                    @else
+                                        Log in/Register
+                                    @endauth
+                                </span>
                             </td>
                         </tr>
                         <tr>
-                            <td class="text-bold">Type</td>
-                            <td>Granular</td>
-                            <td class="text-bold">Analysis</td>
-                            <td>
-                                @auth
-                                    <span>Analysis</span>
-                                @else
-                                    <span class="text-danger">Log in/Register</span>
-                                @endauth
+                            <td class="text-left">
+                                <span class="text-bold" >Partial Shipment</span>
+                                <span >{{ $market->SalesForm->partial_shipment }}</span>
                             </td>
-                            <td class="text-bold">MSDS</td>
-                            <td>Available</td>
-                        </tr>
-                        <tr>
-                            <td class="text-bold">Quantity</td>
-                            <td>30.000 MT</td>
-                            <td class="text-bold">Min – Max Quantity</td>
-                            <td>10.000-40.000 MT</td>
-                            <td class="text-bold">Partial Shipment</td>
-                            <td>
-                                @auth
-                                    <span>Partial Shipment</span>
-                                @else
-                                    <span class="text-danger">Log in/Register</span>
-                                @endauth
+                            <td class="text-left">
+                                <span class="text-bold" >Supplier</span>
+                                <span >{{ $market->SalesForm->company_type }}</span>
+                            </td>
+                            <td class="text-left">
+                                <span class="text-bold" >Peyment Term</span>
+                                <span >
+                                    @auth
+                                        Available
+                                    @else
+                                        Log in/Register
+                                    @endauth
+                                </span>
                             </td>
                         </tr>
                         <tr>
-                            <td class="text-bold">Delivery Term</td>
-                            <td>FOB</td>
-                            <td class="text-bold">Loading Port</td>
-                            <td>
-                                @auth
-                                    <span>Loading Port</span>
-                                @else
-                                    <span class="text-danger">Log in/Register</span>
-                                @endauth
+                            <td class="text-left">
+                                <span class="text-bold" >Insurance</span>
+                                <span >Available</span>
                             </td>
-                            <td class="text-bold">Loading Rate</td>
-                            <td>
-                                @auth
-                                    <span>Loading Port</span>
-                                @else
-                                    <span class="text-danger">Log in/Register</span>
-                                @endauth
+                            <td class="text-left">
+                                <span class="text-bold" >Target Market</span>
+                                <span >
+                                    @auth
+                                        {{ $market->SalesForm->target_market }}
+                                    @else
+                                        Log in/Register
+                                    @endauth
+                                </span>
                             </td>
-                        </tr>
-                        <tr>
-                            <td class="text-bold">Packing</td>
-                            <td>Bulk</td>
-                            <td class="text-bold">Delivery Date</td>
-                            <td>
-                                @auth
-                                    <span>Loading Port</span>
-                                @else
-                                    <span class="text-danger">Log in/Register</span>
-                                @endauth
-                            </td>
-                            <td class="text-bold">Demurrage/Dispatch</td>
-                            <td>
-                                @auth
-                                    <span>Demurrage/Dispatch</span>
-                                @else
-                                    <span class="text-danger">Log in/Register</span>
-                                @endauth
+
+                            <td class="text-left">
+                                <span class="text-bold" >Delivery Date</span>
+                                <span >
+                                    @auth
+                                        Available
+                                    @else
+                                        Log in/Register
+                                    @endauth
+                                </span>
                             </td>
                         </tr>
                         <tr>
-                            <td class="text-bold">Region</td>
-                            <td>Black Sea</td>
-                            <td class="text-bold">Target market</td>
-                            <td>
-                                @auth
-                                    <span>Target market</span>
-                                @else
-                                    <span class="text-danger">Log in/Register</span>
-                                @endauth
+                            <td class="text-left">
+                                <span class="text-bold" >Min Order</span>
+                                <span >
+                                   {{ $market->SalesForm->min_order }}
+                                </span>
                             </td>
-                            <td class="text-bold">Supplier</td>
-                            <td>
-                                @auth
-                                    <span>Supplier</span>
-                                @else
-                                    <span class="text-danger">Log in/Register</span>
-                                @endauth
+                            <td class="text-left">
+                                <span class="text-bold" >Inspection</span>
+                                <span >
+                                    @auth
+                                        {{ $market->SalesForm->quality_quantity_inspection }}
+                                    @else
+                                        Log in/Register
+                                    @endauth
+                                </span>
                             </td>
-                        </tr>
-                        <tr>
-                            <td class="text-bold">Minimum Price</td>
-                            <td>
-                                @auth
-                                    <span>Minimum Price</span>
-                                @else
-                                    <span class="text-danger">Log in/Register</span>
-                                @endauth
-                            </td>
-                            <td class="text-bold">Price Type</td>
-                            <td>
-                                @auth
-                                    <span>Price Type</span>
-                                @else
-                                    <span class="text-danger">Log in/Register</span>
-                                @endauth
-                            </td>
-                            <td class="text-bold">Payment Term</td>
-                            <td>
-                                @auth
-                                    <span>Payment Term</span>
-                                @else
-                                    <span class="text-danger">Log in/Register</span>
-                                @endauth
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="text-bold">Contract Type</td>
-                            <td>
-                                @auth
-                                    <span>Contract Type</span>
-                                @else
-                                    <span class="text-danger">Log in/Register</span>
-                                @endauth
-                            </td>
-                            <td class="text-bold">Insurance</td>
-                            <td>
-                                @auth
-                                    <span>Insurance</span>
-                                @else
-                                    <span class="text-danger">Log in/Register</span>
-                                @endauth
-                            </td>
-                            <td class="text-bold">Documents</td>
-                            <td>
-                                @auth
-                                    <span>Documents</span>
-                                @else
-                                    <span class="text-danger">Log in/Register</span>
-                                @endauth
+                            <td class="text-left">
+                                <span class="text-bold" >Documents</span>
+                                <span >
+                                   @auth
+                                        Available
+                                    @else
+                                        Log in/Register
+                                    @endauth
+                                </span>
                             </td>
                         </tr>
                     </table>

@@ -68,12 +68,14 @@
 
                                                 @include('admin.sales_form.last_section')
                                             </div>
-                                            <div id="status_buttons" class="row mt-4">
-                                                <div class="col-md-12 mt-3">
+                                            <div id="status_buttons" class="row">
+                                                <div class="col-md-12 text-center">
                                                     <button title="Submit" type="button" onclick="submitForm()"
-                                                            class="btn btn-sm btn-info">
+                                                            class="btn btn-info">
                                                         Submit
                                                     </button>
+                                                </div>
+                                                <div class="col-md-12" style="text-align: right">
                                                     <button title="Your Information Saved But Not Submitted"
                                                             type="button" onclick="submitForm(1)"
                                                             class="btn btn-sm btn-success">

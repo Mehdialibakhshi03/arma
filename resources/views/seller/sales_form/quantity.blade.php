@@ -27,7 +27,7 @@
     @endphp
     <label for="{{ filed_name($name) }}"
            class="mb-2">{!! $name.' '.$required_span !!}</label>
-    <input {{ $required }} id="{{ filed_name($name) }}" type="text"
+    <input {{ $required }} id="{{ filed_name($name) }}" type="number"
            name="{{ filed_name($name) }}" class="form-control"
            value="{{ $value }}">
     @error(filed_name($name))
@@ -59,7 +59,7 @@
     @endphp
     <label for="{{ filed_name($name) }}"
            class="mb-2">{!! $name.' '.$required_span !!}</label>
-    <input {{ $required }} id="{{ filed_name($name) }}" type="text"
+    <input {{ $required }} id="{{ filed_name($name) }}" type="number"
            name="{{ filed_name($name) }}" class="form-control"
            value="{{ $value }}">
     @error(filed_name($name))
@@ -91,7 +91,7 @@
     @endphp
     <label for="{{ filed_name($name) }}"
            class="mb-2">{!! $name.'(%) '.$required_span !!}</label>
-    <input {{ $required }} id="{{ filed_name($name) }}" type="text"
+    <input {{ $required }} id="{{ filed_name($name) }}" type="number" min="0" max="1" step="1"
            name="{{ filed_name($name) }}" class="form-control"
            value="{{ $value }}">
     @error(filed_name($name))

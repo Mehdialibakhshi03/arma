@@ -157,18 +157,6 @@
         <!-- [ Main Content ] end -->
     </div>
 </div>
-<!-- [ Main Content ] end -->
-<footer class="dash-footer">
-    <div class="footer-wrapper">
-        <div class="py-1">
-            <span class="text-muted">&copy; {{ date('Y') }} </span><b>
-                {!! Html::link('#', config('app.name'), []) !!}
-            </b>
-        </div>
-        <div class="py-1">
-        </div>
-    </div>
-</footer>
 
 <div class="modal fade" role="dialog" id="common_modal">
     <div class="modal-dialog" role="document">
@@ -232,7 +220,7 @@
 <script src="{{ asset('assets/js/plugins/sweetalert2.all.min.js') }}"></script>
 <script src="{{ asset('assets/js/plugins/bouncer.min.js') }}"></script>
 <script src="{{ asset('assets/js/pages/form-validation.js') }}"></script>
-<script src="{{ asset('js/app.js') }}"></script>
+
 @if (!empty(setting('gtag')))
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ setting('gtag') }}"></script>
     <script>
@@ -274,33 +262,6 @@
     $('#profile-toggle').click(function () {
         $('#profile-dropdown').slideToggle();
     })
-
-    window.Echo.channel('market-status-updated')
-        .listen('MarketStatusUpdated', function (e) {
-            getMarketStatus(e.market_id)
-        });
-
-    function getMarketStatus(market_id) {
-        $.ajax({
-            url: "{{ route('admin.getMarket') }}",
-            data: {
-                _token: '{{ csrf_token() }}',
-                market_id: market_id,
-            },
-            dataType: 'json',
-            method: 'post',
-            success: function (msg) {
-                if (msg) {
-                    let status = msg[1];
-                    let color = msg[2];
-                    $('#market_status_' + market_id).text(status);
-                    $('#market_status_' + market_id).css('color', color);
-                }
-
-            }
-        })
-    }
-
 
 </script>
 

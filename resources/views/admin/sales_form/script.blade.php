@@ -1,6 +1,4 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/js/bootstrap-select.min.js"
-        integrity="sha512-yDlE7vpGDP7o2eftkCiPZ+yuUyEcaBwoJoIhdXv71KZWugFqEphIS3PU60lEkFaz8RxaVsMpSvQxMBaKVwA5xg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="{{ asset('admin/js/bootstrap-select.min.js') }}"></script>
 <!-- MDB -->
 <script>
     $(document).ready(function () {
@@ -10,11 +8,12 @@
         @if(session()->exists('form_id_exists'))
         show_modal_form_exists();
         @endif
-        $('#modal_form_id').val(' ');
         check_unit();
         check_currency();
         check_quality_inspection_report_file();
         check_partial_shipment();
+        check_increase_quantity();
+        check_increase_quantity();
         check_incoterms();
         check_price_type();
         check_payment_term();
@@ -201,7 +200,6 @@
         }
     }
 
-
     function check_quality_inspection_report_file() {
         let old_value = "{{ old('quality_inspection_report') }}";
         let value;
@@ -256,6 +254,32 @@
             let partial_shipment_number = "{{ $errors->first('partial_shipment_number') }}";
             let error_message = `<p class="input-error-validate">${partial_shipment_number}</p>`;
             $(error_message).insertAfter($('#partial_shipment_number'));
+        }
+    }
+    function check_increase_quantity() {
+        let old_value = "{{ old('increase_quantity') }}";
+        let value;
+        let other_value;
+        let sale_form_exist = {{ $sale_form_exist }};
+        let src = null;
+        if (old_value !== '') {
+            value = old_value;
+        } else {
+            if (sale_form_exist === 1) {
+                value = "{{ isset($form['increase_quantity'])?$form['increase_quantity']:'' }}";
+                other_value = "{{ isset($form['increase_quantity_value'])?$form['increase_quantity_value']:'' }}";
+            }
+        }
+        let increase_quantity = value === 'Yes' ? 1 : 0;
+        if (increase_quantity === 1) {
+            addIncreaseQuantity($('#increase_quantity'));
+            $('#increase_quantity_value').val(other_value);
+        }
+        let increase_quantity_value = "{{ $errors->has('increase_quantity_value') }}";
+        if (increase_quantity_value) {
+            let increase_quantity_value = "{{ $errors->first('increase_quantity_value') }}";
+            let error_message = `<p class="input-error-validate">${increase_quantity_value}</p>`;
+            $(error_message).insertAfter($('#increase_quantity_value'));
         }
     }
 
@@ -348,7 +372,6 @@
         }
     }
 
-
     function check_price_type() {
         let old_value = "{{ old('price_type') }}";
         let value;
@@ -387,7 +410,6 @@
         $('#price_type_select').val(other_value);
 
     }
-
 
     function check_safety_file() {
         let old_value = "{{ old('safety_product') }}";
@@ -450,7 +472,6 @@
             $(error_message).insertAfter($('#reach_certificate_file'));
         }
     }
-
 
     function check_documents() {
         let old_value = "{{ old('documents_options') }}";
@@ -530,6 +551,7 @@
     }
 
     function hasOther(tag, is_yes = 0) {
+
         let name = $(tag).attr('name');
         let value = $(tag).val();
         if (is_yes === 0) {
@@ -543,7 +565,7 @@
             let field_name = 'cost_per_unit';
             if (value === 'Yes') {
                 let element = '<div class="col-12 col-md-6 mb-3"><label for="' + field_name + `" class="mb-2">How Much Will Be Cost Per Unit<span class="text-danger">*</span></label>` +
-                    '<input required id="' + field_name + '" type="text" name="' + field_name + '" class="form-control" ' +
+                    '<input required id="' + field_name + '" type="text" name="' + field_name + '" class="form-control" >' +
                     '</div>';
                 $(element).insertAfter($(tag).parent().parent().parent());
             } else {
@@ -564,7 +586,7 @@
 
         if (value !== 'open') {
             let element = '<div class="col-12 col-md-4 mb-3"><label for="' + field_name + `" class="mb-2">${label} Market<span class="text-danger ml-2">*</span></label>` +
-                '<input required id="' + field_name + '" type="text" name="' + field_name + '" class="form-control" ' +
+                '<input required id="' + field_name + '" type="text" name="' + field_name + '" class="form-control" >' +
                 '</div>';
             $(element).insertAfter($(tag).parent().parent());
         }
@@ -612,11 +634,24 @@
         let field_name = 'partial_shipment_number';
         if (value === 'Yes') {
             let element = '<div class="col-12 col-md-6 mb-3"><label for="' + field_name + `" class="mb-2">Shipment Number<span class="text-danger">*</span></label>` +
-                '<input required id="' + field_name + '" type="text" name="' + field_name + '" class="form-control" ' +
+                '<input required id="' + field_name + '" type="text" name="' + field_name + '" class="form-control" >' +
                 '</div>';
             $(element).insertAfter($(tag).parent().parent().parent());
         } else {
             $(('#' + field_name)).parent().remove();
+        }
+    }
+
+    function addIncreaseQuantity(tag) {
+
+        let value = $(tag).val();
+        let field_name = 'increase_quantity_value';
+        $('#' + field_name).parent().remove();
+        if (value === 'Yes') {
+            let element = '<div class="col-12 col-md-6 mb-3"><label for="' + field_name + `" class="mb-2">Enter The Extra Quantity You Can Add To Max Quantity<span class="text-danger">*</span></label>` +
+                '<input required id="' + field_name + '" type="text" name="' + field_name + '" class="form-control" >' +
+                '</div>';
+            $(element).insertAfter($(tag).parent().parent().parent());
         }
     }
 
@@ -639,7 +674,7 @@
     function createOtherElement(name) {
         let field_name = name + '_other';
         return '<div class="col-12 col-md-6 mb-3"><label for="' + field_name + `" class="mb-2">Write Your ${name} <span class="text-danger">*</span></label>` +
-            '<input required id="' + field_name + '" type="text" name="' + field_name + '" class="form-control" ' +
+            '<input required id="' + field_name + '" type="text" name="' + field_name + '" class="form-control" >' +
             '</div>';
     }
 
@@ -816,7 +851,7 @@
             }
         }
         let is_open = value === 'open' ? 1 : 0;
-        if (!is_open) {
+        if (!is_open && value!=='') {
             let has_old = "{{ old('exclude_market') }}";
 
             if (has_old !== '') {

@@ -17,7 +17,8 @@
                                             <div class="row mt-4">
                                                 <div class="col-12 col-md-4 mb-3">
                                                     <label for="ready_to_open">Ready to Open(min)</label>
-                                                    <input id="ready_to_open" type="number" name="ready_to_open" class="form-control"
+                                                    <input id="ready_to_open" type="number" name="ready_to_open"
+                                                           class="form-control"
                                                            value="{{ $ready_to_open }}">
                                                     @error('ready_to_open')
                                                     <p class="input-error-validate">
@@ -27,7 +28,8 @@
                                                 </div>
                                                 <div class="col-12 col-md-4 mb-3">
                                                     <label for="date">Opening(min)</label>
-                                                    <input id="opening" type="number" name="opening" class="form-control"
+                                                    <input id="opening" type="number" name="opening"
+                                                           class="form-control"
                                                            value="{{ $opening }}">
                                                     @error('opening')
                                                     <p class="input-error-validate">
@@ -66,6 +68,26 @@
                                                     </p>
                                                     @enderror
                                                 </div>
+                                                <div class="col-12 mb-3">
+                                                    <label for="bid_deposit_text_area">Bid Deposit</label>
+                                                    <textarea id="bid_deposit_text_area" name="bid_deposit_text_area"
+                                                              class="form-control text_area">{{ $bid_deposit_text_area }}</textarea>
+                                                    @error('bid_deposit_text_area')
+                                                    <p class="input-error-validate">
+                                                        {{ $message }}
+                                                    </p>
+                                                    @enderror
+                                                </div>
+                                                <div class="col-12 mb-3">
+                                                    <label for="term_conditions">Term & Conditions</label>
+                                                    <textarea id="term_conditions" name="term_conditions"
+                                                              class="form-control text_area">{{ $term_conditions }}</textarea>
+                                                    @error('term_conditions')
+                                                    <p class="input-error-validate">
+                                                        {{ $message }}
+                                                    </p>
+                                                    @enderror
+                                                </div>
 
                                                 <div class="col-md-12 mt-3">
                                                     <button type="submit" class="btn btn-primary btn-block btn-sm">
@@ -89,4 +111,17 @@
 
 @endpush
 
+
+@push('script')
+    <script>
+        CKEDITOR.replace('bid_deposit_text_area', {
+            filebrowserUploadUrl: "{{ route('admin.ckeditor.upload', ['_token' => csrf_token()]) }}",
+            filebrowserUploadMethod: 'form'
+        });
+        CKEDITOR.replace('term_conditions', {
+            filebrowserUploadUrl: "{{ route('admin.ckeditor.upload', ['_token' => csrf_token()]) }}",
+            filebrowserUploadMethod: 'form'
+        });
+    </script>
+@endpush
 

@@ -43,7 +43,10 @@ return new class extends Migration
             //incoterms
             $table->text('partial_shipment')->nullable();
             $table->text('partial_shipment_number')->nullable();
+            $table->text('increase_quantity')->nullable();
+            $table->text('increase_quantity_value')->nullable();
             $table->text('shipment_more_details')->nullable();
+            //
             $table->text('incoterms')->nullable();
             $table->text('incoterms_other')->nullable();
             $table->text('incoterms_version')->nullable();
@@ -122,7 +125,9 @@ return new class extends Migration
             $table->text('contact_person_name')->nullable();
             $table->text('contact_person_job_title')->nullable();
             $table->text('contact_person_email')->nullable();
+            $table->text('pre_code')->nullable();
             $table->text('contact_person_mobile_phone')->nullable();
+            $table->text('platform')->nullable();
             //last part
             $table->text('last_more_detail')->nullable();
             $table->text('accept_terms')->nullable();

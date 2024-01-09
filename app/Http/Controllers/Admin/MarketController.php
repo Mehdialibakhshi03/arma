@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\DataTables\FormValuesDataTable;
+use App\Events\MarketTimeUpdated;
 use App\Facades\UtilityFacades;
 use App\Http\Controllers\Controller;
 use App\Mail\FormSubmitEmail;
@@ -59,7 +60,11 @@ class MarketController extends Controller
         $request->validate([
             'date' => 'required|date',
             'time' => 'required',
-            'commodity_id' => 'required'
+            'commodity_id' => 'required',
+            'step_price_competition' => 'required',
+            'bid_deposit' => 'required',
+            'offer_price' => 'required',
+            'description' => 'nullable',
         ]);
         Market::create($request->all());
         session()->flash('success', 'New Market Created Successfully');
@@ -77,7 +82,11 @@ class MarketController extends Controller
         $request->validate([
             'date' => 'required|date',
             'time' => 'required',
-            'commodity_id' => 'required'
+            'commodity_id' => 'required',
+            'step_price_competition' => 'required',
+            'bid_deposit' => 'required',
+            'offer_price' => 'required',
+            'description' => 'nullable',
         ]);
         $request['status'] = 7;
         if (Carbon::now() < $request->start) {
@@ -157,7 +166,9 @@ class MarketController extends Controller
         $q_1 = MarketSetting::where('key', 'q_1')->pluck('value')->first();
         $q_2 = MarketSetting::where('key', 'q_2')->pluck('value')->first();
         $q_3 = MarketSetting::where('key', 'q_3')->pluck('value')->first();
-        return view('admin.markets.setting', compact('q_1', 'q_2', 'q_3', 'ready_to_open', 'opening'));
+        $bid_deposit_text_area=MarketSetting::where('key', 'bid_deposit_text_area')->pluck('value')->first();
+        $term_conditions=MarketSetting::where('key', 'term_conditions')->pluck('value')->first();
+        return view('admin.markets.setting', compact('q_1', 'q_2', 'q_3', 'ready_to_open', 'opening','bid_deposit_text_area','term_conditions'));
     }
 
     public function settings_update(Request $request)
@@ -167,17 +178,22 @@ class MarketController extends Controller
         $q_1 = $request->q_1;
         $q_2 = $request->q_2;
         $q_3 = $request->q_3;
+        $bid_deposit_text_area = $request->bid_deposit_text_area;
+        $term_conditions = $request->term_conditions;
         $array = [
             'ready_to_open' => $ready_to_open,
             'opening' => $opening,
             'q_1' => $q_1,
             'q_2' => $q_2,
             'q_3' => $q_3,
+            'bid_deposit_text_area' => $bid_deposit_text_area,
+            'term_conditions' => $term_conditions,
         ];
         foreach ($array as $key => $val) {
             MarketSetting::where('key', $key)->update(['value' => $val]);
         }
         session()->flash('success', 'Successfully updated');
+        broadcast(new MarketTimeUpdated());
         return redirect()->back();
     }
 
@@ -265,21 +281,43 @@ class MarketController extends Controller
     {
         try {
             $market_id = $request->market_id;
+            $status = $request->status;
             $market = Market::find($market_id);
-            $price = $market->SalesForm->price;
-            $base_price = $price / 2;
-            $bids = $market->Bids()->where('price', '>=', $base_price)->get();
-            if (count($bids)>0){
-                return response()->json([1,'continue']);
+            $price = $market->offer_price;
+            $max_quantity = $market->SalesForm->max_quantity;
+            if ($status===4){
+                $base_price = $price / 2;
+                $bids = $market->Bids()->where('price', '>=', $base_price)->get();
+                if (count($bids)>0){
+                    return response()->json([1,'continue']);
+                }
+                $market->update([
+                    'status'=>7
+                ]);
+                return response()->json([1,'close']);
             }
-            $market->update([
-                'status'=>7
-            ]);
-            return response()->json([1,'close']);
+            if ($status==6){
+                $bids_exists = $market->Bids()->where('price', '>=', $price)->exists();
+                if (!$bids_exists){
+                    $market->update([
+                        'status'=>7
+                    ]);
+                    return response()->json([1,'close']);
+                }
+                $bids_quantity = $market->Bids()->where('price', '>=', $price)->sum('quantity');
+                if ($max_quantity>=$bids_quantity){
+                    $market->update([
+                        'status'=>8
+                    ]);
+                    return response()->json([1,'finish']);
+                }else{
+                    return response()->json([1,'continue']);
+                }
+            }
+
         }catch (\Exception $e) {
             dd($e->getMessage());
         }
-
     }
 
     public function Upload_files($env, $file)

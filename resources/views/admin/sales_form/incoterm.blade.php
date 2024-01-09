@@ -1,4 +1,5 @@
 <div class="col-12">
+    <h4>Delivery Term</h4>
     <hr>
 </div>
 <div class="col-12 col-md-6 mb-3">

@@ -108,7 +108,7 @@
     @endphp
     <label for="{{ filed_name($name) }}"
            class="mb-2">{!! $label.' '.$required_span !!}</label>
-    <textarea name="{{ filed_name($name) }}" class="form-control form-control-sm">{{ $value }}</textarea>
+    <input name="{{ filed_name($name) }}" class="form-control" value="{{ $value }}">
     @error(filed_name($name))
     <p class="input-error-validate">
         {{ $message }}
